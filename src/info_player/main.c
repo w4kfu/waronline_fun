@@ -4,6 +4,7 @@
 
 #pragma comment(lib,"Psapi.lib")
 
+/* Information base on 1.4.5 version build 570 */
 #define PTR_STRUCT_PLAYER 0x00F7512C
 
 struct info_s
@@ -88,6 +89,13 @@ int get_warhammer_pid(void)
 	exit(EXIT_FAILURE);
 }
 
+void print_info_player(struct player_s *player)
+{
+	printf("X = %X\n", player->X);
+	printf("Y = %X\n", player->Y);
+	printf("Z = %X\n", player->Z);
+}
+
 int main(void)
 {
 	struct info_s info;
@@ -110,10 +118,14 @@ int main(void)
 		printf("[-] ReadProcessMemory() failed : %d\n", GetLastError());
 		exit(EXIT_FAILURE);
 	}
+	/* Read X, Y, Z position of player */
 	ReadProcessMemory(info.hProcess, (LPVOID)(info.addr_splayer + 0x24), &player, 4 * 3, &nbread);
-	printf("X = %X\n", player.X);
-	printf("Y = %X\n", player.Y);
-	printf("Z = %X\n", player.Z);
+	if (nbread != (4 * 3))
+	{
+		printf("[-] ReadProcessMemory() failed : %d\n", GetLastError());
+		exit(EXIT_FAILURE);
+	}
+	print_info_player(&player);
 	system("pause");
 	return (0);
 }
