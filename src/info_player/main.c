@@ -4,6 +4,22 @@
 
 #pragma comment(lib,"Psapi.lib")
 
+#define PTR_STRUCT_PLAYER 0x00F7512C
+
+struct info_s
+{
+	DWORD pid;
+	HANDLE hProcess;
+	DWORD addr_splayer;
+};
+
+struct player_s
+{
+	int X;
+	int Y;
+	int Z;
+};
+
 void EnableDebugPriv(void)
 {
 	HANDLE hToken;
@@ -34,10 +50,7 @@ int is_warhammer(DWORD pid)
 
 	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, pid);
 	if (hProcess == NULL)
-	{
-		fprintf(stderr, "[-] OpenProcess() failed : %d\n", GetLastError());
 		return (0);
-	}
 	if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded))
 	{
 		if (GetModuleBaseNameA(hProcess, hMod, path, 512))
@@ -77,7 +90,30 @@ int get_warhammer_pid(void)
 
 int main(void)
 {
+	struct info_s info;
+	struct player_s player;
+	DWORD nbread;
+
 	EnableDebugPriv();
-	printf("%d\n", get_warhammer_pid());
+	
+	info.pid = get_warhammer_pid();
+	info.hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, info.pid);
+	if (info.hProcess == NULL)
+	{
+		printf("[-] OpenProcess() failed : %d\n", GetLastError());
+		exit(EXIT_FAILURE);
+	}
+
+	ReadProcessMemory(info.hProcess, (LPVOID)PTR_STRUCT_PLAYER, &info.addr_splayer, 4, &nbread);
+	if (nbread != 4)
+	{
+		printf("[-] ReadProcessMemory() failed : %d\n", GetLastError());
+		exit(EXIT_FAILURE);
+	}
+	ReadProcessMemory(info.hProcess, (LPVOID)(info.addr_splayer + 0x24), &player, 4 * 3, &nbread);
+	printf("X = %X\n", player.X);
+	printf("Y = %X\n", player.Y);
+	printf("Z = %X\n", player.Z);
+	system("pause");
 	return (0);
 }
