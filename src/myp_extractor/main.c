@@ -31,7 +31,7 @@ struct file_entry
 	DWORD ucmp_size;
 	BYTE  name[0x8];
 	DWORD crc;
-	WORD  comp_method;
+	WORD  compressed;
 };
 
 int is_valid_myp(struct myp_header *hdr)
@@ -63,6 +63,19 @@ void print_filetable(struct filetable_header *hdr)
 	printf("Offset Low = 0x%X\n", hdr->offset_LW);
 	printf("Offset High = 0x%X\n", hdr->offset_HI);
 	printf("\n");
+}
+
+void print_file_entry_info(struct file_entry *fe)
+{
+	printf("[+] FileEntry Information\n");
+	printf("Offset Low = 0x%X\n", fe->offset_LW);
+	printf("Offset High = 0x%X\n", fe->offset_HI);
+	printf("Unknow = 0x%X\n", fe->unknow);
+	printf("Compressed Size = 0x%X\n", fe->cmp_size);
+	printf("Uncompressed Size = 0x%X\n", fe->ucmp_size);
+	printf("Name = %8s\n", fe->name);
+	printf("CRC = 0x%X\n", fe->crc);
+	printf("Is compressed ? = %X\n", fe->compressed);
 }
 
 int main(void)
