@@ -89,7 +89,6 @@ void setup_hook_create_process(void)
 	{
 		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);
 	}
-	__asm jmp $
 	memset(Resume_CreateProcessW, 0x90, 0x1000);
 	setup_hook("kernel32.dll", "CreateProcessW", &Hook_CreateProcessW, Resume_CreateProcessW);
 }
@@ -99,7 +98,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 	char name[256];
 
 	if (fdwReason == DLL_PROCESS_DETACH)
-		return (0);
+		return (FALSE);
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
 		//DisableThreadLibraryCalls(GetModuleHandleA(DLL_NAME));
@@ -108,14 +107,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		if (strstr(name, "warpatch.exe"))
 		{
 			setup_hook_create_process();
-			MessageBoxA(NULL, (LPCSTR)name, (LPCSTR)name, 0);
-			return (0);
 		}
-		//if (strstr(name, "warpatch.bin"))
-		//{
+		if (strstr(name, "warpatch.bin"))
+		{
 		//setup_hook_create_process();
 		MessageBoxA(NULL, "WUT", "WUT", 0);
-		//}
+		}
 	}
-	return (0);
+	return (TRUE);
 }
