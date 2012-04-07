@@ -21,6 +21,19 @@ struct filetable_header
 	DWORD offset_HI;
 };
 
+#pragma pack(1)
+struct file_entry
+{
+	DWORD offset_LW;
+	DWORD offset_HI;
+	DWORD unknow;
+	DWORD cmp_size;
+	DWORD ucmp_size;
+	BYTE  name[0x8];
+	DWORD crc;
+	WORD  comp_method;
+};
+
 int is_valid_myp(struct myp_header *hdr)
 {
 	if (hdr->magic == 0x0050594d)
@@ -60,6 +73,8 @@ int main(void)
 	struct myp_header *hdr;
 	struct filetable_header *hdrf;
 
+	printf("Soze = %x\n", sizeof(struct file_entry));
+
 	if ((hFile = CreateFileA("world.myp", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
 	{
 		printf("[-] CreateFileA() failed : %x\n", GetLastError());
@@ -82,7 +97,7 @@ int main(void)
 	}
 	else
 	{		
-		printf("[-] Magic value wrong\n");
+		printf("[-] Magic number wrong\n");
 	}
 
 	UnmapViewOfFile(mFile);
