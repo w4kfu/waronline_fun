@@ -78,7 +78,7 @@ DWORD __stdcall Hook_CreateProcessW(LPCWSTR lpApplicationName,
 	return (result);
 }
 
-void setup_hook_create_process(void)
+void setup_hook_create_processw(void)
 {
 	/* Alloc enough place for CreateProcess Hook */
 	Resume_CreateProcessW = (DWORD(__stdcall *)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
@@ -106,12 +106,15 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		/* If dll has been injected into warpatch.exe we need to inject it into warpatch.bin */
 		if (strstr(name, "warpatch.exe"))
 		{
-			setup_hook_create_process();
+			setup_hook_create_processw();
 		}
-		if (strstr(name, "warpatch.bin"))
+		else if (strstr(name, "warpatch.bin"))
 		{
-		//setup_hook_create_process();
-		MessageBoxA(NULL, "WUT", "WUT", 0);
+			setup_hook_create_processw();
+		}
+		else if (strstr(name, "WAR.exe"))
+		{
+			MessageBoxA(NULL, "WUT", "WUT", 0);
 		}
 	}
 	return (TRUE);
