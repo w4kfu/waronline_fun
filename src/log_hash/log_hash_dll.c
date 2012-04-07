@@ -4,6 +4,7 @@
 #define		LDE_X86			0
 #define		LDE_X64			64
 #define		UNKNOWN_OPCODE	-1
+#define		DLL_NAME		"log_hash_dll.dll"
 
 #ifdef __cplusplus
 extern "C"
@@ -33,35 +34,64 @@ void	setup_hook(char *module, char *name_export, void *Hook_func, void *trampo)
 	VirtualProtect(Proc, len, OldProtect, &OldProtect);
 }
 
-BOOL (__stdcall *Resume_CreateProcess)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES,
-										BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION) = NULL;
+DWORD (__stdcall *Resume_CreateProcessW)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
+										LPSECURITY_ATTRIBUTES,
+										BOOL, DWORD, LPVOID, LPCWSTR, 
+										LPSTARTUPINFOW, LPPROCESS_INFORMATION) = NULL;
 
-BOOL __stdcall Hook_CreateProcess(LPCSTR lpApplicationName,
-									LPSTR lpCommandLine,
+/* This hook will inject again the dll in the other process */
+DWORD __stdcall Hook_CreateProcessW(LPCWSTR lpApplicationName,
+									LPWSTR lpCommandLine,
 									LPSECURITY_ATTRIBUTES lpProcessAttributes,
 									LPSECURITY_ATTRIBUTES lpThreadAttributes,
 									BOOL bInheritHandles,
 									DWORD dwCreationFlags,
 									LPVOID lpEnvironment,
-									LPCSTR lpCurrentDirectory,
-									LPSTARTUPINFOA lpStartupInfo,
+									LPCWSTR lpCurrentDirectory,
+									LPSTARTUPINFOW lpStartupInfo,
 									LPPROCESS_INFORMATION lpProcessInformation)
 {
 	BOOL result;
+	DWORD	Addr;
+	HANDLE	hThread;
+	HMODULE	hKernel32;
 
+	hKernel32 = GetModuleHandleA("kernel32.dll");
+	/* Change Creation flag to CREATE_SUSPENDED */
 	dwCreationFlags = CREATE_SUSPENDED;
-	result = Resume_CreateProcess(lpApplicationName, lpCommandLine, lpProcessAttributes, 
+	/* Call real CreateProcess function */
+	result = Resume_CreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, 
 						lpThreadAttributes, bInheritHandles, dwCreationFlags,
 						lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+	Addr = (DWORD)VirtualAllocEx(lpProcessInformation->hProcess, 0, strlen(DLL_NAME) + 1, MEM_COMMIT, PAGE_READWRITE);
+	if (Addr == NULL)
+	{
+		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);
+		TerminateProcess(lpProcessInformation->hProcess, 42);
+		exit(EXIT_FAILURE);
+	}
+	WriteProcessMemory(lpProcessInformation->hProcess, (LPVOID)Addr, (void*)DLL_NAME, strlen(DLL_NAME) + 1, NULL);
+	hThread = CreateRemoteThread(lpProcessInformation->hProcess, NULL, 0,(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), (LPVOID)Addr, 0, NULL);
+	WaitForSingleObject(hThread, INFINITE);
+	ResumeThread(lpProcessInformation->hThread);
+	CloseHandle(hThread);
 	return (result);
 }
 
 void setup_hook_create_process(void)
 {
-	Resume_CreateProcess = (BOOL(__stdcall *)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES,
-										BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-	memset(Resume_CreateProcess, 0x90, 0x1000);
-	setup_hook("kernel32.dll", "CreateProcessA", &Hook_CreateProcess, Resume_CreateProcess);
+	/* Alloc enough place for CreateProcess Hook */
+	Resume_CreateProcessW = (DWORD(__stdcall *)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
+												LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, 
+												LPCWSTR, LPSTARTUPINFOW, LPPROCESS_INFORMATION))
+												VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+	if (!Resume_CreateProcessW)
+	{
+		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);
+	}
+	__asm jmp $
+	memset(Resume_CreateProcessW, 0x90, 0x1000);
+	setup_hook("kernel32.dll", "CreateProcessW", &Hook_CreateProcessW, Resume_CreateProcessW);
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
@@ -70,13 +100,22 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
 	if (fdwReason == DLL_PROCESS_DETACH)
 		return (0);
-
-	DisableThreadLibraryCalls(GetModuleHandleA("log_hash_dll"));
-	GetModuleFileNameA(GetModuleHandleA(NULL), (LPSTR)name, 256);
-	if (strstr(name, "warpatch.exe"))
+	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		setup_hook_create_process();
-		MessageBoxA(NULL, (LPCSTR)name, (LPCSTR)name, 0);
+		//DisableThreadLibraryCalls(GetModuleHandleA(DLL_NAME));
+		GetModuleFileNameA(GetModuleHandleA(NULL), (LPSTR)name, 256);
+		/* If dll has been injected into warpatch.exe we need to inject it into warpatch.bin */
+		if (strstr(name, "warpatch.exe"))
+		{
+			setup_hook_create_process();
+			MessageBoxA(NULL, (LPCSTR)name, (LPCSTR)name, 0);
+			return (0);
+		}
+		//if (strstr(name, "warpatch.bin"))
+		//{
+		//setup_hook_create_process();
+		MessageBoxA(NULL, "WUT", "WUT", 0);
+		//}
 	}
 	return (0);
 }
