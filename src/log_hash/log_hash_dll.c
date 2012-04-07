@@ -1,4 +1,4 @@
-#include    <windows.h>
+﻿#include    <windows.h>
 #include    <stdio.h>
 
 #define		LDE_X86			0
