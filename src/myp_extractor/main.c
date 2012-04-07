@@ -14,6 +14,13 @@ struct myp_header
 	DWORD nb_filetable2;
 };
 
+struct filetable_header
+{
+	DWORD nb_entry;
+	DWORD offset_LW;
+	DWORD offset_HI;
+};
+
 int is_valid_myp(struct myp_header *hdr)
 {
 	if (hdr->magic == 0x0050594d)
@@ -36,12 +43,22 @@ void print_header_info(struct myp_header *hdr)
 	printf("\n");
 }
 
+void print_filetable(struct filetable_header *hdr)
+{
+	printf("[+] FileTable Information\n");
+	printf("Nb Entry = 0x%X\n", hdr->nb_entry);
+	printf("Offset Low = 0x%X\n", hdr->offset_LW);
+	printf("Offset High = 0x%X\n", hdr->offset_HI);
+	printf("\n");
+}
+
 int main(void)
 {
 	HANDLE hFile;
 	HANDLE	sFile;
 	BYTE	*mFile;
 	struct myp_header *hdr;
+	struct filetable_header *hdrf;
 
 	if ((hFile = CreateFileA("world.myp", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
 	{
@@ -60,6 +77,8 @@ int main(void)
 	if (is_valid_myp(hdr))
 	{
 		print_header_info(hdr);
+		hdrf = (struct filetable_header*)(mFile + hdr->addr_filetable_LW);
+		print_filetable(hdrf);
 	}
 	else
 	{		
