@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <Windows.h>
+
+struct myp_header
+{
+	DWORD magic;
+	DWORD version;
+	DWORD byteorder;
+	DWORD addr_filetable_LW;
+	DWORD addr_filetable_HI;
+	DWORD nb_file;
+	DWORD all_nb_file;
+	DWORD nb_filetable;
+	DWORD nb_filetable2;
+};
+
+int is_valid_myp(struct myp_header *hdr)
+{
+	if (hdr->magic == 0x0050594d)
+		return (1);
+	return (0);
+}
+
+void print_header_info(struct myp_header *hdr)
+{
+	printf("[+] Header Information\n");
+	printf("MAGIC = 0x%X\n", hdr->magic);
+	printf("Version = 0x%X\n", hdr->version);
+	printf("Byte Order Marker = 0x%X\n", hdr->byteorder);
+	printf("Address First FileTable Low = 0x%X\n", hdr->addr_filetable_LW);
+	printf("Address First FileTable High = 0x%X\n", hdr->addr_filetable_HI);
+	printf("Nb file inside First Table = 0x%X\n", hdr->nb_file);
+	printf("Total file into archive = 0x%X\n", hdr->all_nb_file);
+	printf("Nb FileTable = 0x%X\n", hdr->nb_filetable);
+	printf("Nb FileTable = 0x%X (again?)\n", hdr->nb_filetable2);
+	printf("\n");
+}
+
+int main(void)
+{
+	HANDLE hFile;
+	HANDLE	sFile;
+	BYTE	*mFile;
+	struct myp_header *hdr;
+
+	if ((hFile = CreateFileA("world.myp", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
+	{
+		printf("[-] CreateFileA() failed : %x\n", GetLastError());
+		exit(EXIT_FAILURE);
+	}
+	sFile = CreateFileMappingA(hFile, 0, PAGE_READONLY, 0, 0, 0);
+	mFile = (BYTE*)MapViewOfFile(sFile, FILE_MAP_READ, 0, 0, 0);
+	if (!mFile)
+	{
+		printf("[-] MapViewOfFile() failed : %x\n", GetLastError());
+		exit(EXIT_FAILURE);
+	}
+
+	hdr = (struct myp_header*)mFile;
+	if (is_valid_myp(hdr))
+	{
+		print_header_info(hdr);
+	}
+	else
+	{		
+		printf("[-] Magic value wrong\n");
+	}
+
+	UnmapViewOfFile(mFile);
+	CloseHandle(sFile);
+	CloseHandle(hFile);
+	return (0);
+}
