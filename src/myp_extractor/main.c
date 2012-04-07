@@ -21,6 +21,12 @@ struct filetable_header
 	DWORD offset_HI;
 };
 
+struct hash
+{
+   DWORD hi;
+   DWORD lo;
+};
+
 #pragma pack(1)
 struct file_entry
 {
@@ -29,10 +35,12 @@ struct file_entry
 	DWORD unknow;
 	DWORD cmp_size;
 	DWORD ucmp_size;
-	BYTE  name[0x8];
+	DWORD64 name;
 	DWORD crc;
 	WORD  compressed;
 };
+
+
 
 int is_valid_myp(struct myp_header *hdr)
 {
@@ -73,9 +81,9 @@ void print_file_entry_info(struct file_entry *fe)
 	printf("Unknow = 0x%X\n", fe->unknow);
 	printf("Compressed Size = 0x%X\n", fe->cmp_size);
 	printf("Uncompressed Size = 0x%X\n", fe->ucmp_size);
-	printf("Name = %8s\n", fe->name);
+	printf("Name = %I64X\n", fe->name);
 	printf("CRC = 0x%X\n", fe->crc);
-	printf("Is compressed ? = %X\n", fe->compressed);
+	printf("%s\n", fe->compressed ? "Is compressed" : "Is not compressed");
 }
 
 int main(void)
@@ -85,6 +93,7 @@ int main(void)
 	BYTE	*mFile;
 	struct myp_header *hdr;
 	struct filetable_header *hdrf;
+	struct file_entry *fe;
 
 	printf("Soze = %x\n", sizeof(struct file_entry));
 
@@ -107,9 +116,11 @@ int main(void)
 		print_header_info(hdr);
 		hdrf = (struct filetable_header*)(mFile + hdr->addr_filetable_LW);
 		print_filetable(hdrf);
+		fe = (struct file_entry*)(mFile + hdr->addr_filetable_LW + sizeof(struct filetable_header));
+		print_file_entry_info(fe);
 	}
 	else
-	{		
+	{
 		printf("[-] Magic number wrong\n");
 	}
 
