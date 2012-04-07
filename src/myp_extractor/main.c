@@ -40,7 +40,7 @@ struct file_entry
 	WORD  compressed;
 };
 
-
+unsigned int hash_filename(char *buffer, int seed, unsigned int size);
 
 int is_valid_myp(struct myp_header *hdr)
 {
@@ -120,9 +120,9 @@ int main(void)
 		print_file_entry_info(fe);
 	}
 	else
-	{
 		printf("[-] Magic number wrong\n");
-	}
+
+	printf("%08X\n", hash_filename("Interface/InterfaceCore/InterfaceCorePreload.xml", 0x67520592, strlen("Interface/InterfaceCore/InterfaceCorePreload.xml")));
 
 	UnmapViewOfFile(mFile);
 	CloseHandle(sFile);
