@@ -31,6 +31,7 @@ void create_warpatch_process(char *name, char *dll_name)
 		TerminateProcess(pi.hProcess, 42);
 		exit(EXIT_FAILURE);
 	}
+
 	WriteProcessMemory(pi.hProcess, (LPVOID)Addr, (void*)dll_name, strlen(dll_name) + 1, NULL);
 	hThread = CreateRemoteThread(pi.hProcess, NULL, 0,(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), (LPVOID)Addr, 0, NULL);
 	WaitForSingleObject(hThread, INFINITE);
@@ -39,8 +40,16 @@ void create_warpatch_process(char *name, char *dll_name)
 }
 
 
-int main(void)
+int main(int argc, char **argv)
 {
-	create_warpatch_process("warpatch.exe", "log_hash.dll");
+	PVOID OldValue = NULL;
+
+	if (argc != 3)
+	{
+		printf("Usage : %s <target.exe> <dll_name.dll>\n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+	Wow64DisableWow64FsRedirection(&OldValue);
+	create_warpatch_process(argv[1], argv[2]);
 	return (0);
 }
