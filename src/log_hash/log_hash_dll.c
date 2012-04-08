@@ -57,7 +57,7 @@ DWORD __declspec ( naked ) Hook_hash(void)
 		mov hash_low, edi
 		/* 
 			debug :] 
-		__asm jmp $
+			__asm jmp $
 		*/
 		mov eax, dword ptr [esp + 0x34]
 		mov str, eax
@@ -76,21 +76,21 @@ DWORD __declspec ( naked ) Hook_hash(void)
 }
 
 DWORD (__stdcall *Resume_CreateProcessW)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
-										LPSECURITY_ATTRIBUTES,
-										BOOL, DWORD, LPVOID, LPCWSTR, 
-										LPSTARTUPINFOW, LPPROCESS_INFORMATION) = NULL;
+					LPSECURITY_ATTRIBUTES,
+					BOOL, DWORD, LPVOID, LPCWSTR, 
+					LPSTARTUPINFOW, LPPROCESS_INFORMATION) = NULL;
 
 /* This hook will inject again the dll in the other process */
 DWORD __stdcall Hook_CreateProcessW(LPCWSTR lpApplicationName,
-									LPWSTR lpCommandLine,
-									LPSECURITY_ATTRIBUTES lpProcessAttributes,
-									LPSECURITY_ATTRIBUTES lpThreadAttributes,
-									BOOL bInheritHandles,
-									DWORD dwCreationFlags,
-									LPVOID lpEnvironment,
-									LPCWSTR lpCurrentDirectory,
-									LPSTARTUPINFOW lpStartupInfo,
-									LPPROCESS_INFORMATION lpProcessInformation)
+					LPWSTR lpCommandLine,
+					LPSECURITY_ATTRIBUTES lpProcessAttributes,
+					LPSECURITY_ATTRIBUTES lpThreadAttributes,
+					BOOL bInheritHandles,
+					DWORD dwCreationFlags,
+					LPVOID lpEnvironment,
+					LPCWSTR lpCurrentDirectory,
+					LPSTARTUPINFOW lpStartupInfo,
+					LPPROCESS_INFORMATION lpProcessInformation)
 {
 	BOOL result;
 	DWORD	Addr;
@@ -102,9 +102,11 @@ DWORD __stdcall Hook_CreateProcessW(LPCWSTR lpApplicationName,
 	dwCreationFlags = CREATE_SUSPENDED;
 	/* Call real CreateProcess function */
 	result = Resume_CreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, 
-						lpThreadAttributes, bInheritHandles, dwCreationFlags,
-						lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
-	Addr = (DWORD)VirtualAllocEx(lpProcessInformation->hProcess, 0, strlen(DLL_NAME) + 1, MEM_COMMIT, PAGE_READWRITE);
+					lpThreadAttributes, bInheritHandles, dwCreationFlags,
+					lpEnvironment, lpCurrentDirectory, lpStartupInfo, 
+					lpProcessInformation);
+	Addr = (DWORD)VirtualAllocEx(lpProcessInformation->hProcess, 0, strlen(DLL_NAME) + 1, 
+					MEM_COMMIT, PAGE_READWRITE);
 	if (Addr == NULL)
 	{
 		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);
@@ -112,7 +114,9 @@ DWORD __stdcall Hook_CreateProcessW(LPCWSTR lpApplicationName,
 		exit(EXIT_FAILURE);
 	}
 	WriteProcessMemory(lpProcessInformation->hProcess, (LPVOID)Addr, (void*)DLL_NAME, strlen(DLL_NAME) + 1, NULL);
-	hThread = CreateRemoteThread(lpProcessInformation->hProcess, NULL, 0,(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), (LPVOID)Addr, 0, NULL);
+	hThread = CreateRemoteThread(lpProcessInformation->hProcess, NULL, 0,
+					(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), 
+					(LPVOID)Addr, 0, NULL);
 	WaitForSingleObject(hThread, INFINITE);
 	ResumeThread(lpProcessInformation->hThread);
 	CloseHandle(hThread);
@@ -123,9 +127,9 @@ void setup_hook_create_processw(void)
 {
 	/* Alloc enough place for CreateProcess Hook */
 	Resume_CreateProcessW = (DWORD(__stdcall *)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
-												LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, 
-												LPCWSTR, LPSTARTUPINFOW, LPPROCESS_INFORMATION))
-												VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+							LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, 
+							LPCWSTR, LPSTARTUPINFOW, LPPROCESS_INFORMATION))
+							VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	if (!Resume_CreateProcessW)
 	{
 		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);

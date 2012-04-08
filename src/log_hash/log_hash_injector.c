@@ -33,7 +33,9 @@ void create_warpatch_process(char *name, char *dll_name)
 	}
 
 	WriteProcessMemory(pi.hProcess, (LPVOID)Addr, (void*)dll_name, strlen(dll_name) + 1, NULL);
-	hThread = CreateRemoteThread(pi.hProcess, NULL, 0,(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), (LPVOID)Addr, 0, NULL);
+	hThread = CreateRemoteThread(pi.hProcess, NULL, 0,
+				(LPTHREAD_START_ROUTINE) ::GetProcAddress(hKernel32,"LoadLibraryA" ), 
+				(LPVOID)Addr, 0, NULL);
 	WaitForSingleObject(hThread, INFINITE);
 	ResumeThread(pi.hThread);
 	CloseHandle(hThread);
