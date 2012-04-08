@@ -32,7 +32,7 @@ struct file_entry
 {
 	DWORD offset_LW;
 	DWORD offset_HI;
-	DWORD unknow;
+	DWORD size_header;
 	DWORD cmp_size;
 	DWORD ucmp_size;
 	DWORD64 name;
@@ -82,7 +82,7 @@ void print_file_entry_info(struct file_entry *fe)
 	printf("Compressed Size = 0x%X\n", fe->cmp_size);
 	printf("Uncompressed Size = 0x%X\n", fe->ucmp_size);
 	printf("Name = %I64X\n", fe->name);
-	printf("CRC = 0x%X\n", fe->crc);
+	printf("CRC = 0x%08X\n", fe->crc);
 	printf("%s\n", fe->compressed ? "Is compressed" : "Is not compressed");
 }
 
@@ -94,6 +94,7 @@ int main(void)
 	struct myp_header *hdr;
 	struct filetable_header *hdrf;
 	struct file_entry *fe;
+	DWORD entry;
 
 	printf("Soze = %x\n", sizeof(struct file_entry));
 
@@ -116,13 +117,26 @@ int main(void)
 		print_header_info(hdr);
 		hdrf = (struct filetable_header*)(mFile + hdr->addr_filetable_LW);
 		print_filetable(hdrf);
-		fe = (struct file_entry*)(mFile + hdr->addr_filetable_LW + sizeof(struct filetable_header));
-		print_file_entry_info(fe);
+		for (entry = 0; entry < hdr->all_nb_file; entry++)
+		{
+			//exit(0);
+			fe = (struct file_entry*)(mFile + hdr->addr_filetable_LW + sizeof(struct filetable_header) + (entry * sizeof(struct file_entry)));
+			print_file_entry_info(fe);
+			if (fe->name == 0x05FBF9ECDD8EA010)
+			{
+				printf("Entry = %X\n", entry);
+				printf("hdrf->nb_entry = %X\n", hdrf->nb_entry);
+				break;
+			}
+		}
+		//printf("Offset = %08X\n", hdr->addr_filetable_LW + sizeof(struct filetable_header) + (entry * sizeof(struct file_entry)));
+		//hdr = (struct myp_header*)(mFile + hdr->addr_filetable_LW + sizeof(struct filetable_header) + (hdr->all_nb_file * sizeof(struct file_entry)));
+		//print_header_info(hdr);
 	}
 	else
 		printf("[-] Magic number wrong\n");
 
-	printf("%08X\n", hash_lua("Interface/InterfaceCore/InterfaceCorePreload.xml", 0x67520592, strlen("Interface/InterfaceCore/InterfaceCorePreload.xml")));
+	//printf("%08X\n", hash_lua("Interface/InterfaceCore/InterfaceCorePreload.xml", 0x67520592, strlen("Interface/InterfaceCore/InterfaceCorePreload.xml")));
 
 	UnmapViewOfFile(mFile);
 	CloseHandle(sFile);
