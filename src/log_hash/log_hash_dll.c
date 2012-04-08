@@ -13,15 +13,26 @@ int __stdcall LDE(void* address , DWORD type);
 
 #pragma comment(lib, "LDE64.lib")
 
-void	setup_hook(char *module, char *name_export, void *Hook_func, void *trampo)
+DWORD	hash;
+char	*str;
+FILE	*hfile;
+
+void	setup_hook(char *module, char *name_export, void *Hook_func, void *trampo, DWORD addr)
 {
 	DWORD	OldProtect;
 	DWORD	len;
 	FARPROC	Proc;
 
-	Proc = GetProcAddress(GetModuleHandleA(module), name_export);
-	if (!Proc)
-		MessageBoxA(NULL, name_export, module, 0);
+	if (addr != 0)
+	{
+		Proc = (FARPROC)addr;
+	}
+	else
+	{
+		Proc = GetProcAddress(GetModuleHandleA(module), name_export);
+		if (!Proc)
+			MessageBoxA(NULL, name_export, module, 0);
+	}
 	len = 0;
 	while (len < 5)
 		len += LDE((BYTE*)Proc + len , LDE_X86);
@@ -32,6 +43,31 @@ void	setup_hook(char *module, char *name_export, void *Hook_func, void *trampo)
 	*(BYTE*)Proc = 0xE9;
 	*(DWORD*)((char*)Proc + 1) = (BYTE*)Hook_func - (BYTE*)Proc - 5;
 	VirtualProtect(Proc, len, OldProtect, &OldProtect);
+}
+
+DWORD (__stdcall *Resume_hash)(void) = NULL;
+
+DWORD __declspec ( naked ) Hook_hash(void)
+{
+	__asm
+	{
+		pushad
+		mov hash, eax
+		__asm jmp $
+		mov eax, dword ptr [esp + 0x48]
+		mov str, eax
+	}
+	hfile = fopen("log_hash.txt", "a");
+	if (hfile)
+	{
+		fprintf(hfile, "\"%s\" = %08X\n", str, hash);
+		fclose(hfile);
+	}
+	__asm
+	{
+		popad
+	}
+	Resume_hash();
 }
 
 DWORD (__stdcall *Resume_CreateProcessW)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
@@ -88,9 +124,24 @@ void setup_hook_create_processw(void)
 	if (!Resume_CreateProcessW)
 	{
 		MessageBoxA(NULL, "VirtualAllocEx failed()", "Error", 0);
+		return;
 	}
 	memset(Resume_CreateProcessW, 0x90, 0x1000);
-	setup_hook("kernel32.dll", "CreateProcessW", &Hook_CreateProcessW, Resume_CreateProcessW);
+	setup_hook("kernel32.dll", "CreateProcessW", &Hook_CreateProcessW, Resume_CreateProcessW, 0);
+}
+
+void setup_hook_hash(void)
+{
+	Resume_hash = (DWORD(__stdcall *)(void))VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+	memset(Resume_hash, 0x90, 0x1000);
+	/*
+	.text:0091BD1A                 pop     edi
+	.text:0091BD1B                 pop     esi
+	.text:0091BD1C                 pop     ebx
+	.text:0091BD1D                 leave
+	.text:0091BD1E                 retn
+	*/
+	setup_hook("WAR", "WAR", &Hook_hash, Resume_hash, 0x0091BD1A);
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
@@ -108,13 +159,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		{
 			setup_hook_create_processw();
 		}
+		/* If dll has been injected into warpatch.bin we need to inject it into WAR.exe */
 		else if (strstr(name, "warpatch.bin"))
 		{
 			setup_hook_create_processw();
 		}
 		else if (strstr(name, "WAR.exe"))
 		{
-			MessageBoxA(NULL, "WUT", "WUT", 0);
+			setup_hook_hash();
 		}
 	}
 	return (TRUE);
