@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include "zlib.h"
 #include <Windows.h>
+
+#pragma comment(lib, "zlibstat.lib")
 
 struct myp_header
 {
@@ -78,7 +81,7 @@ void print_file_entry_info(struct file_entry *fe)
 	printf("[+] FileEntry Information\n");
 	printf("Offset Low = 0x%X\n", fe->offset_LW);
 	printf("Offset High = 0x%X\n", fe->offset_HI);
-	printf("Unknow = 0x%X\n", fe->unknow);
+	printf("Size Header = 0x%X\n", fe->size_header);
 	printf("Compressed Size = 0x%X\n", fe->cmp_size);
 	printf("Uncompressed Size = 0x%X\n", fe->ucmp_size);
 	printf("Name = %I64X\n", fe->name);
@@ -95,6 +98,7 @@ int main(void)
 	struct filetable_header *hdrf;
 	struct file_entry *fe;
 	DWORD entry;
+	char *output;
 
 	printf("Soze = %x\n", sizeof(struct file_entry));
 
@@ -124,6 +128,13 @@ int main(void)
 			print_file_entry_info(fe);
 			if (fe->name == 0x05FBF9ECDD8EA010)
 			{
+				HANDLE hout;
+				DWORD writ;
+				hout = CreateFileA("test.zip", GENERIC_WRITE, 0, 0, CREATE_ALWAYS, 0, 0);
+				WriteFile(hout, (mFile + fe->offset_LW + fe->size_header), fe->cmp_size, &writ, 0);
+				CloseHandle(hout);
+				//if (uncompress((Bytef*)output, (uLongf*)&fe->ucmp_size, (mFile + fe->offset_LW + fe->size_header), fe->cmp_size) != Z_OK)
+				//	printf("[-] Uncompress failed :(\n");
 				printf("Entry = %X\n", entry);
 				printf("hdrf->nb_entry = %X\n", hdrf->nb_entry);
 				break;
