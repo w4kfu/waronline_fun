@@ -13,7 +13,8 @@ int __stdcall LDE(void* address , DWORD type);
 
 #pragma comment(lib, "LDE64.lib")
 
-DWORD	hash;
+DWORD	hash_low;
+DWORD	hash_high;
 char	*str;
 FILE	*hfile;
 
@@ -52,15 +53,19 @@ DWORD __declspec ( naked ) Hook_hash(void)
 	__asm
 	{
 		pushad
-		mov hash, eax
+		mov hash_high, ecx
+		mov hash_low, edi
+		/* 
+			debug :] 
 		__asm jmp $
-		mov eax, dword ptr [esp + 0x48]
+		*/
+		mov eax, dword ptr [esp + 0x34]
 		mov str, eax
 	}
 	hfile = fopen("log_hash.txt", "a");
 	if (hfile)
 	{
-		fprintf(hfile, "\"%s\" = %08X\n", str, hash);
+		fprintf(hfile, "\"%s\" = %08X%08X\n", str, hash_high, hash_low);
 		fclose(hfile);
 	}
 	__asm
@@ -68,7 +73,6 @@ DWORD __declspec ( naked ) Hook_hash(void)
 		popad
 		jmp Resume_hash
 	}
-	//Resume_hash();
 }
 
 DWORD (__stdcall *Resume_CreateProcessW)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
