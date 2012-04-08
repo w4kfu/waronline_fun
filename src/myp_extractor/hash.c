@@ -1,4 +1,4 @@
-unsigned int hash_filename(char *buffer, int seed, unsigned int size)
+unsigned int hash_lua(char *buffer, int seed, unsigned int size)
 {
   int v5;
   int v6;
