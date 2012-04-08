@@ -53,12 +53,12 @@ DWORD __declspec ( naked ) Hook_hash(void)
 	{
 		pushad
 		mov hash, eax
-		__asm jmp $
+		//__asm jmp $
 		mov eax, dword ptr [esp + 0x48]
 		mov str, eax
 	}
 	hfile = fopen("log_hash.txt", "a");
-	if (hfile)
+	if (hfile && (DWORD)str > 0x10000)
 	{
 		fprintf(hfile, "\"%s\" = %08X\n", str, hash);
 		fclose(hfile);
@@ -66,8 +66,9 @@ DWORD __declspec ( naked ) Hook_hash(void)
 	__asm
 	{
 		popad
+		jmp Resume_hash
 	}
-	Resume_hash();
+	//Resume_hash();
 }
 
 DWORD (__stdcall *Resume_CreateProcessW)(LPCWSTR, LPWSTR, LPSECURITY_ATTRIBUTES, 
@@ -149,10 +150,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 	char name[256];
 
 	if (fdwReason == DLL_PROCESS_DETACH)
-		return (FALSE);
+		return (TRUE);
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		//DisableThreadLibraryCalls(GetModuleHandleA(DLL_NAME));
+		DisableThreadLibraryCalls(GetModuleHandleA(DLL_NAME));
 		GetModuleFileNameA(GetModuleHandleA(NULL), (LPSTR)name, 256);
 		/* If dll has been injected into warpatch.exe we need to inject it into warpatch.bin */
 		if (strstr(name, "warpatch.exe"))
