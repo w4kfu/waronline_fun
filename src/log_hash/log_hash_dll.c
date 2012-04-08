@@ -53,12 +53,12 @@ DWORD __declspec ( naked ) Hook_hash(void)
 	{
 		pushad
 		mov hash, eax
-		//__asm jmp $
+		__asm jmp $
 		mov eax, dword ptr [esp + 0x48]
 		mov str, eax
 	}
 	hfile = fopen("log_hash.txt", "a");
-	if (hfile && (DWORD)str > 0x10000)
+	if (hfile)
 	{
 		fprintf(hfile, "\"%s\" = %08X\n", str, hash);
 		fclose(hfile);
@@ -136,13 +136,14 @@ void setup_hook_hash(void)
 	Resume_hash = (DWORD(__stdcall *)(void))VirtualAlloc(0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	memset(Resume_hash, 0x90, 0x1000);
 	/*
-	.text:0091BD1A                 pop     edi
-	.text:0091BD1B                 pop     esi
-	.text:0091BD1C                 pop     ebx
-	.text:0091BD1D                 leave
-	.text:0091BD1E                 retn
+	.text:0099485D                 pop     edi
+	.text:0099485E                 pop     esi
+	.text:0099485F                 pop     ebp
+	.text:00994860                 mov     [eax], ecx
+	.text:00994862                 pop     ebx
+	.text:00994863                 retn
 	*/
-	setup_hook("WAR", "WAR", &Hook_hash, Resume_hash, 0x0091BD1A);
+	setup_hook("WAR", "WAR", &Hook_hash, Resume_hash, 0x0099485D);
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
