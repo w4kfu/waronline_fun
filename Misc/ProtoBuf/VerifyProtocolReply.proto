@@ -1,0 +1,10 @@
+package login.proto;
+
+import "ResultCodes.proto";
+
+message VerifyProtocolReply {
+ required ResultCode result_code = 1;
+ optional bytes iv1 = 2;
+ optional bytes iv2 = 3;
+}
+

@@ -1,0 +1,10 @@
+package login.proto;
+
+import "ResultCodes.proto";
+
+message AuthInitialTokenReply {
+ required ResultCode result_code = 1;
+ optional string account_name = 2;
+ optional bytes session_token = 3;
+}
+

@@ -1,0 +1,7 @@
+package login.proto;
+
+message ServerInfo {
+ required uint32 server_id = 1;
+ required string server_name = 2;
+}
+

@@ -1,0 +1,7 @@
+package login.proto;
+
+message MetricEventNotify {
+ required uint32 event_id = 1;
+ optional bytes event_data = 2;
+}
+

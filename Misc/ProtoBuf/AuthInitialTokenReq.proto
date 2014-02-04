@@ -1,0 +1,6 @@
+package login.proto;
+
+message AuthInitialTokenReq {
+ required bytes auth_token = 1;
+}
+

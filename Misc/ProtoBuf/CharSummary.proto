@@ -1,0 +1,9 @@
+package login.proto;
+
+message CharSummary {
+ required uint32 server_id = 1;
+ required uint32 character_id = 2;
+ required int64 last_played_time = 3;
+ optional string xml_data = 4;
+}
+

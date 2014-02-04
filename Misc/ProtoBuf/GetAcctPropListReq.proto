@@ -1,0 +1,9 @@
+package login.proto;
+
+import "ResultCodes.proto";
+import "AcctProp.proto";
+
+message GetAcctPropListReq {
+ repeated AcctProp prop_list = 1;
+}
+

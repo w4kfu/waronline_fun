@@ -1,0 +1,10 @@
+package login.proto;
+
+
+enum ClusterPopStatus {
+ POP_UNKNOWN = 0;
+ POP_LOW = 1;
+ POP_MED = 2;
+ POP_HIGH = 3;
+ POP_FULL = 4;
+}
