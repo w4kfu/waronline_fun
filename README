@@ -1,6 +1,0 @@
-For more information plese view Wiki section
-
-This project include :
-- info_player : Simply program for monitoring warhammer player information
-- myp_extractor : Extractor for MYP archive
-- log_hash : Inject dll for logging all string hashed by war
