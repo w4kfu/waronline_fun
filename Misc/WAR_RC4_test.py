@@ -8,7 +8,7 @@ def hexdump(src, length=16):
         lines.append("%04x  %-*s  %s\n" % (c, length*3, hex, printable))
     return ''.join(lines)
 
-def WAR_RC4(data , key):
+def WAR_RC4(data, key, encrypt = True):
     j = 0
     i = 0
     out_first_half = []
@@ -23,14 +23,20 @@ def WAR_RC4(data , key):
         S[i] , S[j] = S[j] , S[i]
         c = ord(char) ^ S[(S[i] + S[j]) % 256]
         out_second_half.append(chr(c))
-        j = (j + c) % 256
+        if encrypt == True:
+            j = (j + ord(char)) % 256
+        else:
+            j = (j + c) % 256
     for char in data[:half_len]:
         i = (i + 1) % 256
         j = (j + S[i]) % 256
         S[i] , S[j] = S[j] , S[i]
         c = ord(char) ^ S[(S[i] + S[j]) % 256]
         out_first_half.append(chr(c))
-        j = (j + c) % 256
+        if encrypt == True:
+            j = (j + ord(char)) % 256
+        else:
+            j = (j + c) % 256
     return ''.join(out_first_half) + ''.join(out_second_half)
 
 cdata = [
@@ -77,4 +83,11 @@ ckey = [
 key = ''.join([chr(c) for c in ckey])
 data = ''.join([chr(c) for c in cdata])
 
-print hexdump(WAR_RC4(data, key))
+#print hexdump(WAR_RC4(data, key))
+
+a = WAR_RC4(data, key, False)
+print hexdump(a)
+b = WAR_RC4(a, key, True)
+print hexdump(b)
+res = WAR_RC4(b, key, False)
+print hexdump(res)
