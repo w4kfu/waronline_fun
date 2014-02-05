@@ -77,9 +77,10 @@ VOID	ReplaceXML(char *Buffer)
 					 "<Address>0.0.0.0</Address><Port>0</Port></PingServer>"
 					 "<LoginServerList><LoginServer serverName=\"login 1\">"
 					 "<Address>127.0.0.1</Address><Port>18046</Port>"
-					 "</LoginServer>"//<LoginServer serverName=\"login 2\">"
-					 //"<Address>127.0.0.1</Address><Port>18046</Port>"
-					 //"</LoginServer>
+					 "</LoginServer>"
+					 //<LoginServer serverName=\"login 2\">"
+					 //"<Address>127.0.0.1</Address><Port>18047</Port>"
+					 //"</LoginServer>"
 					 "</LoginServerList></Region>"
 					 "</RegionList></MythLoginServiceConfig></RootElementOfAnyName>\x0A\x0A\x00\x00";
 					 
