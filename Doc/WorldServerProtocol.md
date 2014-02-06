@@ -75,7 +75,7 @@ They use a really weird implementation of RC4 (here in python) :
                 j = (j + c) % 256
         return ''.join(out_first_half) + ''.join(out_second_half)
 
-### WAR_RC4_Encrypt proc near
+### WAR_RC4_Encrypt
 
 Function in the client used to encrypt message for the server
 
@@ -89,7 +89,7 @@ PAT signature (for sigmake IDA flair) :
 
     558BEC81EC04010000568BF033C03945080F84CA00000039450C0F84C1000000 C6 43C9 00E6 :0000 WAR_RC4_Encrypt
 
-### WAR_RC4_Decrypt proc near
+### WAR_RC4_Decrypt
 
 Function in the client used to decrypt message from the server
 
