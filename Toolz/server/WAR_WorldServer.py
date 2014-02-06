@@ -126,9 +126,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         size_xml, buf = WAR_Utils.GetWord(buf)
         print "[+] size_xml = %04X" % (size_xml)
 
-        self.prepare_S_CONNECTED(protocol_version, username)
+        self.prepare_0x82(protocol_version, username)
 
-    def prepare_S_CONNECTED(self, protocol_version, username):
+    def prepare_0x82(self, protocol_version, username):
+        """ S_CONNECTED """
         p = struct.pack(">B", 0x82)
 
         p += struct.pack(">B", 0x00)    # unknow
@@ -138,29 +139,27 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">I", protocol_version)
         p += WAR_Utils.MakeBBuffer(username)
         p += WAR_Utils.MakeBBuffer(WAR_TCPHandler.WorldName)
-        p += struct.pack(">B", 0x00)    # unknow
-        p += struct.pack(">I", 0x00)    # unknow
-        p += struct.pack(">B", 0x01)
+        p += struct.pack(">B", 0x00)    # NS related to arry of informations
         p = WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)
 
     def handle_0x5C(self, buf):
         print "[+] handle_0x5C"
-        cipher, buf = WAR_Utils.GetByte(buf)
+        key_present, buf = WAR_Utils.GetByte(buf)
         unk_byte_00, buf = WAR_Utils.GetByte(buf)
         major_version, buf = WAR_Utils.GetByte(buf)
         minor_version, buf = WAR_Utils.GetByte(buf)
         revision_version, buf = WAR_Utils.GetByte(buf)
         unk_byte_01, buf = WAR_Utils.GetByte(buf)
-        print "[+] cipher : %02X" % (cipher)
+        print "[+] key_present : %02X" % (key_present)
         print "[+] unk_byte_00 : %02X" % (unk_byte_00)
         print "[+] major_version : %02X" % (major_version)
         print "[+] minor_version : %02X" % (minor_version)
         print "[+] revision_version : %02X" % (revision_version)
         print "[+] unk_byte_01 : %02X" % (unk_byte_01)
 
-        if cipher == 0:
+        if key_present == 0:
             # ask for a key
             self.prepare_0x8A()
         else:
