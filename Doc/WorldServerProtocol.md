@@ -6,11 +6,18 @@ server.
 
 ## Packet format
 
-All packet received from the client follows this struct :
+### Received FROM client
+
+All packet received from the client follow this struct :
 
     +0x00   :   SIZE_DATA       [WORD] // minus HEADER_SIZE and CRC
 
-The server must recv/read SIZE_DATA + 8 /* sizeof (HEADER_SIZE) */ + 2 /* size of CRC */.
+The server must recv/read SIZE_DATA + 8 + 2.
+
+* 8 for sizeof (HEADER_SIZE).
+* 2 for size of CRC aka sizeof (WORD).
+
+Packet content struct :
 
     /* HEADER       */
     +0x00   :   SEQUENCE_PACKET [WORD]
@@ -22,7 +29,9 @@ The server must recv/read SIZE_DATA + 8 /* sizeof (HEADER_SIZE) */ + 2 /* size o
     +0x08   :   DATA_PACKET     [BYTE] * SIZE_DATA
     +0x..   :   CRC             [WORD]
 
-All packet sent by the server to the client follows this struct :
+### Sent TO client
+
+All packet sent by the server to the client follow this struct :
 
     +0x00   :   SIZE_PACKET     [WORD] // minus OPCODE
     +0x02   :   OPCODE          [BYTE]
