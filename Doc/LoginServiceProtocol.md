@@ -34,8 +34,6 @@ The original content is :
 
 If you want to be able to manage your own login service, you have to replace
 the content of the file inside the data.myp archive, or you can use this
-[DLL project][replace_xml] that replace the content at runtime.
+[DLL project][replacexml] that replace the content at runtime.
 
-Description of Protocol Buffers for discussion with the login service.
-
-[replace_xml] : https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml
+[replacexml] : https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml
