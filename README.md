@@ -18,6 +18,7 @@ Set of tools to play with Warhammer Online 1.4.8.573
       login service
     * [Doc/LoginServiceHandler.md](Doc/LoginServiceHandler.md) : Informations
       to help people who want to reverse engineer replies handlers for login service
+    * [Doc/WorldServerProtocol.md](Doc/WorldServerProtocol.md) : Informations about protocol used by the World Server
 * Misc : Folder containing miscellaneous files
 	* [Misc/ProtoBuf](Misc/ProtoBuf) : Contains all .proto files recovered/extracted from WAR.exe
 	* [Misc/WAR_RC4_test.py](Misc/WAR_RC4_test.py) : python test script to test the weird RC4 implementation in Warhammer Online
