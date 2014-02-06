@@ -19,7 +19,8 @@ Set of tools to play with Warhammer Online 1.4.8.573
 * Misc : Folder containing miscellaneous files
 	* [Misc/ProtoBuf](Misc/ProtoBuf) : Contains all .proto files recovered/extracted from WAR.exe
 	* [Misc/WAR_RC4_test.py](Misc/WAR_RC4_test.py) : python test script to test the weird RC4 implementation in Warhammer Online
-	* [Misc/SendWorldPacket_.md](Misc/SendWorldPacket_.md) : Non exhaustive list of opcodes and handle RVA use for World Server
+	* [Misc/SendWorldPacket_.md](Misc/SendWorldPacket_.md) : Non exhaustive list of opcodes and handle RVA send to World Server
+	* [Misc/ReceiveWorldPacket_.md](Misc/ReceiveWorldPacket_.md) : Non exhaustive list of opcodes and handle RVA received from World Server
 	* ...
 * Toolz : Folder containing all toolz developped during the stud of the game
 	* [Toolz/IDAScript](Toolz/IDAScript) : A set of IDA python scripts to extract usefull informations
