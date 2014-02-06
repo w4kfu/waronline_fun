@@ -21,6 +21,24 @@ import protobuf.GetCharSummaryListReply_pb2
 class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def handle(self):
+        self.OpcodesTableRecv = [
+            (0x00, "UNKNOWN", self.handle_unknown),
+            (0x01, "VerifyProtocolReq", self.handle_VerifyProtocolReq),
+            (0x02, "UNKNOWN", self.handle_unknown),
+            (0x03, "UNKNOWN", self.handle_unknown),
+            (0x04, "UNKNOWN", self.handle_unknown),
+            (0x05, "AuthSessionTokenReq", self.handle_AuthSessionTokenReq),
+            (0x06, "UNKNOWN", self.handle_unknown),
+            (0x07, "GetCharSummaryListReq", self.handle_GetCharSummaryListReq),
+            (0x08, "UNKNOWN", self.handle_unknown),
+            (0x09, "GetClusterList", self.handle_GetClusterList),
+            (0x0A, "UNKNOWN", self.handle_unknown),
+            (0x0B, "MetricEventNotify", self.handle_MetricEventNotify),
+            (0x0C, "UNKNOWN", self.handle_unknown),
+            (0x0D, "GetAccountProperties", self.handle_GetAccountProperties),
+            (0x0E, "UNKNOWN", self.handle_unknown),
+            (0x0F, "UNKNOWN", self.handle_unknown),
+        ]
         self.encrypted = False
         self.name = "LoginTCPHandler"
         print "LoginTCPHandler : New connection from %s : %d" % (self.client_address[0], self.client_address[1])
@@ -40,21 +58,17 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
             self.handle_opcode(opcode_packet, buf)
 
     def handle_opcode(self, opcode, buf):
-        if opcode == 0x01:
-            self.handle_VerifyProtocolReq(buf)
-        elif opcode == 0x05:
-            self.handle_AuthSessionTokenReq(buf)
-        elif opcode == 0x07:
-            self.handle_GetCharSummaryListReq(buf)
-        elif opcode == 0x09:
-            self.handle_GetClusterList(buf)
-        elif opcode == 0x0B:
-            self.handle_MetricEventNotify(buf)
-        elif opcode == 0x0D:
-            self.handle_GetAccountProperties(buf)
+        if opcode <= len(self.OpcodesTableRecv):
+            entry_opcode = self.OpcodesTableRecv[opcode]
+            print "[+] Calling opcode 0x%02X : %s" % (entry_opcode[0], entry_opcode[1])
+            entry_opcode[2](buf)
         else:
-            print "[-] UNNKOW OPCODE %d (%02X)" % (opcode, opcode)
+            print "[-] OPCODE LARGER THAN OpcodesTableRecv size : (%02X) %d " % (opcode, opcode)
             exit(0)
+
+    def handle_unknown(self, buf):
+        print "[-] EXIT !"
+        exit(0)
 
     def handle_VerifyProtocolReq(self, buf):
         print "[+] handle_VerifyProtocolReq"
