@@ -20,6 +20,12 @@ import protobuf.GetCharSummaryListReply_pb2
 
 class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
 
+    VERIFYPROTOCOLREPLY = 0x02
+    AUTHSESSIONTOKENREPLY = 0x06
+    GETCHARSUMMARYLISTREPLY = 0x08
+    GETCLUSTERLISTREPLY = 0x0A
+    GETACCTPROPLISTREPLY = 0x0C
+
     def handle(self):
         self.OpcodesTableRecv = [
             (0x00, "UNKNOWN", self.handle_unknown),
@@ -70,8 +76,13 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[-] EXIT !"
         exit(0)
 
+    def putheaderandsend(self, opcode, buf):
+        p = struct.pack(">B", len(buf))
+        p += struct.pack(">B", opcode)
+        p += buf
+        self.send_data(p)
+
     def handle_VerifyProtocolReq(self, buf):
-        print "[+] handle_VerifyProtocolReq"
         # we don't need to unserialize
         #vreq = protobuf.VerifyProtocolReq_pb2.VerifyProtocolReq()
         #vreq.ParseFromString(buf)
@@ -80,45 +91,31 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
         vrep.iv1 = "\x12" * 16
         vrep.iv2 = "\x12" * 16
         buf_rep = vrep.SerializeToString()
-        p = struct.pack(">B", len(buf_rep))
         # VerifyProtocolReply
-        p += struct.pack(">B", 0x02)
-        p += buf_rep
-        self.send_data(p)
+        self.putheaderandsend(self.VERIFYPROTOCOLREPLY, buf_rep)
 
     def handle_AuthSessionTokenReq(self, buf):
-        print "[+] handle_AuthSessionTokenReq"
         vreq = protobuf.AuthSessionTokenReq_pb2.AuthSessionTokenReq()
         vreq.ParseFromString(buf)
         print "[+] Session_token = " + vreq.session_token
         vrep = protobuf.AuthSessionTokenReply_pb2.AuthSessionTokenReply()
         vrep.result_code = protobuf.ResultCodes_pb2.RES_SUCCESS
         buf_rep = vrep.SerializeToString()
-        p = struct.pack(">B", len(buf_rep))
         # AuthSessionTokenReply
-        p += struct.pack(">B", 0x06)
-        p += buf_rep
-        self.send_data(p)
+        self.putheaderandsend(self.AUTHSESSIONTOKENREPLY, buf_rep)
 
     def handle_GetAccountProperties(self, buf):
-        """ RVA Client : 0x956E24 """
-        print "[+] handle_GetAccountProperties"
         vreq = protobuf.GetAcctPropListReq_pb2.GetAcctPropListReq()
         vreq.ParseFromString(buf)
-
         print "[+] prop_list = " + str(vreq.prop_list)
-
         vrep = protobuf.GetAcctPropListReply_pb2.GetAcctPropListReply()
         vrep.result_code = protobuf.ResultCodes_pb2.RES_SUCCESS
         buf_rep = vrep.SerializeToString()
-        p = struct.pack(">B", len(buf_rep))
+
         # GetAcctPropListReply
-        p += struct.pack(">B", 0x0C)
-        p += buf_rep
-        self.send_data(p)
+        self.putheaderandsend(self.GETACCTPROPLISTREPLY, buf_rep)
 
     def handle_MetricEventNotify(self, buf):
-        print "[+] handle_MetricEventNotify"
         vreq = protobuf.MetricEventNotify_pb2.MetricEventNotify()
         vreq.ParseFromString(buf)
 
@@ -127,52 +124,34 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
         REALM_ID = 1
         REALM_NAME = "moo"
 
-        print "[+] handle_GetClusterList"
-
         vrep = protobuf.GetClusterListReply_pb2.GetClusterListReply()
         vrep.result_code = protobuf.ResultCodes_pb2.RES_SUCCESS
-
         cluster_info = vrep.cluster_list.add()
-
         cluster_info.cluster_id = REALM_ID
         cluster_info.cluster_name = REALM_NAME
         cluster_info.lobby_host = "127.0.0.1"
         cluster_info.lobby_port = WAR_TCPHandler.WorldPort
-
         #cluster_info.cluster_pop = ???
         #cluster_info.max_cluster_pop = ???
         #cluster_info.cluster_pop_status.add() ???
-
         cluster_info.language_id = 0
-
         cluster_info.cluster_status = protobuf.ClusterStatus_pb2.STATUS_ONLINE
-
         server_info = cluster_info.server_list.add()
-
         server_info.server_id = REALM_ID
         server_info.server_name = REALM_NAME
-
         #cluster_prop = clust_info.property_list.add()
-
         buf_rep = vrep.SerializeToString()
-        p = struct.pack(">B", len(buf_rep))
+
         # GetClusterListReply
-        p += struct.pack(">B", 0x0A)
-        p += buf_rep
-        self.send_data(p)
+        self.putheaderandsend(self.GETCLUSTERLISTREPLY, buf_rep)
 
     def handle_GetCharSummaryListReq(self, buf):
-        print "[+] handle_GetCharSummaryListReq"
-
         vrep = protobuf.GetCharSummaryListReply_pb2.GetCharSummaryListReply()
         vrep.result_code = protobuf.ResultCodes_pb2.RES_SUCCESS
-
         buf_rep = vrep.SerializeToString()
-        p = struct.pack(">B", len(buf_rep))
+
         # GetCharSummaryListReply
-        p += struct.pack(">B", 0x08)
-        p += buf_rep
-        self.send_data(p)
+        self.putheaderandsend(self.GETCHARSUMMARYLISTREPLY, buf_rep)
 
     def finish(self):
         print "LoginTCPHandler : Closing connection from %s : %d" % (self.client_address[0], self.client_address[1])
