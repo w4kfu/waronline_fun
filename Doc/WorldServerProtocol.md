@@ -103,5 +103,54 @@ PAT signature (for sigmake IDA flair) :
 
     558BEC81EC040100005333DB395D08568BF00F84C1000000395D0C0F84B80000 BF 71CA 00DF :0000 WAR_RC4_Decrypt
 
+## Opcodes list
+
+### 0x5C
+
+First packet received from the client after connection.
+This packet can be send from two functions.
+
+#### 0x5C (First)
+
+    004B17D7     SendPacket_0x5C_1 proc near
+
+* RVA    : 0x004B17D7
+* VA     : 0x000B17D7
+* OFFSET : 0x000B17D7
+
+Packet data :
+
+    +0x00   :   KEY_PRESENT         [BYTE]
+    +0x01   :   UNK_BYTE_00         [BYTE]
+    +0x02   :   MAJOR_VERSION       [BYTE]
+    +0x03   :   MINOR_VERSION       [BYTE]
+    +0x04   :   REVISION_VERSION    [BYTE]
+    +0x05   :   UNK_BYTE_01         [BYTE]
+
+The server must answer with opcode 0x8A.
+
+### 0x5C (Second)
+
+    004B2B84     SendPacket_0x5C_2 proc near
+
+* RVA    : 0x004B2B84
+* VA     : 0x000B2B84
+* OFFSET : 0x000B2B84
+
+Packet data :
+
+    +0x00   :   KEY_PRESENT         [BYTE]
+    +0x01   :   UNK_BYTE_00         [BYTE]
+    +0x02   :   MAJOR_VERSION       [BYTE]
+    +0x03   :   MINOR_VERSION       [BYTE]
+    +0x04   :   REVISION_VERSION    [BYTE]
+    +0x05   :   UNK_BYTE_01         [BYTE]
+    +0x06   :   WAR_RC4_KEY         [BYTE] * 256
+
+The server doesn't need to answer to this.
+
+### 0x8A
+
+...
 
 [login_service_protocol]:./LoginServiceProtocol.md
