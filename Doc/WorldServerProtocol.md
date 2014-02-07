@@ -184,6 +184,24 @@ Packet data :
 
 The server doesn't need to answer to this.
 
+### 0xB8
+
+    004B2C27 PrepareSendPacket_0xB8 proc near
+
+Packet data :
+
+    +0x00   :   UNK_WORD_00         [WORD]
+    +0x02   :   UNK_BYTE_00         [BYTE]
+    +0x03   :   UNK_BYTE_01         [BYTE]
+    +0x04   :   UNK_DATA_00         [BYTE] * 24
+    +0x1C   :   NS_PORT             [WORD]
+    +0x1E   :   LANGAGE             [BYTE] * 6
+    +0x24   :   UNK_DWORD_00        [DWORD]
+    +0x28   :   UNK_DWORD_01        [DWORD]
+    +0x2C   :   UNK_DWORD_02        [DWORD]
+
+The server must answer with opcode 0x80.
+
 ## Opcodes list send
 
 ### 0x82

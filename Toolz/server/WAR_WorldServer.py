@@ -123,7 +123,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0xB2, "UNKNOWN", self.handle_unknown), (0xB3, "UNKNOWN", self.handle_unknown),
             (0xB4, "UNKNOWN", self.handle_unknown), (0xB5, "UNKNOWN", self.handle_unknown),
             (0xB6, "UNKNOWN", self.handle_unknown), (0xB7, "UNKNOWN", self.handle_unknown),
-            (0xB8, "UNKNOWN", self.handle_unknown), (0xB9, "UNKNOWN", self.handle_unknown),
+            (0xB8, "UNKNOWN", self.handle_0xB8), (0xB9, "UNKNOWN", self.handle_unknown),
             (0xBA, "UNKNOWN", self.handle_unknown), (0xBB, "UNKNOWN", self.handle_unknown),
             (0xBC, "UNKNOWN", self.handle_unknown), (0xBD, "UNKNOWN", self.handle_unknown),
             (0xBE, "UNKNOWN", self.handle_unknown), (0xBF, "UNKNOWN", self.handle_unknown),
@@ -288,7 +288,24 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.send_data(p)
 
     def handle_0xB8(self, buf):
-
+        unk_word_00, buf = WAR_Utils.GetWord(buf)
+        unk_byte_00, buf = WAR_Utils.GetByte(buf)
+        unk_byte_01, buf = WAR_Utils.GetByte(buf)
+        unk_data_00, buf = WAR_Utils.GetBufferSize(buf, 24)
+        ns_port, buf = WAR_Utils.GetWord(buf)
+        langage, buf = WAR_Utils.GetBufferSize(buf, 6)
+        unk_dword_00, buf = WAR_Utils.GetDword(buf)
+        unk_dword_01, buf = WAR_Utils.GetDword(buf)
+        unk_dword_02, buf = WAR_Utils.GetDword(buf)
+        print "[+] unk_word_00 : %04X" % (unk_word_00)
+        print "[+] unk_byte_00 : %02X" % (unk_byte_00)
+        print "[+] unk_byte_01 : %02X" % (unk_byte_01)
+        print "[+] unk_data_00 : %s" % unk_data_00
+        print "[+] ns_port : %04X" % (ns_port)
+        print "[+] langage : %s" % (langage)
+        print "[+] unk_dword_00 : %08X" % (unk_dword_00)
+        print "[+] unk_dword_01 : %08X" % (unk_dword_01)
+        print "[+] unk_dword_02 : %08X" % (unk_dword_02)
         self.prepare_0x80()
 
     def prepare_0x56(self):
