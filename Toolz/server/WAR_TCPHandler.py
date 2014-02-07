@@ -8,6 +8,9 @@ LoginHost, LoginPort = "", 18046
 WorldHost, WorldPort = "", 18047
 WorldName = "moo"
 
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    pass
+
 class TCPHandler(SocketServer.BaseRequestHandler):
 
     def recv_data(self, size = 1000):

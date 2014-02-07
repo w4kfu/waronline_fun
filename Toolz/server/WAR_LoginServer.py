@@ -2,6 +2,7 @@ import SocketServer
 import struct
 import time
 import zlib
+import threading
 
 import WAR_TCPHandler
 import WAR_Utils
@@ -156,3 +157,15 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
     def finish(self):
         print "LoginTCPHandler : Closing connection from %s : %d" % (self.client_address[0], self.client_address[1])
         return SocketServer.BaseRequestHandler.finish(self)
+
+if __name__ == "__main__":
+
+    LoginServer = WAR_TCPHandler.ThreadedTCPServer((WAR_TCPHandler.LoginHost, WAR_TCPHandler.LoginPort), LoginTCPHandler)
+    LoginServer.allow_reuse_address = True
+    LoginServerThr = threading.Thread(target=LoginServer.serve_forever)
+    LoginServerThr.daemon = True
+    LoginServerThr.start()
+    print "[+] LoginServer started on \"%s\" : %d" % (WAR_TCPHandler.LoginHost, WAR_TCPHandler.LoginPort)
+
+    raw_input('Press enter to stop servers.\n')
+    LoginServerThr._Thread__stop()

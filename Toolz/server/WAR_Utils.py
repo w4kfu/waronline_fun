@@ -2,6 +2,37 @@ import struct
 import zlib
 from binascii import hexlify
 
+def WAR_RC4(data, key, encrypt = True):
+    j = 0
+    i = 0
+    out_first_half = []
+    out_second_half = []
+    half_len = (len(data) / 2)
+    S = []
+    for val in key:
+        S.append(ord(val))
+    for char in data[half_len:]:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i] , S[j] = S[j] , S[i]
+        c = ord(char) ^ S[(S[i] + S[j]) % 256]
+        out_second_half.append(chr(c))
+        if encrypt == True:
+            j = (j + ord(char)) % 256
+        else:
+            j = (j + c) % 256
+    for char in data[:half_len]:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i] , S[j] = S[j] , S[i]
+        c = ord(char) ^ S[(S[i] + S[j]) % 256]
+        out_first_half.append(chr(c))
+        if encrypt == True:
+            j = (j + ord(char)) % 256
+        else:
+            j = (j + c) % 256
+    return ''.join(out_first_half) + ''.join(out_second_half)
+
 def hexdump(src, length=16):
     FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
     lines = []
