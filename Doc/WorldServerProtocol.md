@@ -20,11 +20,11 @@ The server must recv/read SIZE_DATA + 8 + 2.
 Packet content struct :
 
     /* HEADER       */
-    +0x00   :   SEQUENCE_PACKET [WORD]
-    +0x02   :   SESSION_PACKET  [WORD]
-    +0x04   :   UNK_WORD_00     [WORD]
-    +0x06   :   UNK_BYTE_00     [BYTE]
-    +0x07   :   OPCODE_PACKET   [BYTE]
+    +0x00   :   SEQUENCE_PACKET     [WORD]
+    +0x02   :   SESSION_ID_PACKET   [WORD]
+    +0x04   :   UNK_WORD_00         [WORD]
+    +0x06   :   UNK_BYTE_00         [BYTE]
+    +0x07   :   OPCODE_PACKET       [BYTE]
     /* END HEADER   */
     +0x08   :   DATA_PACKET     [BYTE] * SIZE_DATA
     +0x..   :   CRC             [WORD]
