@@ -38,7 +38,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x08, "UNKNOWN", self.handle_unknown), (0x09, "UNKNOWN", self.handle_unknown),
             (0x0A, "UNKNOWN", self.handle_unknown), (0x0B, "UNKNOWN", self.handle_unknown),
             (0x0C, "UNKNOWN", self.handle_unknown), (0x0D, "UNKNOWN", self.handle_unknown),
-            (0x0E, "UNKNOWN", self.handle_unknown), (0x0F, "UNKNOWN", self.handle_unknown),
+            (0x0E, "UNKNOWN", self.handle_unknown), (0x0F, "UNKNOWN", self.handle_0x0F),
             (0x10, "UNKNOWN", self.handle_unknown), (0x11, "UNKNOWN", self.handle_unknown),
             (0x12, "UNKNOWN", self.handle_unknown), (0x13, "UNKNOWN", self.handle_unknown),
             (0x14, "UNKNOWN", self.handle_unknown), (0x15, "UNKNOWN", self.handle_unknown),
@@ -210,27 +210,26 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] Exit"
 
     def handle_0x0F(self, buf):
-        cipher, buf = WAR_Utils.GetByte(buf)
         unk_byte_00, buf = WAR_Utils.GetByte(buf)
+        unk_byte_01, buf = WAR_Utils.GetByte(buf)
         major_version, buf = WAR_Utils.GetByte(buf)
         minor_version, buf = WAR_Utils.GetByte(buf)
         revision_version, buf = WAR_Utils.GetByte(buf)
-        unk_byte_01, buf = WAR_Utils.GetByte(buf)
+        unk_byte_02, buf = WAR_Utils.GetByte(buf)
         unk_word_00, buf = WAR_Utils.GetWord(buf)
 
-        print "[+] cipher : %02X" % (cipher)
         print "[+] unk_byte_00 : %02X" % (unk_byte_00)
+        print "[+] unk_byte_01 : %02X" % (unk_byte_01)
         print "[+] major_version : %02X" % (major_version)
         print "[+] minor_version : %02X" % (minor_version)
         print "[+] revision_version : %02X" % (revision_version)
-        print "[+] unk_byte_01 : %02X" % (unk_byte_01)
+        print "[+] unk_byte_02 : %02X" % (unk_byte_02)
         print "[+] unk_word_00 : %02X" % (unk_word_00)
 
         protocol_version, buf = WAR_Utils.GetDword(buf)
         print "[+] Protocol Version = %08X" % (protocol_version)
-        session, buf = WAR_Utils.GetBufferSize(buf, 80)
+        session, buf = WAR_Utils.GetBufferSize(buf, 101)
         print "[+] Session = %s" % session
-        buf = buf[21:]
         username, buf = WAR_Utils.GetBufferSize(buf, 21)
         print "[+] username = %s" % username
         size_xml, buf = WAR_Utils.GetWord(buf)
@@ -241,14 +240,18 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def prepare_0x82(self, protocol_version, username):
         """ S_CONNECTED """
         p = struct.pack(">B", 0x82)
-
-        p += struct.pack(">B", 0x00)    # unknow
-        p += struct.pack(">B", 0x00)    # unknow
-        p += struct.pack(">B", 0x00)    # unknow
-        p += struct.pack(">B", 0x00)    # unknow
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_00
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_01
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_02
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_03
         p += struct.pack(">I", protocol_version)
-        p += WAR_Utils.MakeBBuffer(username)
-        p += WAR_Utils.MakeBBuffer(WAR_TCPHandler.WorldName)
+        p += struct.pack(">B", WAR_TCPHandler.WorldID)    # SERVER_ID
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_04
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_05
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_06
+        p += struct.pack(">B", 0x00)    # TRANSFER_FLAG
+        p += WAR_Utils.MakeBBuffer(username)    # USERNAME
+        p += WAR_Utils.MakeBBuffer(WAR_TCPHandler.WorldName)    # SERVER_NAME
         p += struct.pack(">B", 0x00)    # NS related to arry of informations
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p

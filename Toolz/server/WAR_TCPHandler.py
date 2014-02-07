@@ -6,7 +6,7 @@ import WAR_Utils
 
 LoginHost, LoginPort = "", 18046
 WorldHost, WorldPort = "", 18047
-WorldName = "moo"
+WorldName, WorldID = "moo", 1
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     pass

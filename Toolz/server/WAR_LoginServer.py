@@ -121,16 +121,12 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
         vreq.ParseFromString(buf)
 
     def handle_GetClusterList(self, buf):
-
-        REALM_ID = 1
-        REALM_NAME = "moo"
-
         vrep = protobuf.GetClusterListReply_pb2.GetClusterListReply()
         vrep.result_code = protobuf.ResultCodes_pb2.RES_SUCCESS
         cluster_info = vrep.cluster_list.add()
-        cluster_info.cluster_id = REALM_ID
-        cluster_info.cluster_name = REALM_NAME
-        cluster_info.lobby_host = "127.0.0.1"
+        cluster_info.cluster_id = WAR_TCPHandler.WorldID
+        cluster_info.cluster_name = WAR_TCPHandler.WorldName
+        cluster_info.lobby_host = "127.0.0.1"   # TODO FIX : HARDCODED IP
         cluster_info.lobby_port = WAR_TCPHandler.WorldPort
         #cluster_info.cluster_pop = ???
         #cluster_info.max_cluster_pop = ???
@@ -138,8 +134,8 @@ class LoginTCPHandler(WAR_TCPHandler.TCPHandler):
         cluster_info.language_id = 0
         cluster_info.cluster_status = protobuf.ClusterStatus_pb2.STATUS_ONLINE
         server_info = cluster_info.server_list.add()
-        server_info.server_id = REALM_ID
-        server_info.server_name = REALM_NAME
+        server_info.server_id = WAR_TCPHandler.WorldID
+        server_info.server_name = WAR_TCPHandler.WorldName
         #cluster_prop = clust_info.property_list.add()
         buf_rep = vrep.SerializeToString()
 
