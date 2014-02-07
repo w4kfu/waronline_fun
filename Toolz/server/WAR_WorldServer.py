@@ -33,10 +33,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.OpcodesTableRecv = [
             (0x00, "UNKNOWN", self.handle_unknown), (0x01, "UNKNOWN", self.handle_unknown),
             (0x02, "UNKNOWN", self.handle_unknown), (0x03, "UNKNOWN", self.handle_unknown),
-            (0x04, "UNKNOWN", self.handle_unknown), (0x05, "UNKNOWN", self.handle_unknown),
+            (0x04, "UNKNOWN", self.handle_0x04), (0x05, "UNKNOWN", self.handle_unknown),
             (0x06, "UNKNOWN", self.handle_unknown), (0x07, "UNKNOWN", self.handle_unknown),
             (0x08, "UNKNOWN", self.handle_unknown), (0x09, "UNKNOWN", self.handle_unknown),
-            (0x0A, "UNKNOWN", self.handle_unknown), (0x0B, "UNKNOWN", self.handle_unknown),
+            (0x0A, "UNKNOWN", self.handle_unknown), (0x0B, "UNKNOWN", self.handle_0x0B),
             (0x0C, "UNKNOWN", self.handle_unknown), (0x0D, "UNKNOWN", self.handle_unknown),
             (0x0E, "UNKNOWN", self.handle_unknown), (0x0F, "UNKNOWN", self.handle_0x0F),
             (0x10, "UNKNOWN", self.handle_unknown), (0x11, "UNKNOWN", self.handle_unknown),
@@ -73,7 +73,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x4E, "UNKNOWN", self.handle_unknown), (0x4F, "UNKNOWN", self.handle_unknown),
             (0x50, "UNKNOWN", self.handle_unknown), (0x51, "UNKNOWN", self.handle_unknown),
             (0x52, "UNKNOWN", self.handle_unknown), (0x53, "UNKNOWN", self.handle_unknown),
-            (0x54, "UNKNOWN", self.handle_unknown), (0x55, "UNKNOWN", self.handle_unknown),
+            (0x54, "UNKNOWN", self.handle_0x54), (0x55, "UNKNOWN", self.handle_unknown),
             (0x56, "UNKNOWN", self.handle_unknown), (0x57, "UNKNOWN", self.handle_unknown),
             (0x58, "UNKNOWN", self.handle_unknown), (0x59, "UNKNOWN", self.handle_unknown),
             (0x5A, "UNKNOWN", self.handle_unknown), (0x5B, "UNKNOWN", self.handle_unknown),
@@ -207,7 +207,27 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         exit(0)
 
     def handle_0x04(self, buf):
+        session_id, buf = WAR_Utils.GetWord(buf)
+        unk_word_00, buf = WAR_Utils.GetWord(buf)
+        print "[+] session_id = %04X" % (session_id)
+        print "[+] unk_word_00 = %04X" % (unk_word_00)
         print "[+] Exit"
+
+    def handle_0x0B(self, buf):
+        unk_dword_00, buf = WAR_Utils.GetDword(buf)
+        unk_dword_01, buf = WAR_Utils.GetDword(buf)
+        unk_dword_02, buf = WAR_Utils.GetDword(buf)
+        unk_word_00, buf = WAR_Utils.GetWord(buf)
+        unk_word_01, buf = WAR_Utils.GetWord(buf)
+        unk_word_02, buf = WAR_Utils.GetWord(buf)
+        unk_word_03, buf = WAR_Utils.GetWord(buf)
+        print "[+] unk_dword_00 = %08X" % (unk_dword_00)
+        print "[+] unk_dword_00 = %08X" % (unk_dword_01)
+        print "[+] unk_dword_00 = %08X" % (unk_dword_02)
+        print "[+] unk_data = %04X %04X %04X" % (unk_word_00, unk_word_01, unk_word_02)
+        print "[+] unk_word_03 : %02X" % (unk_word_03)
+        # MAKE PONG
+        #exit(0)
 
     def handle_0x0F(self, buf):
         unk_byte_00, buf = WAR_Utils.GetByte(buf)
@@ -308,6 +328,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_dword_02 : %08X" % (unk_dword_02)
         self.prepare_0x80()
 
+    def prepare_0x54(self):
+        p = struct.pack(">B", 0x54)
+        p += struct.pack(">H", 0x1)
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
     def prepare_0x56(self):
         p = struct.pack(">B", 0x56)
         p += struct.pack(">H", 0x1)
@@ -317,14 +344,21 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def handle_0x54(self, buf):
         action, buf = WAR_Utils.GetWord(buf)
+        unk_byte_00, buf = WAR_Utils.GetByte(buf)
         print "[+] Action = %04X" % (action)
+        print "[+] unk_byte_00 = %02X" % (unk_byte_00)
         if action == 0x2D58:
             self.prepare_0x56()
+        elif action == 0x2D53:
+            self.prepare_0x54()
+        else:
+            print "UNKNOW Action !"
+            exit(0)
 
 
     def prepare_0x80(self):
         p = struct.pack(">B", 0x80)
-        p += struct.pack(">H", 0x42)    # unknow
+        p += struct.pack(">H", 0x42)    # SESSION_ID
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)

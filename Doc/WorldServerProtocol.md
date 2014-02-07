@@ -111,6 +111,29 @@ PAT signature (for sigmake IDA flair) :
 
 ## Opcodes list received
 
+### 0x04
+
+    004B2E63 SendPacket_0x04 proc near
+
+Packet data :
+
+    +0x00   :   SESSION_ID          [WORD]
+    +0x02   :   UNK_WORD_00         [WORD]
+
+### 0x0B
+
+    004B2F33 PrepareSendPacket_0x0B proc near
+
+Packt data :
+
+    +0x00   :   UNK_DWORD_00        [DWORD]
+    +0x04   :   UNK_DWORD_01        [DWORD]
+    +0x08   :   UNK_DWORD_02        [DWORD]
+    +0x0C   :   UNK_DATA            [WORD] * 3
+    +0x012  :   UNK_WORD_00         [WORD]
+
+The server must answer with opcode 0x81.
+
 ### 0x0F
 
 ...
@@ -141,6 +164,28 @@ Packet data :
 *TODO, not really important*
 
 The server must answer with opcode 0x82.
+
+### 0x54
+
+This packet can be send from two functions.
+
+Packet data :
+
+    +0x00   :   COMMAND             [WORD]
+    +0x02   :   UNK_BYTE_00         [BYTE]
+
+#### 0x2D58
+
+    004B19C6 SendPacket_0x54_0x2D58 proc near
+
+The server must answer with opcode 0x56.
+
+#### 0x2D53
+
+    004B1A64 SendPacket_0x54_0x2D53 proc near
+
+The server must answer with opcode 0x55.
+
 
 ### 0x5C
 
@@ -203,6 +248,37 @@ Packet data :
 The server must answer with opcode 0x80.
 
 ## Opcodes list send
+
+### 0x55
+
+Answer to packet 0x54 with command 0x2D53
+
+    004C8CC1 Handle_0x55 proc near
+
+### 0x56
+
+Answer to packet 0x54 with command 0x2D58
+
+No function handler.
+
+    .text:004C3C23                 movzx   eax, byte ptr [edi]  // Buffer
+    .text:004C3C26                 push    eax
+    .text:004C3C27                 push    56h
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+
+### 0x80
+
+Answer to packet 0xB8.
+
+    004C8A86 Handle_0x80 proc near
+
+Packet data :
+
+    +0x00   :   SESSION_ID          [WORD]
+
 
 ### 0x82
 
