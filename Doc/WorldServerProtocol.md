@@ -165,6 +165,18 @@ Packet data :
 
 The server must answer with opcode 0x82.
 
+### 0x13
+
+...
+
+    004B162A SendPacket_0x13 proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+
+The server must answer with opcode 0x13.
+
 ### 0x54
 
 This packet can be send from two functions.
@@ -229,6 +241,28 @@ Packet data :
 
 The server doesn't need to answer to this.
 
+### 0x68
+
+    004B3ABD SendPacket_0x68 proc near
+
+Packet data :
+
+    +0x00   :   CHAR_NAME           [BYTE] * 24
+    +0x18   :   PADDING             [DWORD]
+    +0x1C   :   PADDING             [WORD]
+    +0x1E   :   USER_NAME           [BYTE] * 20
+    +0x32   :   PADDING             [DWORD]
+
+The server must answer with opcode 0x6A.
+
+### 0x91
+
+    004C6DFA SendPacket_0x91 proc near
+
+Packet data :
+
+The server must answer with opcode 0x58.
+
 ### 0xB8
 
     004B2C27 PrepareSendPacket_0xB8 proc near
@@ -249,11 +283,36 @@ The server must answer with opcode 0x80.
 
 ## Opcodes list send
 
+### 0x13
+
+Answer to packet 0x13.
+
+    004C3300 mov     [ebp+var_10], offset aF_request_char ; "F_REQUEST_CHAR_TEMPLATES"
+
+...
+
+    004C8AA5 Handle_0x13 proc near
+
+Packet data :
+
+    +0x00   :   NB_AVAILABLETEMPLATES_NAMES     [DWORD]
+    +0x04   :   TEMPLATES_NAMES                 [WAR_BUFFER] * NB_AVAILABLETEMPLATES_NAMES
+    +0x..   :   NB_AVAILABLETEMPLATES_CLASSES   [DWORD]
+    +0x..   :   TEMPLATES_CLASSES               [DWORD] * NB_AVAILABLETEMPLATES_CLASSES
+    +0x..   :   NB_AVAILABLETEMPLATES_RACES     [DWORD]
+    +0x..   :   TEMPLATES_RACES                 [DWORD] * NB_AVAILABLETEMPLATES_RACES
+    +0x..   :   NB_AVAILABLETEMPLATES_GENDERS   [DWORD]
+    +0x..   :   TEMPLATES_GENDERS               [DWORD] * NB_AVAILABLETEMPLATES_GENDERS
+
 ### 0x55
 
 Answer to packet 0x54 with command 0x2D53
 
     004C8CC1 Handle_0x55 proc near
+
+Packet data :
+
+    +0x00   :   UNK_DWORD_00        [DWORD]
 
 ### 0x56
 
@@ -268,6 +327,22 @@ No function handler.
 Packet data :
 
     +0x00   :   UNK_BYTE_00         [BYTE]
+
+### 0x6A
+
+Answer to packet 0x68.
+Check if the character name is valid and not used.
+
+No function handler, only check the byte value at offset 0x32, WTF
+
+    .text:004C3E58                 xor     eax, eax
+    .text:004C3E5A                 cmp     [edi+32h], al
+    .text:004C3E5D                 setz    al
+
+Packet data :
+
+    +0x00   :   DATA_OSEF           [BYTE] * 0x31
+    +0x32   :   NAME_VALID          [BYTE]
 
 ### 0x80
 
