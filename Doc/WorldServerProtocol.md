@@ -10,9 +10,31 @@ server.
 
 Inside some packets some buffers are sent, using the following structur :
 
+#### WAR_B_BUFFER
+
     /* WAR_B_BUFFER */
     +0x00   :   SIZE_DATA           [BYTE]
     +0x01   :   DATA                [BYTE] * SIZE_DATA
+
+#### WAR_PLAYER
+
+    /* WAR_PLAYER */
+    +0x000  :   NICKNAME            [BYTE] * 48
+    +0x030  :   LEVEL               [BYTE]
+    +0x031  :   CAREER              [BYTE]      // 0x1A == Shaman
+    +0x032  :   REALM               [BYTE]      // ORDER = 1 ; DESTRU = 2
+    +0x033  :   GENDER              [BYTE]      //
+    +0x034  :   UNK_WORD_00         [WORD]      // Crash game :(
+    +0x036  :   ZONE_ID             [WORD]      //
+    +0x038  :   UNK_DATA_00         [BYTE] * 12
+    +0x044  :   NS_INVENTORY        [WAR_INVENTORY] * 16
+    +0x0C4  :   NS_OTHER_INVENTORY  [WAR_INVENTORY] * 5
+    +0x0EC  :   UNK_DATA_01         [BYTE] * 0x14
+    +0x100  :   ...
+    ...
+    +0x11C  :   ...
+
+#### WAR_INVENTORY
 
 ### Received FROM client
 

@@ -343,9 +343,53 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_dword_02 : %08X" % (unk_dword_02)
         self.prepare_0x80()
 
+    def premaidcharacter(self):
+        p = "NICKNAME"
+        p += "\x00" * (48 - len(p))
+        p += struct.pack(">B", 42)               # +0x030 : LEVEL
+        p += struct.pack(">B", 0x1A)             # +0x031 : CAREER
+        p += struct.pack(">B", 0x2)              # +0x032 : REALM : ORDER = 1 ; DESTRU = 2
+        p += struct.pack(">B", 0x0)              # +0x033 : GENDER
+        p += struct.pack("<H", 0x000)            # +0x034 : UNK_WORD_00 // CRASH :(
+        p += struct.pack("<H", 0x006)            # +0x036 : ZONE
+
+        p += "\x00" * 12                         # +0x038 : UNK_DATA
+
+        for i in xrange(0, 16):
+            p += struct.pack("<H", 0x0000)            # +0x044 : ??
+            p += struct.pack("<H", 0x0000)            # +0x046 : ??
+            p += struct.pack("<H", 0x0000)            # +0x048 : ??
+            p += struct.pack("<H", 0x0000)            # +0x04A : ??
+
+        for i in xrange(0, 5):
+            p += struct.pack("<H", 0x0000)            # +0x0C4 : ??
+            p += struct.pack("<H", 0x0000)            # +0x0C6 : ??
+            p += struct.pack("<H", 0x0000)            # +0x0C8 : ??
+            p += struct.pack("<H", 0x0000)            # +0x0CA : ??
+
+        p += "\x42" * 0x14                              # +0x0EC : ??
+
+        p += struct.pack("<H", 0x0000)              # +0x100 : ??
+
+        #p += struct.pack("<H", 0x4242)            # +0x0ED : ??
+
+        #p += struct.pack(">B", 0x7)             # +0x039 :
+        #p += struct.pack(">B", 0x8)             # +0x18 :
+        #p += struct.pack(">B", 0x9)             # +0x18 :
+        #p += struct.pack(">B", 0x10)             # +0x18 :
+        #p += struct.pack(">B", 0x11)             # +0x18 :
+        #p += struct.pack(">B", 0x12)             # +0x18 :
+        #p += struct.pack(">B", 0x13)             # +0x18 :
+        #p += struct.pack(">B", 0x14)             # +0x18 :
+        p += "\x00" * (0x11C - len(p))
+        return p
+
     def makepacketcharacters(self):
+        NB_PREMAID = 1
         p = ""
-        for i in xrange(0, 0x14):
+        for i in xrange(0, NB_PREMAID):
+            p += self.premaidcharacter()
+        for i in xrange(0, 0x14 - NB_PREMAID):
             p += "\x00" * 0x11C
         return p
 
@@ -360,15 +404,11 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">B", 0x0)             # +0x18 :
         p += struct.pack(">B", 0x0)             # +0x19 :
         p += struct.pack(">B", 0x14)            # +0x1A : MaxCharacters
-        p += struct.pack(">B", 0x0)            # +0x1B : GameplayRulesetType
-        p += struct.pack(">B", 0x0)            # +0x1C : LastSwitchedToRealm
-        p += struct.pack(">B", 0x0)            # +0x1D : NumPaidNameChangesAvailable
-        p += struct.pack(">H", 0x0)            # +0x1E :
-        p += struct.pack(">I", 0x0)            # +0x20 :
-        p += struct.pack(">I", 0x0)            # +0x24 :
-        p += struct.pack(">I", 0x0)            # +0x28 :
-        p += struct.pack(">I", 0x0)            # +0x2C :
-        p += struct.pack(">H", 0x0)            # +0x30 :
+        p += struct.pack(">B", 0x0)             # +0x1B : GameplayRulesetType
+        p += struct.pack(">B", 0x0)             # +0x1C : LastSwitchedToRealm
+        p += struct.pack(">B", 0x0)             # +0x1D : NumPaidNameChangesAvailable
+        p += struct.pack(">H", 0x00)            # +0x1E :
+
         p += self.makepacketcharacters()
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
@@ -442,8 +482,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] sex = %02X" % (sex)          # 0 = MAN ; 1 = WOMEN
         unk_word_00, buf = WAR_Utils.GetWord(buf)
         print "[+] unk_word_00 = %04X" % (unk_word_00)
-        unk_byte_04, buf = WAR_Utils.GetByte(buf)
-        print "[+] unk_byte_04 = %02X" % (unk_byte_04)
+        nickname_size, buf = WAR_Utils.GetByte(buf)
+        print "[+] nickname_size = %02X" % (nickname_size)
         unk_byte_05, buf = WAR_Utils.GetByte(buf)
         print "[+] unk_byte_05 = %02X" % (unk_byte_05)
         unk_byte_06, buf = WAR_Utils.GetByte(buf)
@@ -453,7 +493,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             unk_byte, buf = WAR_Utils.GetByte(buf)
             print "%02X " % (unk_byte),
         print ""
-        unk_buffer, buf = WAR_Utils.GetBufferSize(buf, unk_byte_04)
+        unk_buffer, buf = WAR_Utils.GetBufferSize(buf, nickname_size)
         print "[+] unk_buffer = %s" % (unk_buffer)
         unk_buffer2, buf = WAR_Utils.GetBufferSize(buf, unk_byte_05)
         print "[+] unk_buffer2 = %s" % (unk_buffer2)
