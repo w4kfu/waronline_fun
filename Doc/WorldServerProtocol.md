@@ -261,7 +261,7 @@ The server must answer with opcode 0x6A.
 
 Packet data :
 
-The server must answer with opcode 0x58.
+The server must answer with opcode 0x58, or 0x59 for error.
 
 ### 0xB8
 
@@ -327,6 +327,19 @@ No function handler.
 Packet data :
 
     +0x00   :   UNK_BYTE_00         [BYTE]
+
+### 0x59
+
+Answer to packet 0x91 in case of character error creation.
+
+    004C991E Handle_0x59 proc near
+
+Packet data :
+
+    +0x00   :   PADDING             [BYTE] * 24
+    +0x18   :   MSG_ERROR           [BYTE] * 100
+
+MSG\_ERROR will be displayed
 
 ### 0x6A
 

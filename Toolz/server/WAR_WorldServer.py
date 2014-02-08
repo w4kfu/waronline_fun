@@ -423,6 +423,14 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)
 
+    def prepare_0x59(self):
+        p = struct.pack(">B", 0x59)
+        p += "\x00" * 24
+        p += "DISPLAYED MESSAGE"
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
     def handle_0x91(self, buf):
         unk_byte_00, buf = WAR_Utils.GetByte(buf)
         print "[+] unk_byte_00 = %02X" % (unk_byte_00)
@@ -430,8 +438,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_byte_01 = %02X" % (unk_byte_01)
         unk_byte_02, buf = WAR_Utils.GetByte(buf)
         print "[+] unk_byte_02 = %02X" % (unk_byte_02)
-        unk_byte_03, buf = WAR_Utils.GetByte(buf)
-        print "[+] unk_byte_03 = %02X" % (unk_byte_03)
+        sex, buf = WAR_Utils.GetByte(buf)
+        print "[+] sex = %02X" % (sex)          # 0 = MAN ; 1 = WOMEN
         unk_word_00, buf = WAR_Utils.GetWord(buf)
         print "[+] unk_word_00 = %04X" % (unk_word_00)
         unk_byte_04, buf = WAR_Utils.GetByte(buf)
@@ -440,6 +448,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_byte_05 = %02X" % (unk_byte_05)
         unk_byte_06, buf = WAR_Utils.GetByte(buf)
         print "[+] unk_byte_06 = %02X" % (unk_byte_06)
+        print "[+] ATTRIBUTES FACE/BODY: ",
         for i in xrange(0, 0xF):
             unk_byte, buf = WAR_Utils.GetByte(buf)
             print "%02X " % (unk_byte),
@@ -449,6 +458,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         unk_buffer2, buf = WAR_Utils.GetBufferSize(buf, unk_byte_05)
         print "[+] unk_buffer2 = %s" % (unk_buffer2)
         #self.prepare_0x58()
+        self.prepare_0x59()
+        #     F_SEND_CHARACTER_ERROR = 0x59, // Implement IT !!!
 
     def finish(self):
         print "WorldTCPHandler : Closing connection from %s : %d" % (self.client_address[0], self.client_address[1])
