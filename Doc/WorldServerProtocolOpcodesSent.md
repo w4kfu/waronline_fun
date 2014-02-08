@@ -24,6 +24,12 @@ Packet data :
     +0x..   :   NB_AVAILABLETEMPLATES_GENDERS   [DWORD]
     +0x..   :   TEMPLATES_GENDERS               [DWORD] * NB_AVAILABLETEMPLATES_GENDERS
 
+## 0x19
+
+Answer to packet 0x35.
+
+    004C973B Handle_0x19 proc near
+
 ## 0x55
 
 Answer to packet 0x54 with command 0x2D53
@@ -114,6 +120,12 @@ Packet data :
     +0x..   :   UNK_DATA            [BYTE] * UNK_BYTE_07
 
 Protocol version must be equal to 0xEB8DB21.
+
+## 0x85
+
+Answer to packet 0x17.
+
+No function handler.
 
 ## 0x8A
 

@@ -69,6 +69,32 @@ Packet data :
 
 The server must answer with opcode 0x13.
 
+## 0x17
+
+...
+
+    004BFF5D SendPacket_0x17 proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+    +0x01   :   UNK_BYTE_01         [BYTE]
+
+The server must answer with opcode 0x85.
+
+## 0x35
+
+...
+
+    004BFEF2 SendPacket_0x35 proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+    +0x01   :   UNK_BYTE_01         [BYTE]
+
+Server must answer with packet 0x019.
+
 ## 0x54
 
 This packet can be send from two functions.
@@ -132,6 +158,12 @@ Packet data :
     +0x06   :   WAR_RC4_KEY         [BYTE] * 256
 
 The server doesn't need to answer to this.
+
+## 0x62
+
+...
+
+    004C69A3 SendPacket_0x62 proc near
 
 ## 0x68
 

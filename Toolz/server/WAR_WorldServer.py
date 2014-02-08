@@ -42,7 +42,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x10, "UNKNOWN", self.handle_unknown), (0x11, "UNKNOWN", self.handle_unknown),
             (0x12, "UNKNOWN", self.handle_unknown), (0x13, "UNKNOWN", self.handle_0x13),
             (0x14, "UNKNOWN", self.handle_unknown), (0x15, "UNKNOWN", self.handle_unknown),
-            (0x16, "UNKNOWN", self.handle_unknown), (0x17, "UNKNOWN", self.handle_unknown),
+            (0x16, "UNKNOWN", self.handle_unknown), (0x17, "UNKNOWN", self.handle_0x17),
             (0x18, "UNKNOWN", self.handle_unknown), (0x19, "UNKNOWN", self.handle_unknown),
             (0x1A, "UNKNOWN", self.handle_unknown), (0x1B, "UNKNOWN", self.handle_unknown),
             (0x1C, "UNKNOWN", self.handle_unknown), (0x1D, "UNKNOWN", self.handle_unknown),
@@ -57,7 +57,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x2E, "UNKNOWN", self.handle_unknown), (0x2F, "UNKNOWN", self.handle_unknown),
             (0x30, "UNKNOWN", self.handle_unknown), (0x31, "UNKNOWN", self.handle_unknown),
             (0x32, "UNKNOWN", self.handle_unknown), (0x33, "UNKNOWN", self.handle_unknown),
-            (0x34, "UNKNOWN", self.handle_unknown), (0x35, "UNKNOWN", self.handle_unknown),
+            (0x34, "UNKNOWN", self.handle_unknown), (0x35, "UNKNOWN", self.handle_0x35),
             (0x36, "UNKNOWN", self.handle_unknown), (0x37, "UNKNOWN", self.handle_unknown),
             (0x38, "UNKNOWN", self.handle_unknown), (0x39, "UNKNOWN", self.handle_unknown),
             (0x3A, "UNKNOWN", self.handle_unknown), (0x3B, "UNKNOWN", self.handle_unknown),
@@ -272,6 +272,19 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_byte_00 : %02X" % (unk_byte_00)
         self.prepare_0x13()
 
+    def prepare_0x85(self):
+        p = struct.pack(">B", 0x85)
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
+    def handle_0x17(self, buf):
+        unk_byte_00, buf = WAR_Utils.GetByte(buf)
+        unk_byte_01, buf = WAR_Utils.GetByte(buf)
+        print "[+] unk_byte_00 : %02X" % (unk_byte_00)
+        print "[+] unk_byte_01 : %02X" % (unk_byte_01)
+        self.prepare_0x85()
+
     def prepare_0x82(self, protocol_version, username):
         """ S_CONNECTED """
         p = struct.pack(">B", 0x82)
@@ -291,6 +304,32 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)
+
+    def prepare_0x19(self):
+        p = struct.pack(">B", 0x19)
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_00
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_01
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_02
+        p += struct.pack(">B", 0x00)    # UNK_BYTE_03
+        p += struct.pack(">I", 0x00)    # UNK_DWORD_00
+        p += struct.pack(">I", 0x00)    # UNK_DWORD_01
+        p += struct.pack(">I", 0x00)    # UNK_DWORD_02
+        p += struct.pack(">I", 0x00)    # UNK_DWORD_03
+        p += struct.pack(">H", 0x00)    # UNK_WORD_00
+
+        p += struct.pack(">H", 13337)
+        p += struct.pack(">H", 13337)
+        p += "0.0.0.0"
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
+    def handle_0x35(self, buf):
+        unk_byte_00, buf = WAR_Utils.GetByte(buf)
+        unk_byte_01, buf = WAR_Utils.GetByte(buf)
+        print "[+] unk_byte_00 : %02X" % (unk_byte_00)
+        print "[+] unk_byte_01 : %02X" % (unk_byte_01)
+        self.prepare_0x19()
 
     def handle_0x5C(self, buf):
         key_present, buf = WAR_Utils.GetByte(buf)
