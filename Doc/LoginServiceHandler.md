@@ -15,9 +15,8 @@ All messages received for the login service are handled by this function :
 
     0095858B     LoginServiceHandler proc near
 
-* RVA    : 0x0095858B
-* VA     : 0x0055858B
-* Offset : 0x0055858B
+* VA    : 0x0095858B
+* RVA   : 0x0055858B
 
 PAT signature (for sigmake IDA) :
 
@@ -28,9 +27,8 @@ PAT signature (for sigmake IDA) :
 
     0095734B     Handle_VerifyProtocolReply proc near
 
-* RVA    : 0x0095734B
-* VA     : 0x0055734B
-* Offset : 0x0055734B
+* VA    : 0x0095734B
+* RVA   : 0x0055734B
 
 PAT signature (for sigmake IDA) :
 
@@ -41,9 +39,8 @@ PAT signature (for sigmake IDA) :
 
     0095749E     Handle_AuthInitialTokenReply proc near
 
-* RVA    : 0x0095749E
-* VA     : 0x0055749E
-* Offset : 0x0055749E
+* VA    : 0x0095749E
+* RVA   : 0x0055749E
 
 PAT signature (for sigmake IDA) :
 
@@ -54,9 +51,8 @@ PAT signature (for sigmake IDA) :
 
     0095758F     Handle_AuthSessionTokenReply proc near
 
-* RVA    : 0x0095758F
-* VA     : 0x0055758F
-* Offset : 0x0055758F
+* VA    : 0x0095758F
+* RVA   : 0x0055758F
 
 PAT signature (for sigmake IDA) :
 
@@ -67,9 +63,8 @@ PAT signature (for sigmake IDA) :
 
     00957B11     Handle_GetCharListReply proc near
 
-* RVA    : 0x00957B11
-* VA     : 0x00557B11
-* Offset : 0x00557B11
+* VA    : 0x00957B11
+* RVA   : 0x00557B11
 
 PAT signature (for sigmake IDA) :
 
@@ -80,9 +75,8 @@ PAT signature (for sigmake IDA) :
 
     0095763F     Handle_GetClusterListReply proc near
 
-* RVA    : 0x0095763F
-* VA     : 0x0055763F
-* Offset : 0x0055763F
+* VA    : 0x0095763F
+* RVA   : 0x0055763F
 
 PAT signature (for sigmake IDA) :
 
@@ -93,9 +87,8 @@ PAT signature (for sigmake IDA) :
 
     00957D2E     Handle_GetAccountPropertiesReply proc near
 
-* RVA    : 0x00957D2E
-* VA     : 0x00557D2E
-* Offset : 0x00557D2E
+* VA    : 0x00957D2E
+* RVA   : 0x00557D2E
 
 PAT signature (for sigmake IDA) :
 
