@@ -165,6 +165,47 @@ The server doesn't need to answer to this.
 
     004C69A3 SendPacket_0x62 proc near
 
+*TODO*
+
+## 0xC8
+
+...
+    004C7199 SendPacket_0xC8 proc near
+
+### 0xC8 (First)
+
+    004B6DC0 PrepareSendPacket_0xC8_1 proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+    +0x01   :   UNK_BYTE_01         [BYTE]
+    +0x02   :   UNK_WORD_00         [WORD]
+    +0x04   :   UNK_WORD_01         [WORD]
+
+*TODO*
+
+## 0x7C
+
+...
+
+    004C6D11 SendPacket_0x7C proc near
+
+Packet data :
+
+    +0x00   :   UNK_WORD_00         [WORD]
+    +0x02   :   UNK_WORD_01         [WORD]
+    +0x04   :   UNK_WORD_02         [WORD]
+    +0x06   :   UNK_WORD_03         [WORD]
+    +0x08   :   UNK_WORD_04         [WORD]
+    +0x0A   :   UNK_WORD_05         [WORD]
+    +0x0C   :   UNK_WORD_06         [WORD]
+    +0x0E   :   UNK_WORD_07         [WORD]
+    +0x0E   :   UNK_WORD_08         [WORD]
+    +0x0E   :   UNK_WORD_09         [WORD]
+    +0x0E   :   UNK_WORD_10         [WORD]
+    +0x0E   :   UNK_WORD_11         [WORD]
+
 ## 0x68
 
     004B3ABD SendPacket_0x68 proc near

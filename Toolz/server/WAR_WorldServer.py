@@ -3,6 +3,7 @@ import struct
 import time
 import zlib
 import threading
+import thread
 
 import WAR_TCPHandler
 import WAR_Utils
@@ -80,7 +81,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x5C, "handle_0x5C", self.handle_0x5C), (0x5D, "UNKNOWN", self.handle_unknown),
             (0x5E, "UNKNOWN", self.handle_unknown), (0x5F, "UNKNOWN", self.handle_unknown),
             (0x60, "UNKNOWN", self.handle_unknown), (0x61, "UNKNOWN", self.handle_unknown),
-            (0x62, "UNKNOWN", self.handle_unknown), (0x63, "UNKNOWN", self.handle_unknown),
+            (0x62, "UNKNOWN", self.handle_0x62), (0x63, "UNKNOWN", self.handle_unknown),
             (0x64, "UNKNOWN", self.handle_unknown), (0x65, "UNKNOWN", self.handle_unknown),
             (0x66, "UNKNOWN", self.handle_unknown), (0x67, "UNKNOWN", self.handle_unknown),
             (0x68, "UNKNOWN", self.handle_0x68), (0x69, "UNKNOWN", self.handle_unknown),
@@ -93,7 +94,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x76, "UNKNOWN", self.handle_unknown), (0x77, "UNKNOWN", self.handle_unknown),
             (0x78, "UNKNOWN", self.handle_unknown), (0x79, "UNKNOWN", self.handle_unknown),
             (0x7A, "UNKNOWN", self.handle_unknown), (0x7B, "UNKNOWN", self.handle_unknown),
-            (0x7C, "UNKNOWN", self.handle_unknown), (0x7D, "UNKNOWN", self.handle_unknown),
+            (0x7C, "UNKNOWN", self.handle_0x7C), (0x7D, "UNKNOWN", self.handle_unknown),
             (0x7E, "UNKNOWN", self.handle_unknown), (0x7F, "UNKNOWN", self.handle_unknown),
             (0x80, "UNKNOWN", self.handle_unknown), (0x81, "UNKNOWN", self.handle_unknown),
             (0x82, "UNKNOWN", self.handle_unknown), (0x83, "UNKNOWN", self.handle_unknown),
@@ -131,7 +132,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0xC2, "UNKNOWN", self.handle_unknown), (0xC3, "UNKNOWN", self.handle_unknown),
             (0xC4, "UNKNOWN", self.handle_unknown), (0xC5, "UNKNOWN", self.handle_unknown),
             (0xC6, "UNKNOWN", self.handle_unknown), (0xC7, "UNKNOWN", self.handle_unknown),
-            (0xC8, "UNKNOWN", self.handle_unknown), (0xC9, "UNKNOWN", self.handle_unknown),
+            (0xC8, "UNKNOWN", self.handle_0xC8), (0xC9, "UNKNOWN", self.handle_unknown),
             (0xCA, "UNKNOWN", self.handle_unknown), (0xCB, "UNKNOWN", self.handle_unknown),
             (0xCC, "UNKNOWN", self.handle_unknown), (0xCD, "UNKNOWN", self.handle_unknown),
             (0xCE, "UNKNOWN", self.handle_unknown), (0xCF, "UNKNOWN", self.handle_unknown),
@@ -175,6 +176,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             opcode_packet, buf = WAR_Utils.GetByte(buf)
             print "[+] Sequence packet : %04X" % (sequence_packet)
             print "[+] Session ID packet : %04X" % (session_id_packet)
+            self.sequence_packet = sequence_packet
             print "[+] unk_word_00 : %04X" % (unk_word_00)
             print "[+] unk_byte_00 : %02X" % (unk_byte_00)
             print "[+] Opcode packet : %02X" % (opcode_packet)
@@ -204,7 +206,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def handle_unknown(self, buf):
         print "[-] EXIT !"
-        exit(0)
+        thread.interrupt_main()
 
     def handle_0x04(self, buf):
         session_id, buf = WAR_Utils.GetWord(buf)
@@ -212,6 +214,17 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] session_id = %04X" % (session_id)
         print "[+] unk_word_00 = %04X" % (unk_word_00)
         print "[+] Exit"
+
+    def prepare_0x81(self, timestamp):
+        p = struct.pack(">B", 0x81)
+        p += struct.pack(">I", timestamp)
+        p += struct.pack(">Q", time.time())
+        p += struct.pack(">I", self.sequence_packet + 1)
+        p += struct.pack(">I", 0)
+        print WAR_Utils.hexdump(p)
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
 
     def handle_0x0B(self, buf):
         unk_dword_00, buf = WAR_Utils.GetDword(buf)
@@ -226,6 +239,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         print "[+] unk_dword_00 = %08X" % (unk_dword_02)
         print "[+] unk_data = %04X %04X %04X" % (unk_word_00, unk_word_01, unk_word_02)
         print "[+] unk_word_03 : %02X" % (unk_word_03)
+
+        self.prepare_0x81(unk_dword_00)
+
         # MAKE PONG
         #exit(0)
 
@@ -274,6 +290,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def prepare_0x85(self):
         p = struct.pack(">B", 0x85)
+        p += struct.pack(">B", 0x00)
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)
@@ -355,6 +372,17 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             self.encrypted = True
             self.RC4Key = key
 
+    def prepare_0x62(self, buf):
+        p = struct.pack(">B", 0x62)
+        p += buf[:-3]
+        p += struct.pack(">B", 0x00)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
+    def handle_0x62(self, buf):
+        print ""
+        self.prepare_0x62(buf)
+
     def prepare_0x8A(self):
         p = struct.pack(">B", 0x8A)
         p += struct.pack(">B", 0x01)
@@ -385,12 +413,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def premaidcharacter(self):
         p = "NICKNAME"
         p += "\x00" * (48 - len(p))
-        p += struct.pack(">B", 42)               # +0x030 : LEVEL
+        p += struct.pack(">B", 1)               # +0x030 : LEVEL
         p += struct.pack(">B", 0x1A)             # +0x031 : CAREER
         p += struct.pack(">B", 0x2)              # +0x032 : REALM : ORDER = 1 ; DESTRU = 2
         p += struct.pack(">B", 0x0)              # +0x033 : GENDER
-        p += struct.pack("<H", 0x000)            # +0x034 : UNK_WORD_00 // CRASH :(
-        p += struct.pack("<H", 0x006)            # +0x036 : ZONE
+        p += struct.pack(">H", 0x0E00)           # +0x034 : UNK_WORD_00 // CRASH :(
+        p += struct.pack("<H", 0x0064)           # +0x036 : ZONE
 
         p += "\x00" * 12                         # +0x038 : UNK_DATA
 
@@ -406,9 +434,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             p += struct.pack("<H", 0x0000)            # +0x0C8 : ??
             p += struct.pack("<H", 0x0000)            # +0x0CA : ??
 
-        p += "\x42" * 0x14                              # +0x0EC : ??
+        #p += "\x00" * 0x14                              # +0x0EC : ??
 
-        p += struct.pack("<H", 0x0000)              # +0x100 : ??
+        #p += struct.pack("<H", 0x0000)              # +0x100 : ??
+
+        p += '4604000000000000000000000000000000000000ff000003000000000000000000'.decode('hex')
+
+        #print "LEN !!! = %08X" % (len(p))
 
         #p += struct.pack("<H", 0x4242)            # +0x0ED : ??
 
@@ -491,7 +523,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def prepare_0x80(self):
         p = struct.pack(">B", 0x80)
-        p += struct.pack(">H", 0x42)    # SESSION_ID
+        p += struct.pack(">H", 0x1300)    # SESSION_ID
         p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
         p = struct.pack(">H", len(p) - 1) + p
         self.send_data(p)
@@ -539,6 +571,27 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         #self.prepare_0x58()
         self.prepare_0x59()
         #     F_SEND_CHARACTER_ERROR = 0x59, // Implement IT !!!
+
+    def handle_0xC8(self, buf):
+        unk_byte_00, buf = WAR_Utils.GetByte(buf)
+        unk_byte_01, buf = WAR_Utils.GetByte(buf)
+        unk_word_00, buf = WAR_Utils.GetWord(buf)
+        unk_word_01, buf = WAR_Utils.GetWord(buf)
+        print "[+] unk_byte_00 = %02X" % (unk_byte_00)
+        print "[+] unk_byte_01 = %02X" % (unk_byte_01)
+        print "[+] unk_word_00 = %02X" % (unk_word_00)
+        print "[+] unk_word_01 = %02X" % (unk_word_01)
+
+    def prepare_0xEF(self):
+        p = struct.pack(">B", 0xEF)
+        p += struct.pack(">H", 0xAE00)
+        p = WAR_Utils.WAR_RC4(p, self.RC4Key, True)
+        p = struct.pack(">H", len(p) - 1) + p
+        self.send_data(p)
+
+    def handle_0x7C(self, buf):
+        # TODO
+        self.prepare_0xEF()
 
     def finish(self):
         print "WorldTCPHandler : Closing connection from %s : %d" % (self.client_address[0], self.client_address[1])

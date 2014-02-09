@@ -142,3 +142,11 @@ Packet data :
 
 SEND_KEY must be equal to 1, and the client will send opcode 0x5C again
 containing the key for encrypt/decrypt.
+
+## 0x88
+
+...
+
+    004DE151 Handle_0x88 proc near
+
+...
