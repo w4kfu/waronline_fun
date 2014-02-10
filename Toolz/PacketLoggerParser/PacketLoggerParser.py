@@ -97,7 +97,7 @@ PACKET_F_PLAYER_EXIT = [
 ]
 
 PACKET_F_PING = [
-        ("unk_dword_00", DWORD),
+        ("timestamp", DWORD),
         ("unk_dword_01", DWORD),
         ("unk_dword_02", DWORD),
         ("unk_word_00", WORD),

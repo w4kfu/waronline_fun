@@ -1,7 +1,37 @@
 import struct
 import zlib
 from binascii import hexlify
+import colorama
 
+###
+#
+###
+class WarError(Exception):
+    pass
+
+LOG_LEVEL = 3
+
+###
+#
+###
+def LogInfo(buf, level = 1):
+    colorama.init()
+    if LOG_LEVEL >= level and level == 1:
+        print colorama.Fore.GREEN + str(buf) + colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
+        return
+    if LOG_LEVEL >= level and level == 2:
+        print colorama.Fore.CYAN+ str(buf)+ colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
+        return
+    if LOG_LEVEL >= level and level == 3:
+        print colorama.Fore.MAGENTA  + str(buf) + colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
+        return
+    else:
+        #print buf
+        return
+
+###
+#
+###
 def WAR_RC4(data, key, encrypt = True):
     j = 0
     i = 0
@@ -33,6 +63,53 @@ def WAR_RC4(data, key, encrypt = True):
             j = (j + c) % 256
     return ''.join(out_first_half) + ''.join(out_second_half)
 
+###
+#
+###
+BYTE = "B"
+WORD = "H"
+DWORD = "I"
+QWORD = "Q"
+
+def padding(fmt):
+    return "x" * (struct.calcsize(fmt) - 1) + "B"
+
+def extract_str(str, data, endianness):
+    struct_str = endianness + str
+    unpack = struct.unpack(struct_str, data[:struct.calcsize(struct_str)])
+    if len(unpack) == 1:
+        i, = unpack
+        return (i, data[struct.calcsize(struct_str):])
+    return (list(unpack), data[struct.calcsize(struct_str):])
+
+def depack(descr, data, endiannes = ">"):
+    res_struct = dict()
+    for field, value in iter(descr):
+        if isinstance(value, basestring):
+            if value in res_struct.keys():
+                lfield, data = extract_str("B" * res_struct[value], data, endiannes)
+                res_struct.update({field : lfield})
+            else:
+                lfield, data = extract_str(value, data, endiannes)
+                res_struct.update({field : lfield})
+            continue
+        if isinstance(value, list):
+            lfield, data = depack(value, data, endiannes)
+            res_struct.update({field : lfield})
+            continue
+        if isinstance(value, tuple):
+            res = []
+            for descr in value:
+                result, data = depack(descr, data, endiannes)
+                res.append(result)
+            res_struct.update({field : res})
+            continue
+        raise DescriptionError("Unhandled type for field : " + field)
+    return (res_struct, data)
+
+###
+#
+###
 def hexdump(src, length=16):
     FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
     lines = []
@@ -41,8 +118,11 @@ def hexdump(src, length=16):
         hex = ' '.join(["%02x" % ord(x) for x in chars])
         printable = ''.join(["%s" % ((ord(x) <= 127 and FILTER[ord(x)]) or '.') for x in chars])
         lines.append("%04x  %-*s  %s\n" % (c, length*3, hex, printable))
-    return ''.join(lines)
+    return ''.join(lines).rstrip('\n')
 
+###
+#
+###
 def MakeBBuffer(buf):
     p = struct.pack(">B", len(buf))
     p += buf
