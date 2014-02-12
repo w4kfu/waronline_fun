@@ -221,9 +221,26 @@ def depack(descr, data, endiannes = ">"):
         raise DescriptionError("Unhandled type for field : " + field)
     return (res_struct, data)
 
+start_log = 0
+moo = ""
+lopcode = []
+dopcode = {}.fromkeys(set(range(0, 0xFF)),0)
+
 def decode_packet(packet_size, packet_data, is_client):
+    global start_log
+    global moo, lopcode
     size_data, packet_data = GetWord(packet_data)
     if is_client == True:
+        if start_log == 1:
+            fd = open("C:\Temp\lol.py", "w")
+            fd.write(moo)
+            fd.close()
+            print map(hex, lopcode)
+            for i, k in dopcode.items():
+               if k != 0:
+                print "%02X : %02X" % (i, k)
+            raise "LOL"
+        return
         packet_crc = packet_data[len(packet_data) - 2: len(packet_data)]
         packet_data = packet_data[:-2]
         packet_client_header, packet_data = depack(PACKET_CLIENT_HEADER, packet_data)
@@ -243,8 +260,17 @@ def decode_packet(packet_size, packet_data, is_client):
             print "WTF DATA LEFT !"
             exit(0)
     else:
-        packet_server_header, packet_data = depack(PACKET_SERVER_HEADER, packet_data)
-        print packet_server_header
+        #packet_server_header, packet_data = depack(PACKET_SERVER_HEADER, packet_data)
+        #print packet_server_header
+        if packet_data[0] == chr(0x46):
+            start_log = 1
+        if start_log == 1 and ord(packet_data[0]) != 0xF8 and ord(packet_data[0]) != 0xF3:
+            dopcode[ord(packet_data[0])] += 1
+            if ord(packet_data[0]) not in lopcode:
+                lopcode.append(ord(packet_data[0]))
+            #print "0x%02X" % (struct.unpack(">B", packet_data[:1]))
+            print "p = \'" + packet_data.encode('hex') + "\'"
+            moo += "        p = \'" + packet_data.encode('hex') + "\'.decode(\'hex\')\n        self.send_data(p)\n"
 
 if __name__ == "__main__":
     fd = open(FILENAME, "r")
@@ -254,7 +280,7 @@ if __name__ == "__main__":
             break
         if PATTERN_SIZE in line:
             size_packet = int(line[line.find(PATTERN_SIZE) + len(PATTERN_SIZE):])
-            print "size_packet = %08X" % size_packet
+            #print "size_packet = %08X" % size_packet
             if line.startswith("[Client]"):
                 is_client = True
             else:
@@ -266,12 +292,12 @@ if __name__ == "__main__":
             buf_data = ""
             for i in xrange(0, (size_packet / 16)):
                 data_line = fd.readline()
-                print data_line[1:(16 * 3)].replace(" ", "")
+                #print data_line[1:(16 * 3)].replace(" ", "")
                 buf_data += data_line[1:(16 * 3)].replace(" ", "").decode('hex')
                 remain_size = remain_size - 16
             if remain_size > 0:
                 data_line = fd.readline()
-                print data_line[1:(remain_size * 3)].replace(" ", "")
+                #print data_line[1:(remain_size * 3)].replace(" ", "")
                 buf_data += data_line[1:(remain_size * 3)].replace(" ", "").decode('hex')
             #print hex(len(buf_data))
             #print buf_data

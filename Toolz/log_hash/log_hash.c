@@ -73,17 +73,17 @@ char	*format_hash = "[+] \"%s\" = %08X%08X\n";
 
 VOID	MyLogHash(char *Filename, DWORD dwHash_High, DWORD dwHash_Low, DWORD dwRetAddr)
 {
-	if (!strncmp(Filename, "data", 4))
-	{
+	//if (!strncmp(Filename, "data", 4))
+	//{
 		dbg_msg("[+] \"%s\" = %08X%08X (dwRetAddr = %08X)\n", Filename, dwHash_High, dwHash_Low, dwRetAddr);
 		if (!strcmp(Filename, "data/mythloginserviceconfig.xml"))
 		{
-			__asm
+			/*__asm
 			{
 				jmp $
-			}
+			}*/
 		}
-	}
+	//}
 }
 
 DWORD __declspec ( naked ) Hook_hash(void)

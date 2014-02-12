@@ -4,7 +4,7 @@
 #pragma comment(lib, "LDE64.lib")
 
 #define LDE_X86 0
-#define FILE_DBG "dbg_log_hash_msg.txt"
+#define FILE_DBG "dbg_replace_xml.txt"
 
 #ifdef __cplusplus
 extern "C"
