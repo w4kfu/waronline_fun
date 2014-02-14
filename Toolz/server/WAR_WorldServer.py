@@ -414,6 +414,41 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">H", 0x0000) # TODO
         self.send_data(p)
 
+    def response_0x39(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">I", 0x00)        # TODO
+        p += struct.pack(">I", 0x0a96)
+        p += struct.pack(">I", 0x00)
+        p += struct.pack(">I", 0x01000000)
+        self.send_data(p)
+
+    def response_0x4E(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">I", 0x00)        # TODO
+        p += struct.pack(">I", 0x0a)
+        p += struct.pack(">I", 0x01000000)
+        self.send_data(p)
+
+    def response_0x05(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">I", 0x0226)        # TODO
+        p += struct.pack(">I", 0x0226)
+        p += struct.pack(">H", 0x0000)
+        p += struct.pack(">H", 0x0064)
+        p += struct.pack(">H", 0x0000)
+        p += struct.pack(">H", 0xE000)
+        self.send_data(p)
+
+    def response_0xEA(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">B", 0x00)        # TODO
+        self.send_data(p)
+
+    def response_0xEF(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">H", 0xAE00)        # TODO
+        self.send_data(p)
+
     def response_player_init(self, opcode_entry, packet_client_header, packet_client, packet_data):
         self.response(0x52, packet_client_header, packet_client, packet_data)
         self.response(0x1E, packet_client_header, packet_client, packet_data)
@@ -425,26 +460,39 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.response(0xF4, packet_client_header, packet_client, packet_data)
         p = 'e21c0000000a9600000018c400000028f000000039ee0000004fb000000065fe00000082320000009ec0000000be96000000e2040300000000000001050e000001302403000000000000015acc00000189840300000000000001bc88000001ee74030000000000000229ca00000263900300000000000002a0bc0400000000000002d26c030000000000000309620300000000000003512e03000000000000039f800300000000000003ec3803000000000000043e04030000000000000488640300000000000004fa1a03000000000000059a240300000000000006442403000000000400000000000006fc2a0300000000000007cec00300000000000008a19c03000000000000097fe0030000000000000ab342030000000000000b6ea4030000000000000c2e02030000000000000d00fc030000000000000dcc8a030000000000000ea19603000000000400000000050000000a06000000000500000050060000000005000000e6060000000005000001b8060000000005000002da06000000000500000438060000000005000005dc060000000005000007d006000000000500000a0006000000000500000c76060000000004000000000500000f320600000000050000122a06000000000500001572060000000005000018f606000000000500001cb6060000000005000020bc060000000005000025080600000000050000299006000000000500002e540600000000050000335e0600000000040000000005000038a406000000000500003e30060000000005000043ee060000000005000049f206000000000500005032060000000005000056ae06000000000500005d660600000000050000646406000000000500006b9406000000000500007300060000000004000000000500007aa80600000000050000828c06000000000500008aa2060000000005000092fe06000000000500009b8c0600000000050000a44c0600000000050000ad520600000000050000b68a0600000000050000bff40600000000050000c99a06000000000300000000050000d3720600000000050000dd860600000000050000e7cc0600000000050000f2440600000000050000fcf80600000000040000000005000107d4060000000005000112ec06000000000500011e36060000000005000129bc0600000000050001356a06000000000300000000050001414a06000000000500014ece06000000000500015e1e06000000000500016f4e06000000000500018290060000000005000198160600000000050001b0120600000000050001caac0600000000050001e820060000000005000208a0060000000003000000000500022c68060000000005000253a006000000000500027e840600000000050002ad5a0600000000050002e0540600000000040000000005000317c2060000000005000353cc060000000005000394b80600000000050003dad6060000000005000426620600000000030000000005000477a20600000000050004cedc06000000000500052c560600000000050005906a0600000000050005fb54060000000004000000000500066d6e0600000000050006e6fe060000000005000768540600000000050007f1ca060000000005000883ba0600000000040000000005000a473d060000000005000ad441060000000005000b6143060000000005000bee460600000000040000000005000c7b48060000000005000d084a060000000005000d954c060000000005000e224f0600000000040000000005000eaf51060000000005000f3c53060000000005000fc9550600000000050010565806000000000400000000050010e35a0600000000050011705c0600000000050011fd5f06000000000500128a610600000000040000000005001317630600000000050013a465060000000005001431680600000000050014be6a06000000000400000000000000000000'.decode('hex')
         self.send_data(p)
-        p = '390000000000000a960000000001000000'.decode('hex')
-        self.send_data(p)
-        p = '4e000000000000000a01000000'.decode('hex')
-        self.send_data(p)
+
+        #p = '390000000000000a960000000001000000'.decode('hex')
+        #self.send_data(p)
+        self.response(0x39, packet_client_header, packet_client, packet_data)
+
+        #p = '4e000000000000000a01000000'.decode('hex')
+        #self.send_data(p)
+        self.response(0x4E, packet_client_header, packet_client, packet_data)
+
         p = 'be030000000703400800000000'.decode('hex')
         self.send_data(p)
-        p = '0500000226000002260000006400000e00'.decode('hex')
-        self.send_data(p)
+
+        #p = '0500000226000002260000006400000e00'.decode('hex')
+        #self.send_data(p)
+        self.response(0x05, packet_client_header, packet_client, packet_data)
+
         p = '950f200010006400000000025000080060ea0000'.decode('hex')
         self.send_data(p)
         p = 'aa03000000000a0000000133044600000000000000000a0b0000000000010004000000000000000000000000000100010000000000000400004901900c4d65204f6c2720537469636b000000000000000000000003020000000000000000000000000000000000000000000014000002dcd412c9000000000000000014000000000000010100000000400000000000000000000100010000000000000000000100000f4d6520536f6665737420536869727400000000000000000000000302000000000000000000000000000000000000000000002a0000002e8f0213000000000000000000000000000001050000000000000000000000000000000100010000000000000000000000000f426f6f6b206f662042696e64696e670000000000007355736520746f2072657475726e20746f20796f75722072616c6c7920706f696e742e20596f752063616e2073657420796f75722072616c6c7920706f696e742062792074616c6b696e6720746f207468652052616c6c79204d617374657220696e20616e79206368617074657220617265612e000000000302000000000000000000000000000000000000000000'.decode('hex')
         self.send_data(p)
         p = 'be01060300010701010b0101d301076a01076b0100f500'.decode('hex')
         self.send_data(p)
-        p = 'ea00'.decode('hex')
-        self.send_data(p)
+
+        #p = 'ea00'.decode('hex')
+        #self.send_data(p)
+        self.response(0xEA, packet_client_header, packet_client, packet_data)
+
         p = '4f1aae000000000000000000000000000000000000'.decode('hex')
         self.send_data(p)
-        p = 'efae00'.decode('hex')
-        self.send_data(p)
+
+        #p = 'efae00'.decode('hex')
+        #self.send_data(p)
+        self.response(0xEF, packet_client_header, packet_client, packet_data)
     ### ALL HANDLE
 
     def handle_unknown(self, opcode_entry, packet_client_header, packet_data):
@@ -726,9 +774,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xFE, "UNKNOWN", self.handle_unknown, None), (0xFF, "UNKNOWN", self.handle_unknown, None),
         ]
         self.WorldSent = [
+            (0x05, "F_PLAYER_HEALTH", self.response_0x05),
             (0x13, "F_REQUEST_CHAR_TEMPLATES", self.response_0x13),
             (0x19, "F_WORLD_ENTER", self.response_0x19),
             (0x1E, "F_MAX_VELOCITY", self.response_0x1E),
+            (0x39, "F_PLAYER_EXPERIENCE", self.response_0x39),
+            (0x4E, "F_PLAYER_RENOWN", self.response_0x4E),
             (0x52, "F_PLAYER_WEALTH", self.response_0x52),
             (0x55, "F_REQUEST_CHAR_RESPONSE", self.response_0x55),
             (0x56, "F_REQUEST_CHAR_ERROR", self.response_0x56),
@@ -743,6 +794,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x85, "S_GAME_OPENED", self.response_0x85),
             (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_0x8A),
             (0xD6, "F_SET_TIME", self.response_0xD6),
+            (0xEA, "F_QUEST_LIST", self.response_0xEA),
+            (0xEF, "F_PLAYER_INIT_COMPLETE", self.response_0xEF),
             (0xF4, "F_PLAYER_RANK_UPDATE", self.response_0xF4)
         ]
         WAR_Utils.LogInfo("WorldTCPHandler : New connection from %s : %d" % (self.client_address[0], self.client_address[1]), 1)
