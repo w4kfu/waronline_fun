@@ -245,3 +245,28 @@ Packet data :
     +0x2C   :   UNK_DWORD_02        [DWORD]
 
 The server must answer with opcode 0x80.
+
+## 0xD5
+
+    .text:004C7217 SendPacket_0xD5 proc near
+
+Packet data :
+
+    +0x00   :   UNK_WORD_00         [WORD]
+    +0x02   :   UNK_WORD_01         [WORD]
+    +0x04   :   UNK_WORD_02         [WORD]
+    +0x06   :   UNK_WORD_03         [WORD]
+    +0x08   :   UNK_WORD_04         [WORD]
+    +0x0A   :   UNK_WORD_05         [WORD]
+    +0x0C   :   ABILITY_ID          [WORD]
+    +0x0E   :   SEQUENCE_ABILITY    [BYTE]
+    +0x0F   :   UNK_BYTE_00         [BYTE]
+    +0x10   :   UNK_WORD_07         [WORD]
+
+## 0xA1
+
+    .text:0055583A SendPacket_0xA1 proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]

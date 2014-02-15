@@ -134,6 +134,29 @@ PACKET_F_CREATE_CHARACTER = [
     ("unk_byte_07", WAR_Utils.BYTE),
 ]
 
+PACKET_F_DO_ABILITY = [
+    ("unk_word_00", WAR_Utils.WORD),
+    ("unk_word_01", WAR_Utils.WORD),
+    ("unk_word_02", WAR_Utils.WORD),
+    ("unk_word_03", WAR_Utils.WORD),
+    ("unk_word_04", WAR_Utils.WORD),
+    ("unk_word_05", WAR_Utils.WORD),
+    ("ABILITY_ID", WAR_Utils.WORD),
+    ("SEQUENCE", WAR_Utils.BYTE),
+    ("unk_byte_01", WAR_Utils.BYTE),
+    ("unk_word_07", WAR_Utils.WORD),
+]
+
+PACKET_F_PLAY_VOICE_OVER = [
+    ("unk_byte_00", WAR_Utils.BYTE),
+    ("unk_byte_01", WAR_Utils.BYTE),
+    ("unk_word_00", WAR_Utils.WORD)
+]
+
+PACKET_F_INTERRUPT = [
+    ("unk_byte_00", WAR_Utils.BYTE),
+]
+
 PACKET_F_DISCONNECT = [
     ("unk_byte_00", WAR_Utils.BYTE),
 ]
@@ -163,7 +186,7 @@ PACKET_F_UI_MOD = [
 ]
 
 PACKET_F_TEXT = [
-# TODO
+    ("unk_byte_00", WAR_Utils.BYTE)
 ]
 
 PACKET_F_CLIENT_DATA = [
@@ -396,17 +419,24 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">I", 0)           # TODO CHECK
         self.send_data(p)
 
-    # MOVE IT
+    def response_0xDA(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">I", packet_client['ABILITY_ID'])
+        p += "\x8E\x7B\x05\x2E\x00\x00\x01\x01\x00\x00\x03\xE8"
+        self.send_data(p)
+
+        p = "\x51\x04\xB2\x00\x00\x00\x00"
+        self.send_data(p)
+
     def response_0x52(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", 0)
-        p += struct.pack(">I", 0)
+        p += struct.pack(">I", 0)           # unk_dword_00
+        p += struct.pack(">I", 0x3131)      # GameData.Player.money
         self.send_data(p)
 
     def response_0x1E(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">H", 0x0064) # TODO
-        p += struct.pack(">H", 0x0064) # TODO
+        p += struct.pack(">H", 0x0000)      # TODO
         self.send_data(p)
 
     def response_0xF4(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -416,27 +446,27 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def response_0x39(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", 0x00)        # TODO
-        p += struct.pack(">I", 0x0a96)
-        p += struct.pack(">I", 0x00)
-        p += struct.pack(">I", 0x01000000)
+        p += struct.pack(">I", 0x02)        # Current experience
+        p += struct.pack(">I", 0xA96)       # Next level experience
+        p += struct.pack(">I", 0x400)       # Rested Experience
+        p += struct.pack("<I", 0x01)        # Current Level
         self.send_data(p)
 
     def response_0x4E(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", 0x00)        # TODO
-        p += struct.pack(">I", 0x0a)
-        p += struct.pack(">I", 0x01000000)
+        p += struct.pack(">I", 0x02)        # Current Renown experience
+        p += struct.pack(">I", 0x0A)        # Next Renowm experience
+        p += struct.pack("<I", 0x01)        # Renown Rank : Little Endian
         self.send_data(p)
 
     def response_0x05(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", 0x0226)        # TODO
-        p += struct.pack(">I", 0x0226)
-        p += struct.pack(">H", 0x0000)
-        p += struct.pack(">H", 0x0064)
-        p += struct.pack(">H", 0x0000)
-        p += struct.pack(">H", 0xE000)
+        p += struct.pack(">I", 0x0226)      # Actual hit points
+        p += struct.pack(">I", 0x0226)      # Max hit points
+        p += struct.pack(">H", 0x0064)      # Actual Action points
+        p += struct.pack(">H", 0x0064)      # Max Action points
+        p += struct.pack(">H", 0x0000)      # unk_word_00
+        p += struct.pack(">H", 0x0000)      # unk_word_01
         self.send_data(p)
 
     def response_0xEA(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -446,7 +476,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def response_0xEF(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">H", 0xAE00)        # TODO
+        p += struct.pack(">H", 0x0000)        # unk_word_00
         self.send_data(p)
 
     def response_player_init(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -509,8 +539,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         WAR_Utils.LogInfo(packet_client, 2)
 
     def handle_0x07(self, opcode_entry, packet_client_header, packet_data):
-        # TODO
-        pass
+        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        WAR_Utils.LogInfo(packet_client, 2)
+        print "CMD = " + packet_data
+        #pass
 
     def handle_0x0B(self, opcode_entry, packet_client_header, packet_data):
         packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
@@ -605,6 +637,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO
         pass
 
+    def handle_0xA1(self, opcode_entry, packet_client_header, packet_data):
+        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        WAR_Utils.LogInfo(packet_client, 2)
+
     def handle_0x91(self, opcode_entry, packet_client_header, packet_data):
         packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
         WAR_Utils.LogInfo(packet_client, 2)
@@ -617,6 +653,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO
         pass
 
+    def handle_0xB6(self, opcode_entry, packet_client_header, packet_data):
+        # TODO
+        pass
+        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        #WAR_Utils.LogInfo(packet_client, 2)
+
     def handle_0xB8(self, opcode_entry, packet_client_header, packet_data):
         packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
         WAR_Utils.LogInfo(packet_client, 2)
@@ -626,6 +668,14 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
         WAR_Utils.LogInfo(packet_client, 2)
         self.response(0x80, packet_client_header, packet_client, packet_data)
+
+    def handle_0xD5(self, opcode_entry, packet_client_header, packet_data):
+        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        WAR_Utils.LogInfo(packet_client, 2)
+        # IF EVEYRTHING OK
+        time.sleep(5)
+        self.response(0x05, packet_client_header, packet_client, packet_data)
+        self.response(0xDA, packet_client_header, packet_client, packet_data)
 
     def handle_0xDB(self, opcode_entry, packet_client_header, packet_data):
         # TODO !
@@ -639,6 +689,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO !
         pass
 
+    def handle_0xFE(self, opcode_entry, packet_client_header, packet_data):
+        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        WAR_Utils.LogInfo(packet_client, 2)
 
     def handle(self):
         self.name = "WorldTCPHandler"
@@ -724,7 +777,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0x9A, "UNKNOWN", self.handle_unknown, None), (0x9B, "UNKNOWN", self.handle_unknown, None),
         (0x9C, "UNKNOWN", self.handle_unknown, None), (0x9D, "UNKNOWN", self.handle_unknown, None),
         (0x9E, "UNKNOWN", self.handle_unknown, None), (0x9F, "UNKNOWN", self.handle_unknown, None),
-        (0xA0, "UNKNOWN", self.handle_unknown, None), (0xA1, "UNKNOWN", self.handle_unknown, None),
+        (0xA0, "UNKNOWN", self.handle_unknown, None), (0xA1, "F_INTERRUPT", self.handle_0xA1, PACKET_F_INTERRUPT),
         (0xA2, "UNKNOWN", self.handle_unknown, None), (0xA3, "UNKNOWN", self.handle_unknown, None),
         (0xA4, "UNKNOWN", self.handle_unknown, None), (0xA5, "UNKNOWN", self.handle_unknown, None),
         (0xA6, "UNKNOWN", self.handle_unknown, None), (0xA7, "UNKNOWN", self.handle_unknown, None),
@@ -735,7 +788,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xB0, "UNKNOWN", self.handle_unknown, None), (0xB1, "UNKNOWN", self.handle_unknown, None),
         (0xB2, "UNKNOWN", self.handle_unknown, None), (0xB3, "UNKNOWN", self.handle_unknown, None),
         (0xB4, "UNKNOWN", self.handle_unknown, None), (0xB5, "UNKNOWN", self.handle_unknown, None),
-        (0xB6, "UNKNOWN", self.handle_unknown, None), (0xB7, "UNKNOWN", self.handle_unknown, None),
+        (0xB6, "F_SOCIAL_NETWORK", self.handle_0xB6, None), (0xB7, "UNKNOWN", self.handle_unknown, None),
         (0xB8, "F_PLAYER_ENTER_FULL", self.handle_0xB8, PACKET_F_PLAYER_ENTER_FULL), (0xB9, "UNKNOWN", self.handle_unknown, None),
         (0xBA, "UNKNOWN", self.handle_unknown, None), (0xBB, "UNKNOWN", self.handle_unknown, None),
         (0xBC, "UNKNOWN", self.handle_unknown, None), (0xBD, "UNKNOWN", self.handle_unknown, None),
@@ -750,7 +803,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xCE, "UNKNOWN", self.handle_unknown, None), (0xCF, "UNKNOWN", self.handle_unknown, None),
         (0xD0, "UNKNOWN", self.handle_unknown, None), (0xD1, "UNKNOWN", self.handle_unknown, None),
         (0xD2, "UNKNOWN", self.handle_unknown, None), (0xD3, "UNKNOWN", self.handle_unknown, None),
-        (0xD4, "UNKNOWN", self.handle_unknown, None), (0xD5, "UNKNOWN", self.handle_unknown, None),
+        (0xD4, "UNKNOWN", self.handle_unknown, None), (0xD5, "F_DO_ABILITY", self.handle_0xD5, PACKET_F_DO_ABILITY),
         (0xD6, "UNKNOWN", self.handle_unknown, None), (0xD7, "UNKNOWN", self.handle_unknown, None),
         (0xD8, "UNKNOWN", self.handle_unknown, None), (0xD9, "UNKNOWN", self.handle_unknown, None),
         (0xDA, "UNKNOWN", self.handle_unknown, None), (0xDB, "F_INFLUENCE_DETAILS", self.handle_0xDB, PACKET_F_INFLUENCE_DETAILS),
@@ -771,7 +824,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xF8, "UNKNOWN", self.handle_unknown, None), (0xF9, "UNKNOWN", self.handle_unknown, None),
         (0xFA, "UNKNOWN", self.handle_unknown, None), (0xFB, "UNKNOWN", self.handle_unknown, None),
         (0xFC, "UNKNOWN", self.handle_unknown, None), (0xFD, "UNKNOWN", self.handle_unknown, None),
-        (0xFE, "UNKNOWN", self.handle_unknown, None), (0xFF, "UNKNOWN", self.handle_unknown, None),
+        (0xFE, "F_PLAY_VOICE_OVER", self.handle_0xFE, PACKET_F_PLAY_VOICE_OVER), (0xFF, "UNKNOWN", self.handle_unknown, None),
         ]
         self.WorldSent = [
             (0x05, "F_PLAYER_HEALTH", self.response_0x05),
@@ -794,6 +847,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x85, "S_GAME_OPENED", self.response_0x85),
             (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_0x8A),
             (0xD6, "F_SET_TIME", self.response_0xD6),
+            (0xDA, "F_USE_ABILITY", self.response_0xDA),
             (0xEA, "F_QUEST_LIST", self.response_0xEA),
             (0xEF, "F_PLAYER_INIT_COMPLETE", self.response_0xEF),
             (0xF4, "F_PLAYER_RANK_UPDATE", self.response_0xF4)

@@ -150,3 +150,91 @@ containing the key for encrypt/decrypt.
     004DE151 Handle_0x88 proc near
 
 ...
+
+## 0x39
+
+Send experience informations
+
+    .text:004C382F                 push    dword ptr [edi] ; netlong
+    .text:004C3831                 call    ntohl
+    .text:004C3836                 push    dword ptr [edi+4] ; netlong
+    .text:004C3839                 mov     [edi], eax
+    .text:004C383B                 call    ntohl
+    .text:004C3840                 push    dword ptr [edi+8] ; netlong
+    .text:004C3843                 mov     [edi+4], eax
+    .text:004C3846                 call    ntohl
+    .text:004C384B                 and     [ebp+var_14], 0
+    .text:004C384F                 mov     [edi+8], eax
+    .text:004C3852                 lea     eax, [ebx-0Dh]
+    .text:004C3855                 mov     [ebp+var_1C], eax
+    .text:004C3858                 mov     [ebp+var_18], eax
+    .text:004C385B                 lea     eax, [ebp+var_20]
+    .text:004C385E                 lea     ecx, [edi+0Dh]
+    .text:004C3861                 push    eax
+    .text:004C3862                 mov     [ebp+var_20], ecx
+    .text:004C3865                 mov     [ebp+var_10], offset aF_player_exper ; "F_PLAYER_EXPERIENCE"
+
+Packet data :
+
+    +0x00   :   CURRENT_EXPERIENCE  [DWORD]
+    +0x04   :   NEXT_LEVEL_EXP      [DWORD]
+    +0x08   :   RESTED_EXPERIENCE   [DWORD]
+    +0x0C   :   CURRENT_LEVEL       [DWORD] // Little Endian
+
+## 0x4E
+
+Send renown informations
+
+    .text:004C3A28                 push    dword ptr [edi] ; netlong
+    .text:004C3A2A                 call    ntohl
+    .text:004C3A2F                 push    dword ptr [edi+4] ; netlong
+    .text:004C3A32                 mov     [edi], eax
+    .text:004C3A34                 call    ntohl
+    .text:004C3A39                 and     [ebp+var_14], 0
+    .text:004C3A3D                 mov     [edi+4], eax
+    .text:004C3A40                 lea     eax, [ebx-0Bh]
+    .text:004C3A43                 mov     [ebp+var_1C], eax
+    .text:004C3A46                 mov     [ebp+var_18], eax
+    .text:004C3A49                 lea     eax, [ebp+var_20]
+    .text:004C3A4C                 lea     ecx, [edi+0Bh]
+    .text:004C3A4F                 push    eax
+    .text:004C3A50                 mov     [ebp+var_20], ecx
+    .text:004C3A53                 mov     [ebp+var_10], offset aF_player_renow ; "F_PLAYER_RENOWN"
+
+Packet data :
+
+    +0x00   :   CURRENT_RENOWN_EXP  [DWORD]
+    +0x04   :   NEXT_RENOWN_EXP     [DWORD]
+    +0x08   :   RENOWN_RANK         [DWORD] // Little Endian
+
+## 0x05
+
+Send Health informations
+
+    .text:004DBBB0 Handle_0x05     proc near
+
+Packet data :
+
+    +0x00   :   ACTUAL_HIT_POINTS   [DWORD]
+    +0x04   :   MAX_HIT_POINTS      [DWORD]
+    +0x08   :   ACTUAL_ACTION_POINTS[WORD]
+    +0x0A   :   MAX_ACTION_POINTS   [WORD]
+    +0x0C   :   UNK_WORD_00         [WORD]
+    +0x0E   :   UNK_WORD_01         [WORD]
+
+## 0x52
+
+Send Wealth informations
+
+Packet data :
+
+    +0x00   :   UNK_DWORD_00        [DWORD]
+    +0x04   :   PLAYER_MONEY        [DWORD]
+
+## 0x1E
+
+Send Velocity informations
+
+Packet data :
+
+    +0x00   :   UNK_WORD_00         [WORD]
