@@ -270,3 +270,14 @@ Packet data :
 Packet data :
 
     +0x00   :   UNK_BYTE_00         [BYTE]
+
+## 0xDC
+
+    .text:004B4B96 SendPacket_0xDC proc near
+
+Packet data :
+
+    +0x00   :   UNK_BYTE_00         [BYTE]
+    +0x01   :   MODE                [BYTE]
+    +0x02   :   UNK_BYTE_01         [BYTE]
+    +0x03   :   UNK_BYTE_02         [BYTE]

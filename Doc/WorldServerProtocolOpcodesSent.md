@@ -151,6 +151,11 @@ containing the key for encrypt/decrypt.
 
 ...
 
+Packet data :
+
+    +0x00   :   UNK_DWORD_00        [DWORD]
+    +0x04   :   PLAYER_MONEY        [DWORD]
+
 ## 0x39
 
 Send experience informations
@@ -238,3 +243,14 @@ Send Velocity informations
 Packet data :
 
     +0x00   :   UNK_WORD_00         [WORD]
+
+## 0xAA
+
+    .text:004D64A2 Handle_0xAA     proc near
+
+Packet data :
+
+    +0x00   :   NB_ITEM             [BYTE]
+    +0x01   :   PADDING             [BYTE]
+    +0x02   :   PADDING             [WORD]
+    +0x04   :   OBJECT(S)           [WAR_OBJECT] * NB_TIME
