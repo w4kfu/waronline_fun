@@ -6,8 +6,10 @@ import construct
 GEOM_SIGNATURE      = 0x464c7367
 GEOM_VERSION        = 0x04
 
-GEOM_HEADER_SIZE    = 40
-MESH_SIZE           = 0x20
+GEOM_HEADER_SIZE    = 0x20
+MESH_DATA_SIZE      = 0x20
+VERTEX_DATA_SIZE    = 0x20
+
 BONES_SIZE          = 0x6C
 
 GEOM_Header = construct.Struct("GEOM_Header",
@@ -21,28 +23,27 @@ GEOM_Header = construct.Struct("GEOM_Header",
                 construct.ULInt32("offset_meshes"),         # + 0x1C
                                )
 
-MESH_Header = construct.Struct("MESH_Header",
+MESH_Data = construct.Struct("MESH_Data",
                 construct.ULInt16("unk_word_00"),           # + 0x00
-                construct.ULInt16("unk_nb_00"),             # + 0x02
-                construct.ULInt32("unk_off_00"),            # + 0x04
-                construct.ULInt32("unk_nb_01"),             # + 0x08
-                construct.ULInt32("unk_off_01"),            # + 0x0C
-                construct.ULInt32("unk_dword_04"),          # + 0x10
-                construct.ULInt32("unk_dword_05"),          # + 0x14
-                construct.ULInt32("unk_dword_06"),          # + 0x18
-                construct.ULInt32("unk_dword_07"),          # + 0x1C
+                construct.ULInt16("nb_vertices"),           # + 0x02
+                construct.ULInt32("offset_vertices"),       # + 0x04
+                construct.ULInt32("nb_triangles"),          # + 0x08
+                construct.ULInt32("offset_triangles"),      # + 0x0C
+                construct.ULInt32("unk_dword_00"),          # + 0x10
+                construct.ULInt32("unk_dword_01"),          # + 0x14
+                construct.ULInt32("unk_dword_02"),          # + 0x18
+                construct.ULInt32("unk_dword_03"),          # + 0x1C
                                )
 
-VERTEX_Header = construct.Struct("VERTEX_Header",
-                construct.LFloat32("unk_float_00"),         # + 0x00
-                construct.LFloat32("unk_float_01"),         # + 0x04
-                construct.LFloat32("unk_float_02"),         # + 0x08
-                construct.LFloat32("unk_float_03"),         # + 0x0C
-                construct.LFloat32("unk_float_04"),         # + 0x10
-                construct.LFloat32("unk_float_05"),         # + 0x14
-                construct.LFloat32("unk_float_06"),         # + 0x18
-                construct.LFloat32("unk_float_07"),         # + 0x1C
-                #construct.LFloat32("unk_float_08"),         # + 0x20
+VERTEX_Data = construct.Struct("VERTEX_Data",
+                construct.LFloat32("position_x"),           # + 0x00
+                construct.LFloat32("position_y"),           # + 0x04
+                construct.LFloat32("position_z"),           # + 0x08
+                construct.LFloat32("normal_x"),             # + 0x0C
+                construct.LFloat32("normal_y"),             # + 0x10
+                construct.LFloat32("normal_z"),             # + 0x14
+                construct.LFloat32("texture_u"),            # + 0x18
+                construct.LFloat32("texture_v"),            # + 0x1C
                                )
 
 def hexdump(src, length=16):
@@ -82,100 +83,94 @@ class Buffer:
         return buf
 
 def print_geom_header(geom_header):
-    print "[+] signature        : 0x%08X" % geom_header['signature']
-    print "[+] version          : 0x%08X" % geom_header['version']
-    print "[+] file_size        : 0x%08X" % geom_header['file_size']
-    print "[+] unk_dword_00     : 0x%08X" % geom_header['unk_dword_00']
-    print "[+] nb_bones         : 0x%08X" % geom_header['nb_bones']
-    print "[+] offset_bones     : 0x%08X" % geom_header['offset_bones']
-    print "[+] nb_meshes        : 0x%08X" % geom_header['nb_meshes']
-    print "[+] offset_meshes    : 0x%08X" % geom_header['offset_meshes']
+    print "[+] GEOM_HEADER"
+    print "  +0x00 signature        : 0x%08X" % geom_header['signature']
+    print "  +0x04 version          : 0x%08X" % geom_header['version']
+    print "  +0x08 file_size        : 0x%08X" % geom_header['file_size']
+    print "  +0x0C unk_dword_00     : 0x%08X" % geom_header['unk_dword_00']
+    print "  +0x10 nb_bones         : 0x%08X" % geom_header['nb_bones']
+    print "  +0x14 offset_bones     : 0x%08X" % geom_header['offset_bones']
+    print "  +0x18 nb_meshes        : 0x%08X" % geom_header['nb_meshes']
+    print "  +0x1C offset_meshes    : 0x%08X" % geom_header['offset_meshes']
     print "-" * 20
 
-def print_mesh_header(mesh_header):
-    print "[+] unk_word_00      : 0x%04X" % mesh_header['unk_word_00']
-    print "[+] unk_nb_00        : 0x%04X" % mesh_header['unk_nb_00']
-    print "[+] unk_off_00       : 0x%08X" % mesh_header['unk_off_00']
-    print "[+] unk_nb_01        : 0x%08X" % mesh_header['unk_nb_01']
-    print "[+] unk_off_01       : 0x%08X" % mesh_header['unk_off_01']
-    print "[+] unk_dword_04     : 0x%08X" % mesh_header['unk_dword_04']
-    print "[+] unk_dword_05     : 0x%08X" % mesh_header['unk_dword_05']
-    print "[+] unk_dword_06     : 0x%08X" % mesh_header['unk_dword_06']
-    print "[+] unk_dword_07     : 0x%08X" % mesh_header['unk_dword_07']
-    print "[+] unk_off_00 + unk_nb_00 * 0x20 : 0x%08X" % (mesh_header['unk_off_00']  + mesh_header['unk_nb_00'] * 0x20)
+def print_mesh_data(mesh_data):
+    print "[+] MESH_DATA"
+    print "  +0x00 unk_word_00      : 0x%04X" % mesh_data['unk_word_00']
+    print "  +0x02 nb_vertices      : 0x%04X" % mesh_data['nb_vertices']
+    print "  +0x04 offset_vertices  : 0x%08X" % mesh_data['offset_vertices']
+    print "  +0x08 nb_triangles     : 0x%08X" % mesh_data['nb_triangles']
+    print "  +0x0C offset_triangles : 0x%08X" % mesh_data['offset_triangles']
+    print "  +0x10 unk_dword_00     : 0x%08X" % mesh_data['unk_dword_00']
+    print "  +0x14 unk_dword_01     : 0x%08X" % mesh_data['unk_dword_01']
+    print "  +0x18 unk_dword_02     : 0x%08X" % mesh_data['unk_dword_02']
+    print "  +0x1C unk_dword_03     : 0x%08X" % mesh_data['unk_dword_03']
     print "-" * 20
 
-def print_vertex_header(vertex_header):
-    print "[+] unk_float_00     : %f" % vertex_header['unk_float_00']
-    print "[+] unk_float_01     : %f" % vertex_header['unk_float_01']
-    print "[+] unk_float_02     : %f" % vertex_header['unk_float_02']
-    print "[+] unk_float_03     : %f" % vertex_header['unk_float_03']
-    print "[+] unk_float_04     : %f" % vertex_header['unk_float_04']
-    print "[+] unk_float_05     : %f" % vertex_header['unk_float_05']
-    print "[+] unk_float_06     : %f" % vertex_header['unk_float_06']
-    print "[+] unk_float_07     : %f" % vertex_header['unk_float_07']
-    print "v %f %f %f" % (vertex_header['unk_float_00'], vertex_header['unk_float_02'], vertex_header['unk_float_01'])
+def print_vertex_data(vertex_data):
+    print "[+] VERTEX_DATA"
+    print "  +0x00 position_x       : %f" % vertex_data['position_x']
+    print "  +0x04 position_y       : %f" % vertex_data['position_y']
+    print "  +0x08 position_z       : %f" % vertex_data['position_z']
+    print "  +0x0C normal_x         : %f" % vertex_data['normal_x']
+    print "  +0x10 normal_y         : %f" % vertex_data['normal_y']
+    print "  +0x14 normal_z         : %f" % vertex_data['normal_z']
+    print "  +0x18 texture_u        : %f" % vertex_data['texture_u']
+    print "  +0x1C texture_v        : %f" % vertex_data['texture_v']
     print "-" * 20
+
+def is_valid_geom(geom_header, file_size):
+    if geom_header['signature'] != GEOM_SIGNATURE:
+        print "[-] Wrong GEOM_SIGNATURE : %08X" % geom_header['signature']
+        return False
+    if geom_header['version'] != GEOM_VERSION:
+        print "[-] Wrong GEOM_VERSION : %08X" % geom_header['version']
+        return False
+    if geom_header['file_size'] != file_size:
+        print "[-] Wrong file_size : %08X != %08X" % (geom_header['file_size'], file_size)
+        return False
+    return True
 
 def main():
     fd_out = open("test.obj", "wb")
-    fd_out.write("o test.001\n")
     if len(sys.argv) != 2:
         print "Usage: %s <.geom>" % (sys.argv[0])
         sys.exit(1)
     file_size = os.stat(sys.argv[1]).st_size
-    buf = Buffer(open(sys.argv[1], "rb").read())
-    header_buf = buf.GetBufferSize(GEOM_HEADER_SIZE)
-    geom_header = GEOM_Header.parse(header_buf)
-    #signature = buf.GetDword()
+    geom_buf = Buffer(open(sys.argv[1], "rb").read())
+    geom_header = GEOM_Header.parse(geom_buf.GetBufferSize(GEOM_HEADER_SIZE))
+    if is_valid_geom(geom_header, file_size) == False:
+        sys.exit(1)
     print_geom_header(geom_header)
-    if geom_header['signature'] != GEOM_SIGNATURE:
-        print "[-] Wrong GEOM_SIGNATURE : %08X" % geom_header['signature']
-        sys.exit(42)
-    if geom_header['version'] != GEOM_VERSION:
-        print "[-] Wrong GEOM_VERSION : %08X" % geom_header['version']
-        sys.exit(42)
-    if geom_header['file_size'] != file_size:
-        print "[-] Wrong file_size : %08X != %08X" % (geom_header['file_size'], file_size)
-        sys.exit(42)
-    print "[+] offset_bones + nb_bones * 0x6C : 0x%08X" % (geom_header['offset_bones'] + geom_header['nb_bones'] * 0x6C)
-    buf.pos = geom_header['offset_bones']
-    for i in xrange(geom_header['nb_bones']):
-        print "[+] actual offset    : 0x%08X" % buf.pos
-        header_buf = buf.GetBufferSize(BONES_SIZE)
-        print "-" * 20
-        
-    buf.pos = geom_header['offset_meshes']
-    for i in xrange(geom_header['nb_meshes']):
-        print "[+] actual offset    : 0x%08X" % buf.pos
-        header_buf = buf.GetBufferSize(MESH_SIZE)
-        mesh_header = MESH_Header.parse(header_buf)
-        print_mesh_header(mesh_header)
-        saved_pos = buf.pos
-        buf.pos = buf.pos - MESH_SIZE + mesh_header['unk_off_00']
-        for j in xrange(mesh_header['unk_nb_00']):
-            header_buf = buf.GetBufferSize(0x20)
-            print hexdump(header_buf)
-            vertex_header = VERTEX_Header.parse(header_buf)
-            print_vertex_header(vertex_header)
-            fd_out.write("v %f %f %f\n" % (vertex_header['unk_float_00'], vertex_header['unk_float_01'], vertex_header['unk_float_02']))
-            #fd_out.write("vn %f %f %f\n" % (vertex_header['unk_float_03'], vertex_header['unk_float_04'], vertex_header['unk_float_05']))
-        buf.pos = saved_pos
 
-        save_pos = buf.pos
-        buf.pos = saved_pos - MESH_SIZE + mesh_header['unk_off_01']
-        for j in xrange(mesh_header['unk_nb_01']):
-            buff = buf.GetBufferSize(0x6)
+    #print "[+] offset_bones + nb_bones * 0x6C : 0x%08X" % (geom_header['offset_bones'] + geom_header['nb_bones'] * 0x6C)
+    # TODO BONES !
+    geom_buf.pos = geom_header['offset_bones']
+    for i in xrange(geom_header['nb_bones']):
+        #print "[+] actual offset    : 0x%08X" % buf.pos
+        buf = geom_buf.GetBufferSize(BONES_SIZE)
+        #print "-" * 20
+
+    nb_vertices = 0
+    geom_buf.pos = geom_header['offset_meshes']
+    for i in xrange(geom_header['nb_meshes']):
+        fd_out.write("o test.%d\n" % i)
+        mesh_data = MESH_Data.parse(geom_buf.GetBufferSize(0x20))
+        print_mesh_data(mesh_data)
+        saved_pos = geom_buf.pos
+        geom_buf.pos = geom_header['offset_meshes'] + mesh_data['offset_vertices'] + i * 0x20
+        for j in xrange(mesh_data['nb_vertices']):
+            vertex_data = VERTEX_Data.parse(geom_buf.GetBufferSize(VERTEX_DATA_SIZE))
+            print_vertex_data(vertex_data)
+            fd_out.write("v %f %f %f\n" % (vertex_data['position_x'], vertex_data['position_y'], vertex_data['position_z']))
+            fd_out.write("vn %f %f %f\n" % (vertex_data['normal_x'], vertex_data['normal_y'], vertex_data['normal_z']))
+        geom_buf.pos = geom_header['offset_meshes'] + mesh_data['offset_triangles'] + i * 0x20
+        for j in xrange(mesh_data['nb_triangles']):
+            buff = geom_buf.GetBufferSize(0x6)
             w1, w2, w3 = struct.unpack("<HHH", buff)
-            print "[+] w1 : 0x%04X ; w2 : 0x%04X ; w3 : 0x%04X" % (w1, w2, w3)
-            #fd_out.write("l %d %d\n" % (w1 + 1, w2 + 1))
-            #fd_out.write("l %d %d\n" % (w2 + 1, w3 + 1))
-            #fd_out.write("l %d %d\n" % (w1 + 1, w3 + 1))
-            fd_out.write("f %d %d %d\n" % (w1 + 1, w2 + 1, w3 + 1))
-        buf.pos = saved_pos
-        
-        
-    #print hex(signature)
+            fd_out.write("f %d %d %d\n" % (w1 + 1 + nb_vertices, w2 + 1 + nb_vertices, w3 + 1 + nb_vertices))
+        geom_buf.pos = saved_pos
+        nb_vertices += mesh_data['nb_vertices']
     fd_out.close()
 
 if __name__ == "__main__":
