@@ -17,5 +17,9 @@ Hash list can be found in [geom_hash_filelist.txt](geom_hash_filelist.txt).
 
 ## Charmesh 2 obj
 
+![result/result_geom2obj.png][1]
+
 Problem: Wavefront .obj file doesn't support mesh vertex-colors, armatures, 
 animation, lamps, camera, empty-objects, parenting or transformations.
+
+[1]:result/result_geom2obj.png
