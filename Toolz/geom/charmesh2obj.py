@@ -131,7 +131,21 @@ def is_valid_geom(geom_header, file_size):
         return False
     return True
 
+def search_specific_geom():
+    for root, dirs, files in os.walk("."):
+        for f in files:
+            fullpath = os.path.join(root, f)
+            if f.endswith('.geom'):
+                file_size = os.stat(sys.argv[1]).st_size
+                print file_size
+                #myp = MYP(fullpath)
+                #for hash in hash_list:
+                #    if myp.is_file_present(hash) == True:
+                #        print "[+] FOUND 0x%016lX inside %s" % (hash, fullpath)
+    sys.exit(42)
+    
 def main():
+    search_specific_geom()
     fd_out = open("test.obj", "wb")
     if len(sys.argv) != 2:
         print "Usage: %s <.geom>" % (sys.argv[0])
