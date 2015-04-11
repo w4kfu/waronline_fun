@@ -48,12 +48,14 @@ Vertices (list of vertex data) are stored at offset (FileHeader->offset_meshes +
     + 0x02 :       vertex_indice_2      [WORD]
     + 0x04 :       vertex_indice_3      [WORD]
     
-## charmesh2obj.py
-
-### Requirements
-
+## geom_parser.py    
+    
+### Requirements    
+    
 * [Python 2.7][python_2_7]
-* [Python Construct][python_construct]
+* [Python Construct][python_construct]    
+    
+## geom2obj.py
 
 Convert .geom file to [Wavefront .obj file][wavefront] so
 [blender][blender_software] (an open-source 3D computer graphics software) can import 
