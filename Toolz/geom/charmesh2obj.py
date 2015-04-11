@@ -130,19 +130,6 @@ def is_valid_geom(geom_header, file_size):
         print "[-] Wrong file_size : %08X != %08X" % (geom_header['file_size'], file_size)
         return False
     return True
-
-def search_specific_geom():
-    for root, dirs, files in os.walk("."):
-        for f in files:
-            fullpath = os.path.join(root, f)
-            if f.endswith('.geom'):
-                file_size = os.stat(sys.argv[1]).st_size
-                print file_size
-                #myp = MYP(fullpath)
-                #for hash in hash_list:
-                #    if myp.is_file_present(hash) == True:
-                #        print "[+] FOUND 0x%016lX inside %s" % (hash, fullpath)
-    sys.exit(42)
     
 def main():
     search_specific_geom()
@@ -177,7 +164,7 @@ def main():
             vertex_data = VERTEX_Data.parse(geom_buf.GetBufferSize(VERTEX_DATA_SIZE))
             print_vertex_data(vertex_data)
             fd_out.write("v %f %f %f\n" % (vertex_data['position_x'], vertex_data['position_y'], vertex_data['position_z']))
-            fd_out.write("vn %f %f %f\n" % (vertex_data['normal_x'], vertex_data['normal_y'], vertex_data['normal_z']))
+            #fd_out.write("vn %f %f %f\n" % (vertex_data['normal_x'], vertex_data['normal_y'], vertex_data['normal_z']))
         geom_buf.pos = geom_header['offset_meshes'] + mesh_data['offset_triangles'] + i * 0x20
         for j in xrange(mesh_data['nb_triangles']):
             buff = geom_buf.GetBufferSize(0x6)

@@ -8,7 +8,7 @@ Hash list can be found in [geom_hash_filelist.txt](geom_hash_filelist.txt).
 
 ### File Header 
 
-    + 0x00 :       signature            [DWORD]
+    + 0x00 :       signature            [DWORD]         // 0x464c7367 'gsLF'
     + 0x04 :       version              [DWORD]
     + 0x08 :       file_size            [DWORD]
     + 0x0C :       unk_dword_00         [DWORD]         // CRC?
