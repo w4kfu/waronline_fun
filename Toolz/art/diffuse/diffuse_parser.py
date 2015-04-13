@@ -33,7 +33,8 @@ MIPMAP_Data = construct.Struct("MIPMAP_Data",
                 construct.ULInt32("offset"),                # + 0x00
                 construct.ULInt16("width"),                 # + 0x04
                 construct.ULInt16("height"),                # + 0x06
-                construct.ULInt32("unk_dword_00"),          # + 0x08
+                construct.ULInt16("unk_word_00"),           # + 0x08
+                construct.ULInt16("unk_word_01"),           # + 0x0A
                                )                               
                                
 class Buffer:
@@ -81,6 +82,23 @@ class Diffuse:
             print "[-] Wrong file_size : %08X != %08X" % (self.header['file_size'], self.file_size)
             return False
         return True
+        
+    def get_mipmaps(self):
+        mipmaps = []
+        for i in xrange(0, self.header['num_mipmaps']):
+            mipmap_data = MIPMAP_Data.parse(self.buf.GetBufferSize(MIPMAP_DATA_SIZE))
+            saved_pos = self.buf.pos
+            if mipmap_data['offset'] != 0:
+                self.buf.pos = self.buf.pos - MIPMAP_DATA_SIZE + mipmap_data['offset']
+                mipmap_data['roffset'] = self.buf.pos
+                # DBG
+                mipmap_data['next_offset'] = self.buf.pos + (((mipmap_data['width'] + mipmap_data['unk_word_00']) * (mipmap_data['height'] + mipmap_data['unk_word_01'])) / 2)                
+                
+                buf = self.buf.GetBufferSize(((mipmap_data['width'] + mipmap_data['unk_word_00']) * (mipmap_data['height'] + mipmap_data['unk_word_01'])) / 2)
+                mipmap_data['data'] = buf
+            self.buf.pos = saved_pos
+            mipmaps.append(mipmap_data)
+        return mipmaps
 
 def print_diffuse_header(geom_header):
     print "[+] DIFFUSE_HEADER"
@@ -96,12 +114,20 @@ def print_diffuse_header(geom_header):
 def print_mipmap_data(mipmap_data):
     print "[+] MIPMAP_DATA"
     print "  +0x00 offset           : 0x%08X" % mipmap_data['offset']
-    print "  +0x04 width            : 0x%04X" % mipmap_data['width']
-    print "  +0x06 height           : 0x%04X" % mipmap_data['height']
-    print "  +0x08 unk_dword_00     : 0x%08X" % mipmap_data['unk_dword_00']
+    print "  +0x04 width            : 0x%04X (%s)" % (mipmap_data['width'], ispower2(mipmap_data['width']))
+    print "  +0x06 height           : 0x%04X (%s)" % (mipmap_data['height'], ispower2(mipmap_data['height']))
+    print "  +0x08 unk_word_00      : 0x%04X" % mipmap_data['unk_word_00']
+    print "  +0x0A unk_word_01      : 0x%04X" % mipmap_data['unk_word_01']
+    # DBG
+    if mipmap_data['offset'] != 0:
+        print "        roffset          : 0x%08X" % mipmap_data['roffset']
+        print "        next_offset      : 0x%08X" % mipmap_data['next_offset']
     print "-" * 20
     
 # 0x0B * 0x0C    
+
+def ispower2(a):
+    return ((a & (a - 1)) == 0) and a != 0
     
 def main():
     if len(sys.argv) != 2:
@@ -111,28 +137,37 @@ def main():
     if diffuse.is_valid_diffuse() == False:
         sys.exit(1)
     print_diffuse_header(diffuse.header)
-    for i in xrange(0, diffuse.header['num_mipmaps']):
-        mipmap_data = MIPMAP_Data.parse(diffuse.buf.GetBufferSize(MIPMAP_DATA_SIZE))
-        saved_pos = diffuse.buf.pos
-        print_mipmap_data(mipmap_data)
-        if mipmap_data['offset'] != 0:
-            diffuse.buf.pos = diffuse.buf.pos - 0x0C + mipmap_data['offset']
-            buf = diffuse.buf.GetBufferSize(mipmap_data['width'] * mipmap_data['height'] / 2)
-            print hexdump(buf[:0x10])
+    mipmaps = diffuse.get_mipmaps()
+    for mipmap in mipmaps:
+        print_mipmap_data(mipmap)
+        if mipmap['offset'] != 0:
+            buf = mipmap['data']
+            print len(buf)
             decoded = pythonDecodeDXT1(buf)
-            data = []
             for d in decoded:
                 print len(d)
-                data.append(d)
-            data = ''.join(data)
-            print len(data)
-            import Image
-            img = Image.new('RGB', (mipmap_data['height'], mipmap_data['width']), "black")
-            img.fromstring(data)
-            img.save("test_%d.png" % i, "PNG")
-        print "-" * 20
-  
-        diffuse.buf.pos = saved_pos
+    #for i in xrange(0, diffuse.header['num_mipmaps']):
+    #    mipmap_data = MIPMAP_Data.parse(diffuse.buf.GetBufferSize(MIPMAP_DATA_SIZE))
+    #    saved_pos = diffuse.buf.pos
+    #    print_mipmap_data(mipmap_data)
+    #    if mipmap_data['offset'] != 0:
+    #        diffuse.buf.pos = diffuse.buf.pos - 0x0C + mipmap_data['offset']
+    #        buf = diffuse.buf.GetBufferSize((mipmap_data['width'] * mipmap_data['height'] / 2))
+    #        print hexdump(buf[:0x10])
+    #        decoded = pythonDecodeDXT1(buf)
+    #        data = []
+    #        for d in decoded:
+    #            print len(d)
+    #            data.append(d)
+    #        data = ''.join(data)
+    #        print len(data)
+    #        import Image
+    #        img = Image.new('RGB', (mipmap_data['height'], mipmap_data['width']), "black")
+    #        img.fromstring(data)
+    #        img.save("test_%d.png" % i, "PNG")
+    #    print "-" * 20
+    #
+    #    diffuse.buf.pos = saved_pos
     
 # Python-only DXT1 decoder; this is slow!
 # Better to use _dxt1.decodeDXT1 if you can
