@@ -1,0 +1,22 @@
+<MythicMFT>
+    <product serial="1220248331" launchfile="warpatch.exe">
+        <manifestrepos>
+            <repo url="http://80.12.101.101/patcher-valid-qa/patch/patcher/manifest/" />
+        </manifestrepos>
+        <filerepos>
+            <repo url="http://80.12.101.101/patcher-valid-qa/patch/patcher/files/" />
+        </filerepos>
+        <stages>
+            <stage name="main" priority="10">
+                <completion />
+                <packages>
+                    <package name="base" rpath="base" priority="0">
+                        <manifest n="pkg.mft" ul="2d6" ct="1" cl="1be" t="48bb830b">
+                            <sig id="3" v="AIECRN5ts8q4lbQZ7G56j23f42WeCy3s+Wuidq2ZJAX5cY16C6tcFzCM95KOtJr21PmNYe51RtFHGGUSrnCchaMHReO89ThGVr4j+KZz5yjw7acOChvVgN3irFGVo/jOikalQlCAWaTfkxHyoohj2YvHTVeYuN7XDYOAIKkcYTRCXOY=" />
+                        </manifest>
+                    </package>
+                </packages>
+            </stage>
+        </stages>
+    </product>
+</MythicMFT>
