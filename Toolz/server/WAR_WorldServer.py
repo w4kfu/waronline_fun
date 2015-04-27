@@ -4,21 +4,26 @@ import time
 import zlib
 import threading
 import thread
+import construct
 
 import WAR_TCPHandler
 import WAR_Utils
 
 ## HEADER PACKET RECEIVED
-
-PACKET_CLIENT_HEADER = [
-        ("sequence_packet", WAR_Utils.WORD),
-        ("session_id_packet", WAR_Utils.WORD),
-        ("unk_word_00", WAR_Utils.WORD),
-        ("unk_byte_00", WAR_Utils.BYTE),
-        ("opcode_packet", WAR_Utils.BYTE),
-        ]
-
+        
+SIZE_PACKET_CLIENT_HEADER = 8
+        
+PacketClientHeader = construct.Struct("PacketClientHeader",
+                        construct.UBInt16("sequence"),
+                        construct.UBInt16("session_id"),
+                        construct.UBInt16("unk_word_00"),
+                        construct.UBInt8("unk_byte_00"),
+                        construct.UBInt8("opcode"),
+                        )
+        
 ## PACKET RECEIVED
+
+
 
 PACKET_F_ENCRYPTKEY = [
         ("key_present", WAR_Utils.BYTE),
@@ -209,9 +214,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         if buf_len == 0:
             raise WAR_Utils.WarError("Received packet length NULL")
         len_packet, buf = WAR_Utils.GetWord(buf)
-        buf = self.request.recv(len_packet + 8 + 2)
-        # + 8 : SIZE OF PACKET_CLIENT_HEADER
-        # + 2 : CRC [WORD]
+        buf = self.request.recv(len_packet + SIZE_PACKET_CLIENT_HEADER + 2) # + 2 : CRC [WORD]
         buf_len = len(buf)
         WAR_Utils.LogInfo("[+] len(buf) = %d (0x%08X)" % (buf_len, buf_len), 3)
         if buf_len == 0:
@@ -240,11 +243,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_packet_client_header(self, packet_data):
         packet_crc = packet_data[len(packet_data) - 2: len(packet_data)]
         packet_data = packet_data[:-2]
-        packet_client_header, packet_data = WAR_Utils.depack(PACKET_CLIENT_HEADER, packet_data)
+        #packet_client_header, packet_data = WAR_Utils.depack(PACKET_CLIENT_HEADER, packet_data)
+        packet_client_header = PacketClientHeader.parse(packet_data)
+        packet_data = packet_data[SIZE_PACKET_CLIENT_HEADER:]
         # TODO PRETTRY PRINT THIS SHIT
         WAR_Utils.LogInfo(packet_client_header, 2)
-        if packet_client_header['opcode_packet'] <= len(self.OpcodesTableRecv):
-            entry_opcode = self.OpcodesTableRecv[packet_client_header['opcode_packet']]
+        if packet_client_header['opcode'] <= len(self.OpcodesTableRecv):
+            entry_opcode = self.OpcodesTableRecv[packet_client_header['opcode']]
             WAR_Utils.LogInfo("[+] Opcode \"%s\" (0x%02X ; %d)" % (entry_opcode[1], entry_opcode[0], entry_opcode[0]), 1)
             entry_opcode[2](entry_opcode, packet_client_header, packet_data)
                 # Now make the answer if it exists
@@ -253,7 +258,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
                         #if answer_opcode == i[0]:
                             #i[2](i, packet_client_header, unpacked_data)
         else:
-            raise WAR_Utils.WarError("OPCODE LARGER THAN OpcodesTableRecv size : (%02X) %d " % (packet_client_header['opcode_packet'], packet_client_header['opcode_packet']))
+            raise WAR_Utils.WarError("OPCODE LARGER THAN OpcodesTableRecv size : %d (0x%02X)" % (packet_client_header['opcode'], packet_client_header['opcode']))
 
     ### CHARACTER RELATED
 
@@ -389,7 +394,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">I", packet_client['timestamp'])
         p += struct.pack(">Q", time.time())
-        p += struct.pack(">I", packet_client_header['sequence_packet'] + 1)
+        p += struct.pack(">I", packet_client_header['sequence'] + 1)
         p += struct.pack(">I", 0)
         self.send_data(p)
 

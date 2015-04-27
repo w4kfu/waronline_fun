@@ -72,7 +72,7 @@ DWORD (__stdcall *Resume_xml)(void) = NULL;
 VOID	ReplaceXML(char *Buffer)
 {
 	char new_xml[] = "<?xml version=\"1.0\" encoding=\"utf-8\"?><RootElementOfAnyName><MythLoginServiceConfig>"
-					 "<Settings><ProductId>2</ProductId><MessageTimeoutSecs>20</MessageTimeoutSecs>"
+					 "<Settings><ProductId>2</ProductId><LogLevel>10</LogLevel><MessageTimeoutSecs>20</MessageTimeoutSecs>"
 					 "</Settings><RegionList><Region regionName=\"WAR Live\"><PingServer serverName=\"None\">"
 					 "<Address>0.0.0.0</Address><Port>0</Port></PingServer>"
 					 "<LoginServerList><LoginServer serverName=\"login 1\">"

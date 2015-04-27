@@ -9,7 +9,7 @@ import colorama
 class WarError(Exception):
     pass
 
-LOG_LEVEL = 1
+LOG_LEVEL = 2
 
 ###
 #
