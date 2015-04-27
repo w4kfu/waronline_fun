@@ -10,42 +10,73 @@ import WAR_TCPHandler
 import WAR_Utils
 
 ## HEADER PACKET RECEIVED
-        
-SIZE_PACKET_CLIENT_HEADER = 8
-        
+
+SIZE_PACKET_CLIENT_HEADER = 0x08
+
 PacketClientHeader = construct.Struct("PacketClientHeader",
-                        construct.UBInt16("sequence"),
-                        construct.UBInt16("session_id"),
-                        construct.UBInt16("unk_word_00"),
-                        construct.UBInt8("unk_byte_00"),
-                        construct.UBInt8("opcode"),
+                        construct.UBInt16("sequence"),              # + 0x00
+                        construct.UBInt16("session_id"),            # + 0x02
+                        construct.UBInt16("unk_word_00"),           # + 0x04
+                        construct.UBInt8("unk_byte_00"),            # + 0x06
+                        construct.UBInt8("opcode"),                 # + 0x07
                         )
-        
+
 ## PACKET RECEIVED
 
+# OPCODE VALUE
+# SIZE PACKET
+# Structure
 
+F_CONNECT = 0x0F
+SIZE_PACKET_F_CONNECT = 0x88
+Packet_F_CONNECT = construct.Struct("Packet_F_CONNECT",
+                        construct.UBInt8("unk_byte_00"),            # + 0x00
+                        construct.UBInt8("unk_byte_01"),            # + 0x01
+                        construct.UBInt8("major_version"),          # + 0x02
+                        construct.UBInt8("minor_version"),          # + 0x03
+                        construct.UBInt8("revision_version"),       # + 0x04
+                        construct.UBInt8("unk_byte_02"),            # + 0x05
+                        construct.UBInt16("unk_word_00"),           # + 0x06
+                        construct.UBInt32("protocol_version"),      # + 0x08
+                        construct.String("session_id", 0x65),       # + 0x0C
+                        construct.String("username", 0x15),         # + 0x71
+                        construct.UBInt16("size_xml"),              # + 0x86
+                        )
 
-PACKET_F_ENCRYPTKEY = [
-        ("key_present", WAR_Utils.BYTE),
-        ("unk_byte_00", WAR_Utils.BYTE),
-        ("major_version", WAR_Utils.BYTE),
-        ("minor_version", WAR_Utils.BYTE),
-        ("revision_version", WAR_Utils.BYTE),
-        ("unk_byte_01", WAR_Utils.BYTE)]
+F_ENCRYPTKEY = 0x5C
+SIZE_PACKET_F_ENCRYPTKEY = 0x06
+Packet_F_ENCRYPTKEY = construct.Struct("Packet_F_ENCRYPTKEY",
+                        construct.UBInt8("key_present"),            # + 0x00
+                        construct.UBInt8("unk_byte_00"),            # + 0x01
+                        construct.UBInt8("major_version"),          # + 0x02
+                        construct.UBInt8("minor_version"),          # + 0x03
+                        construct.UBInt8("revision_version"),       # + 0x04
+                        construct.UBInt8("unk_byte_01"),            # + 0x05
+                        )
 
-PACKET_F_CONNECT = [
-        ("unk_byte_00", WAR_Utils.BYTE),
-        ("unk_byte_01", WAR_Utils.BYTE),
-        ("major_version", WAR_Utils.BYTE),
-        ("minor_version", WAR_Utils.BYTE),
-        ("revision_version", WAR_Utils.BYTE),
-        ("unk_byte_02", WAR_Utils.BYTE),
-        ("unk_word_00", WAR_Utils.WORD),
-        ("protocol_version", WAR_Utils.DWORD),
-        ("session_id", WAR_Utils.BYTE * 101),
-        ("username", WAR_Utils.BYTE * 21),
-        ("size_xml", WAR_Utils.WORD)
-]
+S_CONNECTED = 0x82
+
+Packet_S_CONNECTED = construct.Struct("Packet_S_CONNECTED",
+    construct.UBInt8("unk_byte_00"),                                        # + 0x00
+    construct.UBInt8("unk_byte_01"),                                        # + 0x01
+    construct.UBInt8("unk_byte_02"),                                        # + 0x02
+    construct.UBInt8("unk_byte_03"),                                        # + 0x03
+    construct.UBInt32("protocol_version"),                                  # + 0x04
+    construct.UBInt8("server_id"),                                          # + 0x08
+    construct.UBInt8("unk_byte_04"),                                        # + 0x09
+    construct.UBInt8("unk_byte_05"),                                        # + 0x0A
+    construct.UBInt8("unk_byte_06"),                                        # + 0x0B
+    construct.UBInt8("transfer_flag"),                                      # + 0x0C
+    construct.PascalString("username", length_field = construct.UBInt8("length")),    # + 0x..
+    construct.PascalString("server_name", length_field = construct.UBInt8("length")), # + 0x..
+    construct.UBInt8("unk_byte_07"),                                        # + 0x..
+                        )
+
+F_RECEIVE_ENCRYPTKEY = 0x8A
+SIZE_PACKET_F_RECEIVE_ENCRYPTKEY = 0x01
+Packet_F_RECEIVE_ENCRYPTKEY = construct.Struct("Packet_F_RECEIVE_ENCRYPTKEY",
+                        construct.UBInt8("send_key"),               # + 0x00
+                        )
 
 PACKET_F_PLAYER_ENTER_FULL = [
         ("session_id", WAR_Utils.WORD),
@@ -398,21 +429,40 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">I", 0)
         self.send_data(p)
 
-    def response_0x82(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_S_CONNECTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_00
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_01
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_02
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_03
-        p += struct.pack(">I", packet_client['protocol_version'])
-        p += struct.pack(">B", WAR_TCPHandler.WorldID)    # SERVER_ID
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_04
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_05
-        p += struct.pack(">B", 0x00)    # UNK_BYTE_06
-        p += struct.pack(">B", 0x00)    # TRANSFER_FLAG
-        p += WAR_Utils.MakeBBuffer(''.join(map(chr, packet_client['username'])))    # USERNAME
-        p += WAR_Utils.MakeBBuffer(WAR_TCPHandler.WorldName)    # SERVER_NAME
-        p += struct.pack(">B", 0x00)    # NS related to arry of informations
+        p += Packet_S_CONNECTED.build(construct.Container(unk_byte_00 = 0,
+            unk_byte_01 = 0,
+            unk_byte_02 = 0,
+            unk_byte_03 = 0,
+            protocol_version = packet_client['protocol_version'],
+            server_id = WAR_TCPHandler.WorldID,
+            unk_byte_04 = 0,
+            unk_byte_05 = 0,
+            unk_byte_06 = 0,
+            transfer_flag = 0,
+            username = packet_client['username'],
+            server_name = WAR_TCPHandler.WorldName,
+            unk_byte_07 = 0                             # NS related to arry of informations
+            ))
+
+
+        #p = struct.pack(">B", opcode_entry[0])
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_00
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_01
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_02
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_03
+        #p += struct.pack(">I", packet_client['protocol_version'])
+        #p += struct.pack(">B", WAR_TCPHandler.WorldID)    # SERVER_ID
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_04
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_05
+        #p += struct.pack(">B", 0x00)    # UNK_BYTE_06
+        #p += struct.pack(">B", 0x00)    # TRANSFER_FLAG
+        ##p += WAR_Utils.MakeBBuffer(''.join(map(chr, packet_client['username'])))    # USERNAME
+        #print packet_client['username']
+        #p += WAR_Utils.MakeBBuffer(packet_client['username'])    # USERNAME
+        #p += WAR_Utils.MakeBBuffer(WAR_TCPHandler.WorldName)    # SERVER_NAME
+        #p += struct.pack(">B", 0x00)    # NS related to arry of informations
         self.send_data(p)
 
     def response_0x83(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -425,9 +475,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">B", 0x00)
         self.send_data(p)
 
-    def response_0x8A(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_F_RECEIVE_ENCRYPTKEY(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">B", 0x01)        # SEND_KEY : OK
+        p += Packet_F_RECEIVE_ENCRYPTKEY.build(construct.Container(send_key = 0x01))
         self.send_data(p)
 
     def response_0xD6(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -727,12 +777,15 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO
         pass
 
-    def handle_0x0F(self, opcode_entry, packet_client_header, packet_data):
-        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+    def handle_F_CONNECT(self, opcode_entry, packet_client_header, packet_data):
+        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        packet_client = opcode_entry[3].parse(packet_data)
+        packet_data = packet_data[SIZE_PACKET_F_CONNECT:]
         WAR_Utils.LogInfo(packet_client, 2)
         xml_data = packet_data[:packet_client['size_xml']]
+        WAR_Utils.LogInfo(xml_data, 2)
         packet_data = packet_data[packet_client['size_xml']:]
-        self.response(0x82, packet_client_header, packet_client, packet_data)
+        self.response(S_CONNECTED, packet_client_header, packet_client, packet_data)
 
     def handle_0x10(self, opcode_entry, packet_client_header, packet_data):
         packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
@@ -778,11 +831,14 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         else:
             raise WAR_Utils.WarError("[-] handle_0x54 : UNKNOW Action !")
 
-    def handle_0x5C(self, opcode_entry, packet_client_header, packet_data):
-        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
-        WAR_Utils.LogInfo(packet_client, 2)
-        if packet_client['key_present'] == 0:
-            self.response(0x8A, packet_client_header, packet_client, packet_data)
+    def handle_F_ENCRYPTKEY(self, opcode_entry, packet_client_header, packet_data):
+        #
+        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        #WAR_Utils.LogInfo(packet_client, 2)
+        packet_f_encryptkey = opcode_entry[3].parse(packet_data)
+        packet_data = packet_data[SIZE_PACKET_F_ENCRYPTKEY:]
+        if packet_f_encryptkey['key_present'] == 0:
+            self.response(F_RECEIVE_ENCRYPTKEY, packet_client_header, packet_f_encryptkey, packet_data)
         else:
             key = packet_data[0 : 256]
             WAR_Utils.LogInfo("[+] Key (len(key) = %08X) :" % (len(key)), 3)
@@ -911,7 +967,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0x08, "UNKNOWN", self.handle_unknown, None), (0x09, "UNKNOWN", self.handle_unknown, None),
         (0x0A, "UNKNOWN", self.handle_unknown, None), (0x0B, "F_PING", self.handle_0x0B, PACKET_F_PING),
         (0x0C, "UNKNOWN", self.handle_unknown, None), (0x0D, "UNKNOWN", self.handle_0x0D, None),
-        (0x0E, "UNKNOWN", self.handle_0x0E, None), (0x0F, "F_CONNECT", self.handle_0x0F, PACKET_F_CONNECT),
+        (0x0E, "UNKNOWN", self.handle_0x0E, None), (0x0F, "F_CONNECT", self.handle_F_CONNECT, Packet_F_CONNECT),
         (0x10, "F_DISCONNECT", self.handle_0x10, PACKET_F_DISCONNECT), (0x11, "UNKNOWN", self.handle_unknown, None),
         (0x12, "UNKNOWN", self.handle_unknown, None), (0x13, "F_REQUEST_CHAR_TEMPLATES", self.handle_0x13, PACKET_F_REQUEST_CHAR_TEMPLATES),
         (0x14, "UNKNOWN", self.handle_unknown, None), (0x15, "UNKNOWN", self.handle_unknown, None),
@@ -950,7 +1006,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0x56, "UNKNOWN", self.handle_unknown, None), (0x57, "UNKNOWN", self.handle_unknown, None),
         (0x58, "UNKNOWN", self.handle_unknown, None), (0x59, "UNKNOWN", self.handle_unknown, None),
         (0x5A, "UNKNOWN", self.handle_unknown, None), (0x5B, "UNKNOWN", self.handle_unknown, None),
-        (0x5C, "F_ENCRYPTKEY", self.handle_0x5C, PACKET_F_ENCRYPTKEY), (0x5D, "UNKNOWN", self.handle_unknown, None),
+        (0x5C, "F_ENCRYPTKEY", self.handle_F_ENCRYPTKEY, Packet_F_ENCRYPTKEY), (0x5D, "UNKNOWN", self.handle_unknown, None),
         (0x5E, "UNKNOWN", self.handle_unknown, None), (0x5F, "UNKNOWN", self.handle_unknown, None),
         (0x60, "UNKNOWN", self.handle_unknown, None), (0x61, "UNKNOWN", self.handle_unknown, None),
         (0x62, "F_PLAYER_STATE2", self.handle_0x62, PACKET_F_PLAYER_STATE2), (0x63, "UNKNOWN", self.handle_unknown, None),
@@ -1051,11 +1107,11 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x6A, "F_CHECK_NAME_RESPONSE", self.response_0x6A),
             (0x80, "S_PID_ASSIGN", self.response_0x80),
             (0x81, "S_PONG", self.response_0x81),
-            (0x82, "S_CONNECTED", self.response_0x82),
+            (0x82, "S_CONNECTED", self.response_S_CONNECTED),
             (0x83, "S_WORLD_SENT", self.response_0x83),
             (0x85, "S_GAME_OPENED", self.response_0x85),
             (0x88, "S_PLAYER_INITTED", self.response_0x88),
-            (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_0x8A),
+            (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_F_RECEIVE_ENCRYPTKEY),
             (0x95, "F_BAG_INFO", self.response_0x95),
             (0xAA, "F_GET_ITEM", self.reponse_0xAA),
             (0xD6, "F_SET_TIME", self.response_0xD6),
