@@ -36,5 +36,3 @@ opcodes = sorted(opcodes)
 
 for opcode_num, opcode_name in opcodes: 
     print "[+] %3d (0x%02X) ; %s" % (opcode_num, opcode_num, opcode_name)
-    
-    #print "%X" % e, GetDisasm(e)
