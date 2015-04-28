@@ -29,6 +29,25 @@ PacketClientHeader = construct.Struct("PacketClientHeader",
 # SIZE PACKET
 # Structure
 
+F_PLAYER_EXIT = 0x04
+SIZE_PACKET_F_PLAYER_EXIT = 4
+PACKET_F_PLAYER_EXIT = construct.Struct("PACKET_F_PLAYER_EXIT",
+    construct.UBInt16("session_id"),                            # + 0x00
+    construct.UBInt16("unk_word_00"),                           # + 0x02
+    )
+
+F_PING = 0x0B
+SIZE_PACKET_F_PING = 0x14
+PACKET_F_PING = construct.Struct("PACKET_F_PING",
+    construct.UBInt32("timestamp"),                             # + 0x00
+    construct.UBInt32("unk_dword_00"),                          # + 0x04
+    construct.UBInt32("unk_dword_01"),                          # + 0x08
+    construct.UBInt16("unk_word_00"),                           # + 0x0C
+    construct.UBInt16("unk_word_01"),                           # + 0x0E
+    construct.UBInt16("unk_word_02"),                           # + 0x10
+    construct.UBInt16("unk_word_03"),                           # + 0x12
+    )
+
 F_CONNECT = 0x0F
 SIZE_PACKET_F_CONNECT = 0x88
 PACKET_F_CONNECT = construct.Struct("PACKET_F_CONNECT",
@@ -43,7 +62,7 @@ PACKET_F_CONNECT = construct.Struct("PACKET_F_CONNECT",
     construct.String("session_id", 0x65),                       # + 0x0C
     construct.String("username", 0x15),                         # + 0x71
     construct.UBInt16("size_xml"),                              # + 0x86
-                        )
+    )
 
 F_REQUEST_CHAR = 0x54
 SIZE_PACKET_F_REQUEST_CHAR = 0x3
@@ -88,7 +107,6 @@ PACKET_F_PLAYER_ENTER_FULL = construct.Struct("PACKET_F_PLAYER_ENTER_FULL",
 
 F_REQUEST_CHAR_RESPONSE = 0x55
 SIZE_PACKET_F_REQUEST_CHAR_RESPONSE = 0x20
-
 PACKET_F_REQUEST_CHAR_RESPONSE = construct.Struct("PACKET_F_REQUEST_CHAR_RESPONSE",
     construct.Array(0x14, construct.UBInt8("unk_data_00")),     # + 0x00
     construct.UBInt32("remaining_lockout_time"),                # + 0x14
@@ -103,13 +121,20 @@ PACKET_F_REQUEST_CHAR_RESPONSE = construct.Struct("PACKET_F_REQUEST_CHAR_RESPONS
 
 S_PID_ASSIGN = 0x80
 SIZE_PACKET_S_PID_ASSIGN = 0x30
-
 PACKET_S_PID_ASSIGN = construct.Struct("PACKET_S_PID_ASSIGN",
     construct.UBInt16("session_id"),                            # + 0x00
     )
 
-S_CONNECTED = 0x82
+S_PONG = 0x81
+SIZE_PACKET_S_PONG = 0x30
+PACKET_S_PONG = construct.Struct("PACKET_S_PONG",
+    construct.UBInt32("client_timestamp"),                     # + 0x00
+    construct.UBInt64("timestamp"),                            # + 0x04
+    construct.UBInt32("sequence"),                             # + 0x0C
+    construct.UBInt32("unk_dword_00"),                         # + 0x10
+    )
 
+S_CONNECTED = 0x82
 PACKET_S_CONNECTED = construct.Struct("PACKET_S_CONNECTED",
     construct.UBInt8("unk_byte_00"),                            # + 0x00
     construct.UBInt8("unk_byte_01"),                            # + 0x01
@@ -137,7 +162,8 @@ PACKET_F_RECEIVE_ENCRYPTKEY = construct.Struct("PACKET_F_RECEIVE_ENCRYPTKEY",
 ##########################################################################
 
 CHARACTER = construct.Struct("CHARACTER",
-    construct.String("nickname", 0x30, padchar="\x00"),         # + 0x00
+    construct.String("nickname", 0x18, padchar="\x00"),         # + 0x00
+    construct.String("last_name", 0x18, padchar="\x00"),        # + 0x18
     construct.UBInt8("level"),                                  # + 0x30
     construct.UBInt8("career"),                                 # + 0x31
     construct.UBInt8("realm"),                                  # + 0x32
@@ -158,146 +184,146 @@ CHARACTER = construct.Struct("CHARACTER",
 #        ("unk_byte_00", WAR_Utils.BYTE),
 #]
 
-PACKET_F_PLAYER_EXIT = [
-        ("session_id", WAR_Utils.WORD),
-        ("unk_word_00", WAR_Utils.WORD),
-]
+#PACKET_F_PLAYER_EXIT = [
+#        ("session_id", WAR_Utils.WORD),
+#        ("unk_word_00", WAR_Utils.WORD),
+#]
 
-PACKET_F_PING = [
-        ("timestamp", WAR_Utils.DWORD),
-        ("unk_dword_01", WAR_Utils.DWORD),
-        ("unk_dword_02", WAR_Utils.DWORD),
-        ("unk_word_00", WAR_Utils.WORD),
-        ("unk_word_01", WAR_Utils.WORD),
-        ("unk_word_02", WAR_Utils.WORD),
-        ("unk_word_03", WAR_Utils.WORD),
-]
+#PACKET_F_PING = [
+#        ("timestamp", WAR_Utils.DWORD),
+#        ("unk_dword_01", WAR_Utils.DWORD),
+#        ("unk_dword_02", WAR_Utils.DWORD),
+#        ("unk_word_00", WAR_Utils.WORD),
+#        ("unk_word_01", WAR_Utils.WORD),
+#        ("unk_word_02", WAR_Utils.WORD),
+#        ("unk_word_03", WAR_Utils.WORD),
+#]
 
-PACKET_F_REQUEST_CHAR_TEMPLATES = [
-        ("unk_byte_00", WAR_Utils.BYTE)
-        ]
-
-PACKET_F_DUMP_ARENAS_LARGE = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-]
-
-PACKET_F_OPEN_GAME = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-]
-
-PACKET_F_PLAYER_STATE2 = [
-    ("unk_dword_00", WAR_Utils.DWORD),
-    ("unk_byte_00", WAR_Utils.BYTE),
-]
-
-PACKET_F_INTERFACE_COMMAND = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-    ("unk_word_00", WAR_Utils.WORD),
-    ("unk_word_01", WAR_Utils.WORD),
-]
-
-PACKET_F_INIT_PLAYER = [
-    ("unk_word_00", WAR_Utils.WORD),
-    ("unk_word_01", WAR_Utils.WORD),
-    ("unk_word_02", WAR_Utils.WORD),
-    ("unk_word_03", WAR_Utils.WORD),
-    ("unk_word_04", WAR_Utils.WORD),
-    ("unk_word_05", WAR_Utils.WORD),
-    ("unk_word_06", WAR_Utils.WORD),
-    ("unk_word_07", WAR_Utils.WORD),
-    ("unk_word_08", WAR_Utils.WORD),
-    ("unk_dword_00", WAR_Utils.DWORD),
-]
-
-F_CHECK_NAME = [
-    ("char_name", WAR_Utils.BYTE * 24),
-    ("padding", 6 * WAR_Utils.BYTE),
-    ("user_name", WAR_Utils.BYTE * 24)
-]
-
-PACKET_F_CREATE_CHARACTER = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-    ("unk_byte_02", WAR_Utils.BYTE),
-    ("sex", WAR_Utils.BYTE),
-    ("unk_word_00", WAR_Utils.WORD),
-    ("nickname_size", WAR_Utils.BYTE),
-    ("unk_byte_05", WAR_Utils.BYTE),
-    ("unk_byte_06", WAR_Utils.BYTE),
-    ("face_attributes", WAR_Utils.BYTE * 0xF),
-    ("nickname", "nickname_size"),
-    ("buffer_unk_byte_05", "unk_byte_05"),
-    ("unk_byte_07", WAR_Utils.BYTE),
-]
-
-PACKET_F_DO_ABILITY = [
-    ("unk_word_00", WAR_Utils.WORD),
-    ("unk_word_01", WAR_Utils.WORD),
-    ("unk_word_02", WAR_Utils.WORD),
-    ("unk_word_03", WAR_Utils.WORD),
-    ("unk_word_04", WAR_Utils.WORD),
-    ("unk_word_05", WAR_Utils.WORD),
-    ("ABILITY_ID", WAR_Utils.WORD),
-    ("SEQUENCE", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-    ("unk_word_07", WAR_Utils.WORD),
-]
-
-PACKET_F_PLAY_VOICE_OVER = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-    ("unk_word_00", WAR_Utils.WORD)
-]
-
-PACKET_F_INTERRUPT = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-]
-
-PACKET_F_DISCONNECT = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-]
-
-PACKET_F_SWITCH_ATTACK_MODE = [
-    ("unk_byte_00", WAR_Utils.BYTE),
-    ("mode", WAR_Utils.BYTE),
-    ("unk_byte_01", WAR_Utils.BYTE),
-    ("unk_byte_02", WAR_Utils.BYTE),
-]
-
-PACKET_F_INFLUENCE_DETAILS = [
-#TODO
-]
-
-PACKET_F_INTERACT_QUEUE = [
-# TODO
-]
-
-PACKET_F_REQUEST_WORLD_LARGE = [
-# TODO
-]
-
-PACKET_S_WORLD_SENT = [
-# TODO
-]
-
-PACKET_F_PLAYER_INFO = [
-# TODO
-]
-
-PACKET_F_UI_MOD = [
-# TODO
-]
-
-PACKET_F_TEXT = [
-    ("unk_byte_00", WAR_Utils.BYTE)
-]
-
-PACKET_F_CLIENT_DATA = [
-# TODO
-]
+#PACKET_F_REQUEST_CHAR_TEMPLATES = [
+#        ("unk_byte_00", WAR_Utils.BYTE)
+#        ]
+#
+#PACKET_F_DUMP_ARENAS_LARGE = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_OPEN_GAME = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_PLAYER_STATE2 = [
+#    ("unk_dword_00", WAR_Utils.DWORD),
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_INTERFACE_COMMAND = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#    ("unk_word_00", WAR_Utils.WORD),
+#    ("unk_word_01", WAR_Utils.WORD),
+#]
+#
+#PACKET_F_INIT_PLAYER = [
+#    ("unk_word_00", WAR_Utils.WORD),
+#    ("unk_word_01", WAR_Utils.WORD),
+#    ("unk_word_02", WAR_Utils.WORD),
+#    ("unk_word_03", WAR_Utils.WORD),
+#    ("unk_word_04", WAR_Utils.WORD),
+#    ("unk_word_05", WAR_Utils.WORD),
+#    ("unk_word_06", WAR_Utils.WORD),
+#    ("unk_word_07", WAR_Utils.WORD),
+#    ("unk_word_08", WAR_Utils.WORD),
+#    ("unk_dword_00", WAR_Utils.DWORD),
+#]
+#
+#F_CHECK_NAME = [
+#    ("char_name", WAR_Utils.BYTE * 24),
+#    ("padding", 6 * WAR_Utils.BYTE),
+#    ("user_name", WAR_Utils.BYTE * 24)
+#]
+#
+#PACKET_F_CREATE_CHARACTER = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#    ("unk_byte_02", WAR_Utils.BYTE),
+#    ("sex", WAR_Utils.BYTE),
+#    ("unk_word_00", WAR_Utils.WORD),
+#    ("nickname_size", WAR_Utils.BYTE),
+#    ("unk_byte_05", WAR_Utils.BYTE),
+#    ("unk_byte_06", WAR_Utils.BYTE),
+#    ("face_attributes", WAR_Utils.BYTE * 0xF),
+#    ("nickname", "nickname_size"),
+#    ("buffer_unk_byte_05", "unk_byte_05"),
+#    ("unk_byte_07", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_DO_ABILITY = [
+#    ("unk_word_00", WAR_Utils.WORD),
+#    ("unk_word_01", WAR_Utils.WORD),
+#    ("unk_word_02", WAR_Utils.WORD),
+#    ("unk_word_03", WAR_Utils.WORD),
+#    ("unk_word_04", WAR_Utils.WORD),
+#    ("unk_word_05", WAR_Utils.WORD),
+#    ("ABILITY_ID", WAR_Utils.WORD),
+#    ("SEQUENCE", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#    ("unk_word_07", WAR_Utils.WORD),
+#]
+#
+#PACKET_F_PLAY_VOICE_OVER = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#    ("unk_word_00", WAR_Utils.WORD)
+#]
+#
+#PACKET_F_INTERRUPT = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_DISCONNECT = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_SWITCH_ATTACK_MODE = [
+#    ("unk_byte_00", WAR_Utils.BYTE),
+#    ("mode", WAR_Utils.BYTE),
+#    ("unk_byte_01", WAR_Utils.BYTE),
+#    ("unk_byte_02", WAR_Utils.BYTE),
+#]
+#
+#PACKET_F_INFLUENCE_DETAILS = [
+##TODO
+#]
+#
+#PACKET_F_INTERACT_QUEUE = [
+## TODO
+#]
+#
+#PACKET_F_REQUEST_WORLD_LARGE = [
+## TODO
+#]
+#
+#PACKET_S_WORLD_SENT = [
+## TODO
+#]
+#
+#PACKET_F_PLAYER_INFO = [
+## TODO
+#]
+#
+#PACKET_F_UI_MOD = [
+## TODO
+#]
+#
+#PACKET_F_TEXT = [
+#    ("unk_byte_00", WAR_Utils.BYTE)
+#]
+#
+#PACKET_F_CLIENT_DATA = [
+## TODO
+#]
 
 class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
@@ -341,7 +367,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         packet_client_header = PacketClientHeader.parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_CLIENT_HEADER:]
         # TODO PRETTRY PRINT THIS SHIT
-        WAR_Utils.LogInfo(packet_client_header, 2)
+        WAR_Utils.LogInfo(packet_client_header, 3)
         if packet_client_header['opcode'] <= len(self.OpcodesTableRecv):
             entry_opcode = self.OpcodesTableRecv[packet_client_header['opcode']]
             WAR_Utils.LogInfo("[+] Opcode \"%s\" (0x%02X ; %d)" % (entry_opcode[1], entry_opcode[0], entry_opcode[0]), 1)
@@ -358,6 +384,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
     def premaidcharacter(self):
         p = CHARACTER.build(construct.Container(nickname = "Skarsnik",
+            last_name = "",
             level = 0x01,
             career = 0x1A,
             realm = 0x02,
@@ -401,17 +428,32 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
         for i in xrange(0, 16):
             p += struct.pack("<H", 0x0000)            # +0x044 : ??
-            p += struct.pack("<H", 0x0000)            # +0x046 : ??
+            p += struct.pack("<H", 0x0000)            # +0x046 : ??     # IGNORED ?
             p += struct.pack("<H", 0x0000)            # +0x048 : ??
             p += struct.pack("<H", 0x0000)            # +0x04A : ??
 
         for i in xrange(0, 5):
             p += struct.pack("<H", 0x0000)            # +0x0C4 : ??
-            p += struct.pack("<H", 0x0000)            # +0x0C6 : ??
-            p += struct.pack("<H", 0x0000)            # +0x0C8 : ??
-            p += struct.pack("<H", 0x0000)            # +0x0CA : ??
+            p += struct.pack("<H", 0x0000)            # +0x0C6 : ??     # IGNORED ?
+            p += struct.pack("<B", 0x0000)            # +0x0C8 : ??
+            p += struct.pack("<B", 0x0000)            # +0x0C9 : ??
+            p += struct.pack("<H", 0x0000)            # +0x0CA : ??     # IGNORED ?
 
-        p += '4604000000000000000000000000000000000000ff000003000000000000000000'.decode('hex')
+        #p += '4604000000'.decode('hex')               # + 0xEC : Array[5]
+        #p += '0000000000'.decode('hex')                # + 0xEC : Array[5]
+        for i in xrange(0, 5):
+            p += struct.pack("<I", 0x0446)
+
+        p += struct.pack("<B", 0x00)                    # + 0x100
+        p += struct.pack("<B", 0x00)                    # + 0x101
+        p += struct.pack("<B", 0x00)                    # + 0x102
+        p += struct.pack("<B", 0x03)                    # + 0x103   RACE ?
+
+        # + 0xF1 : ??
+        # + 0x100: BYTE
+        # + 0x101: BYTE
+
+        #p += '000000000000000000000000000000ff000003000000000000000000'.decode('hex')
         p += "\x00" * (0x11C - len(p))
         return p
 
@@ -511,12 +553,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += PACKET_S_PID_ASSIGN.build(construct.Container(session_id = 0x1300))
         self.send_data(p)
 
-    def response_0x81(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_S_PONG(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", packet_client['timestamp'])
-        p += struct.pack(">Q", time.time())
-        p += struct.pack(">I", packet_client_header['sequence'] + 1)
-        p += struct.pack(">I", 0)
+        p += PACKET_S_PONG.build(construct.Container(client_timestamp = packet_client['timestamp'],
+            timestamp = time.time(),
+            sequence = packet_client_header['sequence'] + 1,
+            unk_dword_00 = 0x00
+            ))
         self.send_data(p)
 
     def response_S_CONNECTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -835,8 +878,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO
         pass
 
-    def handle_0x04(self, opcode_entry, packet_client_header, packet_data):
-        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+    def handle_F_PLAYER_EXIT(self, opcode_entry, packet_client_header, packet_data):
+        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        packet_client = opcode_entry[3].parse(packet_data)
         WAR_Utils.LogInfo(packet_client, 2)
 
     def handle_0x07(self, opcode_entry, packet_client_header, packet_data):
@@ -854,10 +898,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             self.send_data(p)
         #pass
 
-    def handle_0x0B(self, opcode_entry, packet_client_header, packet_data):
-        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+    def handle_F_PING(self, opcode_entry, packet_client_header, packet_data):
+        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        packet_client = opcode_entry[3].parse(packet_data)
+        packet_data = packet_data[SIZE_PACKET_F_PING:]
         WAR_Utils.LogInfo(packet_client, 2)
-        self.response(0x81, packet_client_header, packet_client, packet_data)
+        self.response(S_PONG, packet_client_header, packet_client, packet_data)
 
     def handle_0x0D(self, opcode_entry, packet_client_header, packet_data):
         # TODO
@@ -1056,10 +1102,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.OpcodesTableRecv = [
         (0x00, "UNKNOWN", self.handle_unknown, None), (0x01, "UNKNOWN", self.handle_0x01, None),
         (0x02, "UNKNOWN", self.handle_unknown, None), (0x03, "UNKNOWN", self.handle_unknown, None),
-        (0x04, "F_PLAYER_EXIT", self.handle_0x04, PACKET_F_PLAYER_EXIT), (0x05, "UNKNOWN", self.handle_unknown, None),
+        (0x04, "F_PLAYER_EXIT", self.handle_F_PLAYER_EXIT, PACKET_F_PLAYER_EXIT), (0x05, "UNKNOWN", self.handle_unknown, None),
         (0x06, "UNKNOWN", self.handle_unknown, None), (0x07, "F_TEXT", self.handle_0x07, PACKET_F_TEXT),
         (0x08, "UNKNOWN", self.handle_unknown, None), (0x09, "UNKNOWN", self.handle_unknown, None),
-        (0x0A, "UNKNOWN", self.handle_unknown, None), (0x0B, "F_PING", self.handle_0x0B, PACKET_F_PING),
+        (0x0A, "UNKNOWN", self.handle_unknown, None), (0x0B, "F_PING", self.handle_F_PING, PACKET_F_PING),
         (0x0C, "UNKNOWN", self.handle_unknown, None), (0x0D, "UNKNOWN", self.handle_0x0D, None),
         (0x0E, "UNKNOWN", self.handle_0x0E, None), (0x0F, "F_CONNECT", self.handle_F_CONNECT, PACKET_F_CONNECT),
         (0x10, "F_DISCONNECT", self.handle_0x10, PACKET_F_DISCONNECT), (0x11, "UNKNOWN", self.handle_unknown, None),
@@ -1200,7 +1246,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x62, "F_PLAYER_STATE2", self.response_0x62),
             (0x6A, "F_CHECK_NAME_RESPONSE", self.response_0x6A),
             (0x80, "S_PID_ASSIGN", self.response_S_PID_ASSIGN),
-            (0x81, "S_PONG", self.response_0x81),
+            (0x81, "S_PONG", self.response_S_PONG),
             (0x82, "S_CONNECTED", self.response_S_CONNECTED),
             (0x83, "S_WORLD_SENT", self.response_0x83),
             (0x85, "S_GAME_OPENED", self.response_0x85),
