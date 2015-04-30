@@ -8,322 +8,7 @@ import construct
 
 import WAR_TCPHandler
 import WAR_Utils
-
-## HEADER PACKET RECEIVED
-
-SIZE_PACKET_CLIENT_HEADER = 0x08
-
-PacketClientHeader = construct.Struct("PacketClientHeader",
-    construct.UBInt16("sequence"),                              # + 0x00
-    construct.UBInt16("session_id"),                            # + 0x02
-    construct.UBInt16("unk_word_00"),                           # + 0x04
-    construct.UBInt8("unk_byte_00"),                            # + 0x06
-    construct.UBInt8("opcode"),                                 # + 0x07
-                        )
-
-##########################################################################
-
-## PACKET RECEIVED
-
-# OPCODE VALUE
-# SIZE PACKET
-# Structure
-
-F_PLAYER_EXIT = 0x04
-SIZE_PACKET_F_PLAYER_EXIT = 4
-PACKET_F_PLAYER_EXIT = construct.Struct("PACKET_F_PLAYER_EXIT",
-    construct.UBInt16("session_id"),                            # + 0x00
-    construct.UBInt16("unk_word_00"),                           # + 0x02
-    )
-
-F_PING = 0x0B
-SIZE_PACKET_F_PING = 0x14
-PACKET_F_PING = construct.Struct("PACKET_F_PING",
-    construct.UBInt32("timestamp"),                             # + 0x00
-    construct.UBInt32("unk_dword_00"),                          # + 0x04
-    construct.UBInt32("unk_dword_01"),                          # + 0x08
-    construct.UBInt16("unk_word_00"),                           # + 0x0C
-    construct.UBInt16("unk_word_01"),                           # + 0x0E
-    construct.UBInt16("unk_word_02"),                           # + 0x10
-    construct.UBInt16("unk_word_03"),                           # + 0x12
-    )
-
-F_CONNECT = 0x0F
-SIZE_PACKET_F_CONNECT = 0x88
-PACKET_F_CONNECT = construct.Struct("PACKET_F_CONNECT",
-    construct.UBInt8("unk_byte_00"),                            # + 0x00
-    construct.UBInt8("unk_byte_01"),                            # + 0x01
-    construct.UBInt8("major_version"),                          # + 0x02
-    construct.UBInt8("minor_version"),                          # + 0x03
-    construct.UBInt8("revision_version"),                       # + 0x04
-    construct.UBInt8("unk_byte_02"),                            # + 0x05
-    construct.UBInt16("unk_word_00"),                           # + 0x06
-    construct.UBInt32("protocol_version"),                      # + 0x08
-    construct.String("session_id", 0x65),                       # + 0x0C
-    construct.String("username", 0x15),                         # + 0x71
-    construct.UBInt16("size_xml"),                              # + 0x86
-    )
-
-F_REQUEST_CHAR = 0x54
-SIZE_PACKET_F_REQUEST_CHAR = 0x3
-PACKET_F_REQUEST_CHAR = construct.Struct("PACKET_F_REQUEST_CHAR",
-    construct.UBInt16("command"),                               # + 0x00
-    construct.UBInt8("unk_byte_00"),                            # + 0x02
-    )
-
-
-F_ENCRYPTKEY = 0x5C
-SIZE_PACKET_F_ENCRYPTKEY = 0x06
-PACKET_F_ENCRYPTKEY = construct.Struct("PACKET_F_ENCRYPTKEY",
-    construct.UBInt8("key_present"),                            # + 0x00
-    construct.UBInt8("unk_byte_00"),                            # + 0x01
-    construct.UBInt8("major_version"),                          # + 0x02
-    construct.UBInt8("minor_version"),                          # + 0x03
-    construct.UBInt8("revision_version"),                       # + 0x04
-    construct.UBInt8("unk_byte_01"),                            # + 0x05
-                        )
-
-F_PLAYER_ENTER_FULL = 0xB8
-SIZE_PACKET_F_PLAYER_ENTER_FULL = 0x30
-PACKET_F_PLAYER_ENTER_FULL = construct.Struct("PACKET_F_PLAYER_ENTER_FULL",
-    construct.UBInt16("unk_word_00"),                           # + 0x00
-    construct.UBInt8("unk_byte_00"),                            # + 0x02
-    construct.UBInt8("unk_byte_01"),                            # + 0x03
-    construct.Array(0x18, construct.ULInt8("unk_data_00")),     # + 0x04
-    construct.UBInt16("ns_port"),                               # + 0x1C
-    construct.String("langage", 0x06),                          # + 0x1E
-    construct.UBInt32("unk_dword_00"),                          # + 0x24
-    construct.UBInt32("unk_dword_01"),                          # + 0x28
-    construct.UBInt32("unk_dword_02"),                          # + 0x2C
-                        )
-
-##########################################################################
-
-## PACKET SENT
-
-# OPCODE VALUE
-# SIZE PACKET
-# Structure
-
-F_REQUEST_CHAR_RESPONSE = 0x55
-SIZE_PACKET_F_REQUEST_CHAR_RESPONSE = 0x20
-PACKET_F_REQUEST_CHAR_RESPONSE = construct.Struct("PACKET_F_REQUEST_CHAR_RESPONSE",
-    construct.Array(0x14, construct.UBInt8("unk_data_00")),     # + 0x00
-    construct.UBInt32("remaining_lockout_time"),                # + 0x14
-    construct.UBInt8("unk_byte_00"),                            # + 0x18
-    construct.UBInt8("unk_byte_01"),                            # + 0x19
-    construct.UBInt8("max_characters"),                         # + 0x1A
-    construct.UBInt8("gameplay_rule_set_type"),                 # + 0x1B
-    construct.UBInt8("last_switched_to_realm"),                 # + 0x1C
-    construct.UBInt8("num_paid_name_changes_available"),        # + 0x1D
-    construct.UBInt16("unk_word_00"),                           # + 0x1E
-    )
-
-S_PID_ASSIGN = 0x80
-SIZE_PACKET_S_PID_ASSIGN = 0x30
-PACKET_S_PID_ASSIGN = construct.Struct("PACKET_S_PID_ASSIGN",
-    construct.UBInt16("session_id"),                            # + 0x00
-    )
-
-S_PONG = 0x81
-SIZE_PACKET_S_PONG = 0x30
-PACKET_S_PONG = construct.Struct("PACKET_S_PONG",
-    construct.UBInt32("client_timestamp"),                     # + 0x00
-    construct.UBInt64("timestamp"),                            # + 0x04
-    construct.UBInt32("sequence"),                             # + 0x0C
-    construct.UBInt32("unk_dword_00"),                         # + 0x10
-    )
-
-S_CONNECTED = 0x82
-PACKET_S_CONNECTED = construct.Struct("PACKET_S_CONNECTED",
-    construct.UBInt8("unk_byte_00"),                            # + 0x00
-    construct.UBInt8("unk_byte_01"),                            # + 0x01
-    construct.UBInt8("unk_byte_02"),                            # + 0x02
-    construct.UBInt8("unk_byte_03"),                            # + 0x03
-    construct.UBInt32("protocol_version"),                      # + 0x04
-    construct.UBInt8("server_id"),                              # + 0x08
-    construct.UBInt8("unk_byte_04"),                            # + 0x09
-    construct.UBInt8("unk_byte_05"),                            # + 0x0A
-    construct.UBInt8("unk_byte_06"),                            # + 0x0B
-    construct.UBInt8("transfer_flag"),                          # + 0x0C
-    construct.PascalString("username",
-        length_field = construct.UBInt8("length")),             # + 0x..
-    construct.PascalString("server_name",
-        length_field = construct.UBInt8("length")),             # + 0x..
-    construct.UBInt8("unk_byte_07"),                            # + 0x..
-                        )
-
-F_RECEIVE_ENCRYPTKEY = 0x8A
-SIZE_PACKET_F_RECEIVE_ENCRYPTKEY = 0x01
-PACKET_F_RECEIVE_ENCRYPTKEY = construct.Struct("PACKET_F_RECEIVE_ENCRYPTKEY",
-    construct.UBInt8("send_key"),                               # + 0x00
-                        )
-
-##########################################################################
-
-CHARACTER = construct.Struct("CHARACTER",
-    construct.String("nickname", 0x18, padchar="\x00"),         # + 0x00
-    construct.String("last_name", 0x18, padchar="\x00"),        # + 0x18
-    construct.UBInt8("level"),                                  # + 0x30
-    construct.UBInt8("career"),                                 # + 0x31
-    construct.UBInt8("realm"),                                  # + 0x32
-    construct.UBInt8("gender"),                                 # + 0x33
-    construct.UBInt16("unk_word_00"),                           # + 0x34
-    construct.UBInt16("zone"),                                  # + 0x36
-    construct.Array(0x0C, construct.UBInt8("unk_data_00")),     # + 0x38
-    )
-
-
-##########################################################################
-
-
-
-
-#PACKET_F_REQUEST_CHAR = [
-#        ("action", WAR_Utils.WORD),
-#        ("unk_byte_00", WAR_Utils.BYTE),
-#]
-
-#PACKET_F_PLAYER_EXIT = [
-#        ("session_id", WAR_Utils.WORD),
-#        ("unk_word_00", WAR_Utils.WORD),
-#]
-
-#PACKET_F_PING = [
-#        ("timestamp", WAR_Utils.DWORD),
-#        ("unk_dword_01", WAR_Utils.DWORD),
-#        ("unk_dword_02", WAR_Utils.DWORD),
-#        ("unk_word_00", WAR_Utils.WORD),
-#        ("unk_word_01", WAR_Utils.WORD),
-#        ("unk_word_02", WAR_Utils.WORD),
-#        ("unk_word_03", WAR_Utils.WORD),
-#]
-
-#PACKET_F_REQUEST_CHAR_TEMPLATES = [
-#        ("unk_byte_00", WAR_Utils.BYTE)
-#        ]
-#
-#PACKET_F_DUMP_ARENAS_LARGE = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_OPEN_GAME = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_PLAYER_STATE2 = [
-#    ("unk_dword_00", WAR_Utils.DWORD),
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_INTERFACE_COMMAND = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#    ("unk_word_00", WAR_Utils.WORD),
-#    ("unk_word_01", WAR_Utils.WORD),
-#]
-#
-#PACKET_F_INIT_PLAYER = [
-#    ("unk_word_00", WAR_Utils.WORD),
-#    ("unk_word_01", WAR_Utils.WORD),
-#    ("unk_word_02", WAR_Utils.WORD),
-#    ("unk_word_03", WAR_Utils.WORD),
-#    ("unk_word_04", WAR_Utils.WORD),
-#    ("unk_word_05", WAR_Utils.WORD),
-#    ("unk_word_06", WAR_Utils.WORD),
-#    ("unk_word_07", WAR_Utils.WORD),
-#    ("unk_word_08", WAR_Utils.WORD),
-#    ("unk_dword_00", WAR_Utils.DWORD),
-#]
-#
-#F_CHECK_NAME = [
-#    ("char_name", WAR_Utils.BYTE * 24),
-#    ("padding", 6 * WAR_Utils.BYTE),
-#    ("user_name", WAR_Utils.BYTE * 24)
-#]
-#
-#PACKET_F_CREATE_CHARACTER = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#    ("unk_byte_02", WAR_Utils.BYTE),
-#    ("sex", WAR_Utils.BYTE),
-#    ("unk_word_00", WAR_Utils.WORD),
-#    ("nickname_size", WAR_Utils.BYTE),
-#    ("unk_byte_05", WAR_Utils.BYTE),
-#    ("unk_byte_06", WAR_Utils.BYTE),
-#    ("face_attributes", WAR_Utils.BYTE * 0xF),
-#    ("nickname", "nickname_size"),
-#    ("buffer_unk_byte_05", "unk_byte_05"),
-#    ("unk_byte_07", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_DO_ABILITY = [
-#    ("unk_word_00", WAR_Utils.WORD),
-#    ("unk_word_01", WAR_Utils.WORD),
-#    ("unk_word_02", WAR_Utils.WORD),
-#    ("unk_word_03", WAR_Utils.WORD),
-#    ("unk_word_04", WAR_Utils.WORD),
-#    ("unk_word_05", WAR_Utils.WORD),
-#    ("ABILITY_ID", WAR_Utils.WORD),
-#    ("SEQUENCE", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#    ("unk_word_07", WAR_Utils.WORD),
-#]
-#
-#PACKET_F_PLAY_VOICE_OVER = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#    ("unk_word_00", WAR_Utils.WORD)
-#]
-#
-#PACKET_F_INTERRUPT = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_DISCONNECT = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_SWITCH_ATTACK_MODE = [
-#    ("unk_byte_00", WAR_Utils.BYTE),
-#    ("mode", WAR_Utils.BYTE),
-#    ("unk_byte_01", WAR_Utils.BYTE),
-#    ("unk_byte_02", WAR_Utils.BYTE),
-#]
-#
-#PACKET_F_INFLUENCE_DETAILS = [
-##TODO
-#]
-#
-#PACKET_F_INTERACT_QUEUE = [
-## TODO
-#]
-#
-#PACKET_F_REQUEST_WORLD_LARGE = [
-## TODO
-#]
-#
-#PACKET_S_WORLD_SENT = [
-## TODO
-#]
-#
-#PACKET_F_PLAYER_INFO = [
-## TODO
-#]
-#
-#PACKET_F_UI_MOD = [
-## TODO
-#]
-#
-#PACKET_F_TEXT = [
-#    ("unk_byte_00", WAR_Utils.BYTE)
-#]
-#
-#PACKET_F_CLIENT_DATA = [
-## TODO
-#]
+from WAR_WorldStruct import *
 
 class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
@@ -554,6 +239,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.send_data(p)
 
     def response_S_PONG(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            response sent when packet F_PING has been received.
+            Packet handling is done in the basick block at 0x004C403B.
+            Answer have to reuse the timestamp sent by the client, and put a QWORD of the
+            actual timestamp and increment the sequence number
+        """
         p = struct.pack(">B", opcode_entry[0])
         p += PACKET_S_PONG.build(construct.Container(client_timestamp = packet_client['timestamp'],
             timestamp = time.time(),
@@ -563,6 +254,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.send_data(p)
 
     def response_S_CONNECTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            Reponse sent after receiving F_CONNECT packet.
+            Packet handling is done in WAR.exe by:
+                - 0x004C88F9: username and server_name are PascalString, protocol
+                is normaly equal to 0xEB8DB21.
+        """
         p = struct.pack(">B", opcode_entry[0])
         p += PACKET_S_CONNECTED.build(construct.Container(unk_byte_00 = 0,
             unk_byte_01 = 0,
@@ -609,6 +306,11 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         self.send_data(p)
 
     def response_F_RECEIVE_ENCRYPTKEY(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            Response sent when packet F_ENCRYPTKEY received with key_present is NULL.
+            Packet handler check if (WORD)field_0x1CC is not null, and packet is handled in WAR.exe by:
+            - 0x004C8883: if send_key is not null, RC4 will be generated and sent with packet F_ENCRYPTKEY
+        """
         p = struct.pack(">B", opcode_entry[0])
         p += PACKET_F_RECEIVE_ENCRYPTKEY.build(construct.Container(send_key = 0x01))
         self.send_data(p)
@@ -800,7 +502,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def reponse_0x4F(self, opcode_entry, packet_client_header, packet_client, packet_data):
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">H", 0x4242)          # Objet ID
-        p += struct.pack(">H", 302)            # MOUNT ID ? ; 194,Mount Squig Orange 03,280,200,160,194,0,0,0,,,,,,,,,,,  ; [+] "data/gamedata/monsters.csv" = 4362852945EB393E (dwRetAddr = 00626EDC)
+        p += struct.pack(">H", 302)             # MOUNT ID ? ; 194,Mount Squig Orange 03,280,200,160,194,0,0,0,,,,,,,,,,,  ; [+] "data/gamedata/monsters.csv" = 4362852945EB393E (dwRetAddr = 00626EDC)
         p += struct.pack(">H", 0x0000)          # UNK
         p += struct.pack(">H", 0x0000)          # UNK
         p += struct.pack(">H", 0x0000)          # UNK
@@ -899,7 +601,11 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         #pass
 
     def handle_F_PING(self, opcode_entry, packet_client_header, packet_data):
-        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+        """
+            This packet is sent from method in WAR.exe:
+                - 0x004B2F33, size = 0x00000014
+            Server has to answer with S_PONG (0x81).
+        """
         packet_client = opcode_entry[3].parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_F_PING:]
         WAR_Utils.LogInfo(packet_client, 2)
@@ -970,13 +676,20 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             raise WAR_Utils.WarError("[-] handle_0x54 : UNKNOW command !")
 
     def handle_F_ENCRYPTKEY(self, opcode_entry, packet_client_header, packet_data):
-        #
-        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
-        #WAR_Utils.LogInfo(packet_client, 2)
-        PACKET_F_ENCRYPTKEY = opcode_entry[3].parse(packet_data)
+        """
+            First packet received from the client after connection.
+            If the field key_present is NULL, server has to answer with F_RECEIVE_ENCRYPTKEY (0x8A).
+            If the field key_present is not NULL, RC4 key (256 bytes) is present a the end of packet.
+
+            Opcode 0x5C can be sent from two methods in WAR.exe:
+                - 0x004B1819, size = 0x00000006 : key_present is NULL
+                - 0x004B2C1B, size = 0x00000106 : RC4 key present
+        """
+        packet_client = opcode_entry[3].parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_F_ENCRYPTKEY:]
-        if PACKET_F_ENCRYPTKEY['key_present'] == 0:
-            self.response(F_RECEIVE_ENCRYPTKEY, packet_client_header, PACKET_F_ENCRYPTKEY, packet_data)
+        WAR_Utils.LogInfo(packet_client, 2)
+        if packet_client['key_present'] == 0:
+            self.response(F_RECEIVE_ENCRYPTKEY, packet_client_header, packet_client, packet_data)
         else:
             key = packet_data[0 : 256]
             WAR_Utils.LogInfo("[+] Key (len(key) = %08X) :" % (len(key)), 3)
