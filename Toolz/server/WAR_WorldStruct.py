@@ -55,6 +55,20 @@ PACKET_F_CONNECT = construct.Struct("PACKET_F_CONNECT",
     construct.UBInt16("size_xml"),                              # + 0x86
     )
 
+F_OPEN_GAME = 0x17
+SIZE_PACKET_F_OPEN_GAME = 0x02
+PACKET_F_OPEN_GAME = construct.Struct("PACKET_F_OPEN_GAME",
+    construct.UBInt8("unk_byte_00"),               # + 0x00
+    construct.UBInt8("unk_byte_01"),               # + 0x01
+    )
+
+F_DUMP_ARENAS_LARGE = 0x35
+SIZE_PACKET_F_DUMP_ARENAS_LARGE = 0x02
+PACKET_F_DUMP_ARENAS_LARGE = construct.Struct("PACKET_F_DUMP_ARENAS_LARGE",
+    construct.UBInt8("unk_byte_00"),               # + 0x00
+    construct.UBInt8("unk_byte_01"),               # + 0x01
+    )
+
 F_REQUEST_CHAR = 0x54
 SIZE_PACKET_F_REQUEST_CHAR = 0x3
 PACKET_F_REQUEST_CHAR = construct.Struct("PACKET_F_REQUEST_CHAR",
@@ -74,6 +88,21 @@ PACKET_F_ENCRYPTKEY = construct.Struct("PACKET_F_ENCRYPTKEY",
     construct.UBInt8("unk_byte_01"),                            # + 0x05
                         )
 
+F_INIT_PLAYER = 0x7C
+SIZE_PACKET_F_INIT_PLAYER = 0x00000016
+PACKET_F_INIT_PLAYER = construct.Struct("PACKET_F_INIT_PLAYER",
+    construct.UBInt16("unk_word_00"),                           # + 0x00
+    construct.UBInt16("unk_word_01"),                           # + 0x02
+    construct.UBInt16("unk_word_02"),                           # + 0x04
+    construct.UBInt16("unk_word_03"),                           # + 0x06
+    construct.UBInt16("unk_word_04"),                           # + 0x08
+    construct.UBInt16("unk_word_05"),                           # + 0x0A
+    construct.UBInt16("unk_word_06"),                           # + 0x0C
+    construct.UBInt16("unk_word_07"),                           # + 0x0E
+    construct.UBInt8("unk_byte_00"),                            # + 0x10
+    construct.Array(0x5, construct.ULInt8("unk_data_00")),      # + 0x11
+    )
+
 F_PLAYER_ENTER_FULL = 0xB8
 SIZE_PACKET_F_PLAYER_ENTER_FULL = 0x30
 PACKET_F_PLAYER_ENTER_FULL = construct.Struct("PACKET_F_PLAYER_ENTER_FULL",
@@ -88,6 +117,15 @@ PACKET_F_PLAYER_ENTER_FULL = construct.Struct("PACKET_F_PLAYER_ENTER_FULL",
     construct.UBInt32("unk_dword_02"),                          # + 0x2C
                         )
 
+F_INTERFACE_COMMAND = 0xC8
+SIZE_PACKET_F_INTERFACE_COMMAND = 0x06 # MAYBE OTHER
+PACKET_F_INTERFACE_COMMAND = construct.Struct("PACKET_F_INTERFACE_COMMAND",
+    construct.UBInt8("unk_byte_00"),                            # + 0x00
+    construct.UBInt8("unk_byte_01"),                            # + 0x01
+    construct.UBInt16("unk_word_00"),                           # + 0x02
+    construct.UBInt16("unk_word_01"),                           # + 0x04
+    )
+
 ##########################################################################
 
 ## PACKET SENT
@@ -95,6 +133,36 @@ PACKET_F_PLAYER_ENTER_FULL = construct.Struct("PACKET_F_PLAYER_ENTER_FULL",
 # OPCODE VALUE
 # SIZE PACKET
 # Structure
+
+F_MAX_VELOCITY = 0x1E
+SIZE_PACKET_F_MAX_VELOCITY = 0x02
+PACKET_F_MAX_VELOCITY = construct.Struct("PACKET_F_MAX_VELOCITY",
+    construct.UBInt16("velocity"),                      # + 0x00
+    )
+
+F_PLAYER_EXPERIENCE = 0x39
+SIZE_PACKET_F_PLAYER_EXPERIENCE = 0x0D
+PACKET_F_PLAYER_EXPERIENCE = construct.Struct("PACKET_F_PLAYER_EXPERIENCE",
+    construct.UBInt32("current_xp"),            # + 0x00
+    construct.UBInt32("next_lvl_xp"),           # + 0x04
+    construct.UBInt32("rested_xp"),             # + 0x08
+    construct.UBInt8("level"),                  # + 0x0C
+    )
+
+F_PLAYER_RENOWN = 0x4E
+SIZE_PACKET_F_PLAYER_RENOWN = 0x09
+PACKET_F_PLAYER_RENOWN = construct.Struct("PACKET_F_PLAYER_RENOWN",
+    construct.UBInt32("current_xp"),            # + 0x00
+    construct.UBInt32("next_lvl_xp"),           # + 0x04
+    construct.UBInt8("rank"),                   # + 0x08
+    )
+
+F_PLAYER_WEALTH = 0x52
+SIZE_PACKET_F_PLAYER_WEALTH = 0x08
+PACKET_F_PLAYER_WEALTH = construct.Struct("PACKET_F_PLAYER_WEALTH",
+    construct.UBInt32("unk_dword_00"),                # + 0x00
+    construct.UBInt32("player_money"),                # + 0x04
+    )
 
 F_REQUEST_CHAR_RESPONSE = 0x55
 SIZE_PACKET_F_REQUEST_CHAR_RESPONSE = 0x20
@@ -144,11 +212,42 @@ PACKET_S_CONNECTED = construct.Struct("PACKET_S_CONNECTED",
     construct.UBInt8("unk_byte_07"),                            # + 0x..
                         )
 
+S_PLAYER_INITTED = 0x88
+SIZE_PACKET_S_PLAYER_INITTED = 0x28 # TODO
+PACKET_S_PLAYER_INITTED = construct.Struct("PACKET_S_PLAYER_INITTED",
+    construct.UBInt16("object_id"),        # + 0x00
+    construct.Padding(2),                  # + 0x02
+    construct.UBInt32("character_id"),     # + 0x04
+    construct.UBInt16("coord_z"),          # + 0x08
+    construct.Padding(2),                  # + 0x0A
+    construct.UBInt32("coord_x"),          # + 0x0C
+    construct.UBInt32("coord_y"),          # + 0x10
+    construct.UBInt16("coord_o"),          # + 0x14
+    construct.Padding(1),                  # + 0x16
+    construct.UBInt8("player_realm"),      # + 0x17
+    construct.UBInt16("unk_word_00"),      # + 0x18
+    construct.UBInt16("unk_word_01"),      # + 0x1A
+    construct.UBInt16("region_id"),        # + 0x1C
+    construct.UBInt16("instance_id"),      # + 0x1E
+    construct.UBInt16("unk_word_02"),      # + 0x20
+    construct.UBInt16("unk_word_03"),      # + 0x22
+    construct.UBInt16("unk_word_04"),      # + 0x24
+    construct.UBInt16("unk_word_05"),      # + 0x26
+    )
+
 F_RECEIVE_ENCRYPTKEY = 0x8A
 SIZE_PACKET_F_RECEIVE_ENCRYPTKEY = 0x01
 PACKET_F_RECEIVE_ENCRYPTKEY = construct.Struct("PACKET_F_RECEIVE_ENCRYPTKEY",
     construct.UBInt8("send_key"),                               # + 0x00
                         )
+
+F_PLAYER_RANK_UPDATE = 0xF4
+SIZE_PACKET_F_PLAYER_RANK_UPDATE = 0x04
+PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
+    construct.UBInt8("unk_byte_00"),      # + 0x00
+    construct.UBInt8("unk_byte_01"),      # + 0x01
+    construct.UBInt16("object_id"),       # + 0x02
+    )
 
 ##########################################################################
 
@@ -160,7 +259,7 @@ CHARACTER = construct.Struct("CHARACTER",
     construct.UBInt8("realm"),                                  # + 0x32
     construct.UBInt8("gender"),                                 # + 0x33
     construct.UBInt16("unk_word_00"),                           # + 0x34
-    construct.UBInt16("zone"),                                  # + 0x36
+    construct.ULInt16("zone"),                                  # + 0x36    /!\ Field on little endian
     construct.Array(0x0C, construct.UBInt8("unk_data_00")),     # + 0x38
     )
 
@@ -237,8 +336,8 @@ F_REQUEST_CHAR_TEMPLATES = 0x13
 SIZE_PACKET_F_REQUEST_CHAR_TEMPLATES = 0x00 # TODO
 PACKET_F_REQUEST_CHAR_TEMPLATES = construct.Struct("PACKET_F_REQUEST_CHAR_TEMPLATES",
     # TODO
-    )    
-    
+    )
+
 F_HIT_PLAYER = 0x14
 SIZE_PACKET_F_HIT_PLAYER = 0x00 # TODO
 PACKET_F_HIT_PLAYER = construct.Struct("PACKET_F_HIT_PLAYER",
@@ -254,12 +353,6 @@ PACKET_F_DEATHSPAM = construct.Struct("PACKET_F_DEATHSPAM",
 F_REQUEST_INIT_OBJECT = 0x16
 SIZE_PACKET_F_REQUEST_INIT_OBJECT = 0x00 # TODO
 PACKET_F_REQUEST_INIT_OBJECT = construct.Struct("PACKET_F_REQUEST_INIT_OBJECT",
-    # TODO
-    )
-
-F_OPEN_GAME = 0x17
-SIZE_PACKET_F_OPEN_GAME = 0x00 # TODO
-PACKET_F_OPEN_GAME = construct.Struct("PACKET_F_OPEN_GAME",
     # TODO
     )
 
@@ -290,12 +383,6 @@ PACKET_F_REQ_CAMPAIGN_STATUS = construct.Struct("PACKET_F_REQ_CAMPAIGN_STATUS",
 F_GUILD_DATA = 0x1D
 SIZE_PACKET_F_GUILD_DATA = 0x00 # TODO
 PACKET_F_GUILD_DATA = construct.Struct("PACKET_F_GUILD_DATA",
-    # TODO
-    )
-
-F_MAX_VELOCITY = 0x1E
-SIZE_PACKET_F_MAX_VELOCITY = 0x00 # TODO
-PACKET_F_MAX_VELOCITY = construct.Struct("PACKET_F_MAX_VELOCITY",
     # TODO
     )
 
@@ -377,12 +464,6 @@ PACKET_F_PLAYER_DEATH = construct.Struct("PACKET_F_PLAYER_DEATH",
     # TODO
     )
 
-F_DUMP_ARENAS_LARGE = 0x35
-SIZE_PACKET_F_DUMP_ARENAS_LARGE = 0x00 # TODO
-PACKET_F_DUMP_ARENAS_LARGE = construct.Struct("PACKET_F_DUMP_ARENAS_LARGE",
-    # TODO
-    )
-
 F_GROUP_COMMAND = 0x37
 SIZE_PACKET_F_GROUP_COMMAND = 0x00 # TODO
 PACKET_F_GROUP_COMMAND = construct.Struct("PACKET_F_GROUP_COMMAND",
@@ -392,12 +473,6 @@ PACKET_F_GROUP_COMMAND = construct.Struct("PACKET_F_GROUP_COMMAND",
 F_ZONEJUMP = 0x38
 SIZE_PACKET_F_ZONEJUMP = 0x00 # TODO
 PACKET_F_ZONEJUMP = construct.Struct("PACKET_F_ZONEJUMP",
-    # TODO
-    )
-
-F_PLAYER_EXPERIENCE = 0x39
-SIZE_PACKET_F_PLAYER_EXPERIENCE = 0x00 # TODO
-PACKET_F_PLAYER_EXPERIENCE = construct.Struct("PACKET_F_PLAYER_EXPERIENCE",
     # TODO
     )
 
@@ -461,12 +536,6 @@ PACKET_F_TRADE_STATUS = construct.Struct("PACKET_F_TRADE_STATUS",
     # TODO
     )
 
-F_PLAYER_RENOWN = 0x4E
-SIZE_PACKET_F_PLAYER_RENOWN = 0x00 # TODO
-PACKET_F_PLAYER_RENOWN = construct.Struct("PACKET_F_PLAYER_RENOWN",
-    # TODO
-    )
-
 F_MOUNT_UPDATE = 0x4F
 SIZE_PACKET_F_MOUNT_UPDATE = 0x00 # TODO
 PACKET_F_MOUNT_UPDATE = construct.Struct("PACKET_F_MOUNT_UPDATE",
@@ -482,12 +551,6 @@ PACKET_F_PLAYER_LEVEL_UP = construct.Struct("PACKET_F_PLAYER_LEVEL_UP",
 F_ANIMATION = 0x51
 SIZE_PACKET_F_ANIMATION = 0x00 # TODO
 PACKET_F_ANIMATION = construct.Struct("PACKET_F_ANIMATION",
-    # TODO
-    )
-
-F_PLAYER_WEALTH = 0x52
-SIZE_PACKET_F_PLAYER_WEALTH = 0x00 # TODO
-PACKET_F_PLAYER_WEALTH = construct.Struct("PACKET_F_PLAYER_WEALTH",
     # TODO
     )
 
@@ -641,12 +704,6 @@ PACKET_F_REQUEST_LASTNAME = construct.Struct("PACKET_F_REQUEST_LASTNAME",
     # TODO
     )
 
-F_INIT_PLAYER = 0x7C
-SIZE_PACKET_F_INIT_PLAYER = 0x00 # TODO
-PACKET_F_INIT_PLAYER = construct.Struct("PACKET_F_INIT_PLAYER",
-    # TODO
-    )
-
 F_REQUEST_INIT_PLAYER = 0x7D
 SIZE_PACKET_F_REQUEST_INIT_PLAYER = 0x00 # TODO
 PACKET_F_REQUEST_INIT_PLAYER = construct.Struct("PACKET_F_REQUEST_INIT_PLAYER",
@@ -686,12 +743,6 @@ PACKET_F_MAIL = construct.Struct("PACKET_F_MAIL",
 S_DATAGRAM_ESTABLISHED = 0x87
 SIZE_PACKET_S_DATAGRAM_ESTABLISHED = 0x00 # TODO
 PACKET_S_DATAGRAM_ESTABLISHED = construct.Struct("PACKET_S_DATAGRAM_ESTABLISHED",
-    # TODO
-    )
-
-S_PLAYER_INITTED = 0x88
-SIZE_PACKET_S_PLAYER_INITTED = 0x00 # TODO
-PACKET_S_PLAYER_INITTED = construct.Struct("PACKET_S_PLAYER_INITTED",
     # TODO
     )
 
@@ -1001,12 +1052,6 @@ PACKET_F_OBJECTIVE_CONTROL = construct.Struct("PACKET_F_OBJECTIVE_CONTROL",
     # TODO
     )
 
-F_INTERFACE_COMMAND = 0xC8
-SIZE_PACKET_F_INTERFACE_COMMAND = 0x00 # TODO
-PACKET_F_INTERFACE_COMMAND = construct.Struct("PACKET_F_INTERFACE_COMMAND",
-    # TODO
-    )
-
 F_SCENARIO_PLAYER_INFO = 0xC9
 SIZE_PACKET_F_SCENARIO_PLAYER_INFO = 0x00 # TODO
 PACKET_F_SCENARIO_PLAYER_INFO = construct.Struct("PACKET_F_SCENARIO_PLAYER_INFO",
@@ -1220,12 +1265,6 @@ PACKET_F_BUY_CAREER_PACKAGE = construct.Struct("PACKET_F_BUY_CAREER_PACKAGE",
 F_CAREER_PACKAGE_INFO = 0xF3
 SIZE_PACKET_F_CAREER_PACKAGE_INFO = 0x00 # TODO
 PACKET_F_CAREER_PACKAGE_INFO = construct.Struct("PACKET_F_CAREER_PACKAGE_INFO",
-    # TODO
-    )
-
-F_PLAYER_RANK_UPDATE = 0xF4
-SIZE_PACKET_F_PLAYER_RANK_UPDATE = 0x00 # TODO
-PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
     # TODO
     )
 
