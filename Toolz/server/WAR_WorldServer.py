@@ -11,6 +11,7 @@ import WAR_Utils
 from WAR_WorldStruct import *
 
 class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
+    """ """
 
     def recv_data(self):
         buf = self.request.recv(2)
@@ -437,14 +438,21 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             rank = 0x02))
         self.send_data(p)
 
-    def response_0x05(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_F_PLAYER_HEALTH(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_PLAYER_HEALTH (0x05)
+            Packet handling is done:
+                - 0x4DBBB0
+            Size packet is 0x00000010 (?)
+
+        """
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">I", 0x0226)      # Actual hit points
-        p += struct.pack(">I", 0x0226)      # Max hit points
-        p += struct.pack(">H", 0x0064)      # Actual Action points
-        p += struct.pack(">H", 0x0064)      # Max Action points
-        p += struct.pack(">H", 0x0000)      # unk_word_00
-        p += struct.pack(">H", 0x0000)      # unk_word_01
+        p += PACKET_F_PLAYER_HEALTH.build(construct.Container(hit_points_current = 0x0226,
+            hit_points_max = 0x0226,
+            action_points_current = 0x0064,
+            action_points_max = 0x0064,
+            unk_word_00 = 0x0000,
+            unk_word_01 = 0x0000))
         self.send_data(p)
 
     def response_0xEA(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -452,9 +460,19 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">B", 0x00)        # TODO
         self.send_data(p)
 
-    def response_0xEF(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_F_PLAYER_INIT_COMPLETE(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_PLAYER_INIT_COMPLETE (0xEF)
+            Packet handling is done:
+                - 0x4DCFDD
+            Size packet is 0x00000002
+            Packet data are ignored
+
+            Check if Player->field_255 (0x3FC) is NULL, if True send packet F_CLIENT_DATA
+            In all case send packet F_INTERFACE_COMMAND
+        """
         p = struct.pack(">B", opcode_entry[0])
-        p += struct.pack(">H", 0x0000)        # unk_word_00
+        p += PACKET_F_PLAYER_INIT_COMPLETE.build(construct.Container(unk_word_00 = 0x0000))
         self.send_data(p)
 
     def response_S_PLAYER_INITTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
@@ -484,24 +502,53 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             unk_word_05 = 0))
         self.send_data(p)
 
-    def response_0x95(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def response_F_BAG_INFO(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_BAG_INFO (0x95)
+
+            Packet handling is done:
+                - 0x4C00D6
+            /!\ Little endian /!\
+            First byte is a command that can have the value:
+                - 0x16:
+                - 0x17:
+                - 0x18:
+                - 0x19:
+                - 0x1A:
+                - 0x1D:
+                - 0x1E:
+                - 0x1F:
+                - 0x0B:
+                - 0x0D:
+                - 0x0E:
+                - 0x0C:
+                - 0x05:
+                - 0x09:
+                - 0x04:
+        """
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">B", 0x0F)            # Command
-        p += struct.pack("<H", 0x0020)          # GameData.Player.numBackpackSlots
-        p += struct.pack("<H", 0x0010)          # GameData.Player.backpackExpansionSlots
-        p += struct.pack("<I", 0x64)            # GameData.Player.backpackExpansionSlotsCost
-        p += struct.pack("<H", 0x0200)          # GameData.Player.numBankSlots
-        p += struct.pack("<H", 0x0050)          # GameData.Player.bankExpansionSlots
-        p += struct.pack("<I", 0xEA600008)      # GameData.Player.bankExpansionSlotsCost
+        p += PACKET_F_BAG_INFO_COMMAND_0F.build(construct.Container(num_backpack_slots = 0x40,
+            backpack_expansion_slots = 0x100,
+            backpack_expansion_slots_cost = 0x640,
+            num_bank_slots = 0x200,
+            bank_expansion_slots = 0x50,
+            bank_expansion_slots_cost = 0x10
+            ))
         self.send_data(p)
 
     def response_item(self):
-        p = struct.pack(">H", 0x000A)           # Slot ID
+        """
+
+            0x2A87C15DF8425A8C data/gamedata/itemdata.csv
+
+        """
+        p = struct.pack(">H", 14)           # Slot ID
         p += struct.pack(">B", 0x00)            # unk_byte_00
-        p += struct.pack(">I", 0x0133)          # Info Entry
-        p += struct.pack(">H", 0x0446)          # Model ID
+        p += struct.pack(">I", 0x0133)          # Info Entry        ; i
+        p += struct.pack(">H", 0x0446)          # Model ID          ; icon
         p += "\x00" * 7
-        p += struct.pack(">H", 0x000A)          # Slot ID
+        p += struct.pack(">H", 0x0000)          # Slot ID
         p += struct.pack(">B", 0x0B)            # Type
         p += struct.pack(">B", 0x00)            # MIN RANK ?
         p += struct.pack(">B", 0x00)            # MIN RANK ?
@@ -553,7 +600,14 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">H", 0x0000)          # UNK
         self.send_data(p)
 
-    def reponse_0xAA(self, opcode_entry, packet_client_header, packet_client, packet_data):
+    def reponse_F_GET_ITEM(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_GET_ITEM (0xAA)
+
+            Packet handling is done:
+                - 0x4D64A2
+
+        """
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">B", 0x01)            # NB
         p += "\x00" * 3                         # PADDING
@@ -574,25 +628,17 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         #self.send_data(p)
 
         self.response(F_PLAYER_EXPERIENCE, packet_client_header, packet_client, packet_data)
-
-        #p = '4e000000000000000a01000000'.decode('hex')
-        #self.send_data(p)
         self.response(F_PLAYER_RENOWN, packet_client_header, packet_client, packet_data)
 
         #p = 'be030000000703400800000000'.decode('hex')
         #self.send_data(p)
 
-        #p = '0500000226000002260000006400000e00'.decode('hex')
-        #self.send_data(p)
-        self.response(0x05, packet_client_header, packet_client, packet_data)
-
-        #p = '950f200010006400000000025000080060ea0000'.decode('hex')
-        #self.send_data(p)
-        self.response(0x95, packet_client_header, packet_client, packet_data)
+        self.response(F_PLAYER_HEALTH, packet_client_header, packet_client, packet_data)
+        self.response(F_BAG_INFO, packet_client_header, packet_client, packet_data)
 
         #p = 'aa03000000000a0000000133044600000000000000000a0b0000000000010004000000000000000000000000000100010000000000000400004901900c4d65204f6c2720537469636b000000000000000000000003020000000000000000000000000000000000000000000014000002dcd412c9000000000000000014000000000000010100000000400000000000000000000100010000000000000000000100000f4d6520536f6665737420536869727400000000000000000000000302000000000000000000000000000000000000000000002a0000002e8f0213000000000000000000000000000001050000000000000000000000000000000100010000000000000000000000000f426f6f6b206f662042696e64696e670000000000007355736520746f2072657475726e20746f20796f75722072616c6c7920706f696e742e20596f752063616e2073657420796f75722072616c6c7920706f696e742062792074616c6b696e6720746f207468652052616c6c79204d617374657220696e20616e79206368617074657220617265612e000000000302000000000000000000000000000000000000000000'.decode('hex')
         #self.send_data(p)
-        self.response(0xAA, packet_client_header, packet_client, packet_data)
+        self.response(F_GET_ITEM, packet_client_header, packet_client, packet_data)
 
         #p = 'be01060300010701010b0101d301076a01076b0100f500'.decode('hex')
         #self.send_data(p)
@@ -604,9 +650,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p = '4f1aae000000000000000000000000000000000000'.decode('hex')
         self.send_data(p)
 
-        #p = 'efae00'.decode('hex')
-        #self.send_data(p)
-        self.response(0xEF, packet_client_header, packet_client, packet_data)
+        self.response(F_PLAYER_INIT_COMPLETE, packet_client_header, packet_client, packet_data)
     ### ALL HANDLE
 
     def handle_unknown(self, opcode_entry, packet_client_header, packet_data):
@@ -1026,7 +1070,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xFE, "F_PLAY_VOICE_OVER", self.handle_0xFE, PACKET_F_PLAY_VOICE_OVER), (0xFF, "UNKNOWN", self.handle_unknown, None),
         ]
         self.WorldSent = [
-            (0x05, "F_PLAYER_HEALTH", self.response_0x05),
+            (0x05, "F_PLAYER_HEALTH", self.response_F_PLAYER_HEALTH),
             (0x0C, "F_PLAYER_QUIT", self.reponse_0x0C),
             (0x13, "F_REQUEST_CHAR_TEMPLATES", self.response_0x13),
             (0x19, "F_WORLD_ENTER", self.response_F_WORLD_ENTER),
@@ -1048,12 +1092,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x85, "S_GAME_OPENED", self.response_S_GAME_OPENED),
             (0x88, "S_PLAYER_INITTED", self.response_S_PLAYER_INITTED),
             (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_F_RECEIVE_ENCRYPTKEY),
-            (0x95, "F_BAG_INFO", self.response_0x95),
-            (0xAA, "F_GET_ITEM", self.reponse_0xAA),
+            (0x95, "F_BAG_INFO", self.response_F_BAG_INFO),
+            (0xAA, "F_GET_ITEM", self.reponse_F_GET_ITEM),
             (0xD6, "F_SET_TIME", self.response_0xD6),
             (0xDA, "F_USE_ABILITY", self.response_0xDA),
             (0xEA, "F_QUEST_LIST", self.response_0xEA),
-            (0xEF, "F_PLAYER_INIT_COMPLETE", self.response_0xEF),
+            (0xEF, "F_PLAYER_INIT_COMPLETE", self.response_F_PLAYER_INIT_COMPLETE),
             (0xF4, "F_PLAYER_RANK_UPDATE", self.response_F_PLAYER_RANK_UPDATE)
         ]
         WAR_Utils.LogInfo("WorldTCPHandler : New connection from %s : %d" % (self.client_address[0], self.client_address[1]), 1)

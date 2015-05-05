@@ -134,6 +134,17 @@ PACKET_F_INTERFACE_COMMAND = construct.Struct("PACKET_F_INTERFACE_COMMAND",
 # SIZE PACKET
 # Structure
 
+F_PLAYER_HEALTH = 0x05
+SIZE_PACKET_F_PLAYER_HEALTH = 0x10
+PACKET_F_PLAYER_HEALTH = construct.Struct("PACKET_F_PLAYER_HEALTH",
+    construct.UBInt32("hit_points_current"),     # + 0x00
+    construct.UBInt32("hit_points_max"),         # + 0x04
+    construct.UBInt16("action_points_current"),  # + 0x08
+    construct.UBInt16("action_points_max"),      # + 0x0A
+    construct.UBInt16("unk_word_00"),            # + 0x0C
+    construct.UBInt16("unk_word_01"),            # + 0x0E
+    )
+
 F_MAX_VELOCITY = 0x1E
 SIZE_PACKET_F_MAX_VELOCITY = 0x02
 PACKET_F_MAX_VELOCITY = construct.Struct("PACKET_F_MAX_VELOCITY",
@@ -241,6 +252,23 @@ PACKET_F_RECEIVE_ENCRYPTKEY = construct.Struct("PACKET_F_RECEIVE_ENCRYPTKEY",
     construct.UBInt8("send_key"),                               # + 0x00
                         )
 
+F_BAG_INFO = 0x95
+SIZE_PACKET_F_BAG_INFO_COMMAND_0F = 0x10
+PACKET_F_BAG_INFO_COMMAND_0F = construct.Struct("PACKET_F_BAG_INFO_COMMAND_0F",
+    construct.ULInt16("num_backpack_slots"),                # + 0x00 , GameData.Player.numBackpackSlots
+    construct.ULInt16("backpack_expansion_slots"),          # + 0x02 , GameData.Player.backpackExpansionSlots
+    construct.ULInt32("backpack_expansion_slots_cost"),     # + 0x04 , GameData.Player.backpackExpansionSlotsCost
+    construct.ULInt16("num_bank_slots"),                    # + 0x08 , GameData.Player.numBankSlots
+    construct.ULInt16("bank_expansion_slots"),              # + 0x0A , GameData.Player.bankExpansionSlots
+    construct.ULInt32("bank_expansion_slots_cost"),         # + 0x0C , GameData.Player.bankExpansionSlotsCost
+    )
+
+F_PLAYER_INIT_COMPLETE = 0xEF
+SIZE_PACKET_F_PLAYER_INIT_COMPLETE = 0x02
+PACKET_F_PLAYER_INIT_COMPLETE = construct.Struct("PACKET_F_PLAYER_INIT_COMPLETE",
+    construct.UBInt16("unk_word_00"),     # + 0x00
+    )
+
 F_PLAYER_RANK_UPDATE = 0xF4
 SIZE_PACKET_F_PLAYER_RANK_UPDATE = 0x04
 PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
@@ -275,12 +303,6 @@ PACKET_F_QUEST = construct.Struct("PACKET_F_QUEST",
 F_UPDATE_SIEGE_LOOK_AT = 0x03
 SIZE_PACKET_F_UPDATE_SIEGE_LOOK_AT = 0x00 # TODO
 PACKET_F_UPDATE_SIEGE_LOOK_AT = construct.Struct("PACKET_F_UPDATE_SIEGE_LOOK_AT",
-    # TODO
-    )
-
-F_PLAYER_HEALTH = 0x05
-SIZE_PACKET_F_PLAYER_HEALTH = 0x00 # TODO
-PACKET_F_PLAYER_HEALTH = construct.Struct("PACKET_F_PLAYER_HEALTH",
     # TODO
     )
 
@@ -1241,12 +1263,6 @@ PACKET_F_QUEST_LIST_UPDATE = construct.Struct("PACKET_F_QUEST_LIST_UPDATE",
 F_CAREER_CATEGORY = 0xEE
 SIZE_PACKET_F_CAREER_CATEGORY = 0x00 # TODO
 PACKET_F_CAREER_CATEGORY = construct.Struct("PACKET_F_CAREER_CATEGORY",
-    # TODO
-    )
-
-F_PLAYER_INIT_COMPLETE = 0xEF
-SIZE_PACKET_F_PLAYER_INIT_COMPLETE = 0x00 # TODO
-PACKET_F_PLAYER_INIT_COMPLETE = construct.Struct("PACKET_F_PLAYER_INIT_COMPLETE",
     # TODO
     )
 
