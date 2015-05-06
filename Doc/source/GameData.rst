@@ -4,7 +4,7 @@ Game Data
 Skill type
 ----------
 
-Informations extracted from function 0x005E2271.
+Informations extracted from function :func:`0x005E2271`.
 
 * GameData.SkillType.NONE = 0
 * GameData.SkillType.SWORD = 1
