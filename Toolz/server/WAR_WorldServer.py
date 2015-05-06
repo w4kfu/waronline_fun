@@ -642,6 +642,22 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += struct.pack(">H", 0x0000)          # UNK
         self.send_data(p)
 
+    def response_F_TRADE_SKILL_UPDATE(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_TRADE_SKILL_UPDATE (0xF9)
+            Packet handling is done:
+            
+            * 0x004DEF40
+            
+            Size packet is 0x00000003
+            tradeskill_id can be found in data/gamedata/tradeskilldata.csv (0x7F9B4526CBAEF58B)
+        """
+        p = struct.pack(">B", opcode_entry[0])
+        p += PACKET_F_TRADE_SKILL_UPDATE.build(construct.Container(tradeskill_id = 0x04, # apothecary
+            level = 1))
+            
+        self.send_data(p)
+        
     def reponse_F_GET_ITEM(self, opcode_entry, packet_client_header, packet_client, packet_data):
         """
             F_GET_ITEM (0xAA)
@@ -691,8 +707,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         #self.send_data(p)
         #self.response(0xEA, packet_client_header, packet_client, packet_data)
 
-        p = '4f1aae000000000000000000000000000000000000'.decode('hex')
-        self.send_data(p)
+        #p = '4f1aae000000000000000000000000000000000000'.decode('hex')
+        #self.send_data(p)
+        
+        self.response(F_TRADE_SKILL_UPDATE, packet_client_header, packet_client, packet_data)
+        
+        #p = 'F9040002'.decode('hex')
+        #self.send_data(p)
 
         self.response(F_PLAYER_INIT_COMPLETE, packet_client_header, packet_client, packet_data)
     ### ALL HANDLE
@@ -974,8 +995,16 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         # TODO !
         pass
 
-    def handle_0xDC(self, opcode_entry, packet_client_header, packet_data):
-        packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
+    def handle_F_SWITCH_ATTACK_MODE(self, opcode_entry, packet_client_header, packet_data):
+        """
+            F_SWITCH_ATTACK_MODE (0xDC)
+            This packet is sent from method in WAR.exe:
+            
+            * 0x004B4B96, size = 0x00000004
+        
+        """
+        packet_client = opcode_entry[3].parse(packet_data)
+        packet_data = packet_data[SIZE_PACKET_F_SWITCH_ATTACK_MODE:]
         WAR_Utils.LogInfo(packet_client, 2)
 
     def handle_0xE5(self, opcode_entry, packet_client_header, packet_data):
@@ -1106,7 +1135,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0xD6, "UNKNOWN", self.handle_unknown, None), (0xD7, "UNKNOWN", self.handle_unknown, None),
         (0xD8, "UNKNOWN", self.handle_unknown, None), (0xD9, "UNKNOWN", self.handle_unknown, None),
         (0xDA, "UNKNOWN", self.handle_unknown, None), (0xDB, "F_INFLUENCE_DETAILS", self.handle_0xDB, PACKET_F_INFLUENCE_DETAILS),
-        (0xDC, "F_SWITCH_ATTACK_MODE", self.handle_0xDC, PACKET_F_SWITCH_ATTACK_MODE), (0xDD, "UNKNOWN", self.handle_unknown, None),
+        (0xDC, "F_SWITCH_ATTACK_MODE", self.handle_F_SWITCH_ATTACK_MODE, PACKET_F_SWITCH_ATTACK_MODE), (0xDD, "UNKNOWN", self.handle_unknown, None),
         (0xDE, "UNKNOWN", self.handle_unknown, None), (0xDF, "UNKNOWN", self.handle_unknown, None),
         (0xE0, "UNKNOWN", self.handle_unknown, None), (0xE1, "UNKNOWN", self.handle_unknown, None),
         (0xE2, "UNKNOWN", self.handle_unknown, None), (0xE3, "UNKNOWN", self.handle_unknown, None),
@@ -1155,7 +1184,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0xDA, "F_USE_ABILITY", self.response_0xDA),
             (0xEA, "F_QUEST_LIST", self.response_0xEA),
             (0xEF, "F_PLAYER_INIT_COMPLETE", self.response_F_PLAYER_INIT_COMPLETE),
-            (0xF4, "F_PLAYER_RANK_UPDATE", self.response_F_PLAYER_RANK_UPDATE)
+            (0xF4, "F_PLAYER_RANK_UPDATE", self.response_F_PLAYER_RANK_UPDATE),
+            (0xF9, "F_TRADE_SKILL_UPDATE", self.response_F_TRADE_SKILL_UPDATE)
         ]
         WAR_Utils.LogInfo("WorldTCPHandler : New connection from %s : %d" % (self.client_address[0], self.client_address[1]), 1)
         self.handle_recv_data()

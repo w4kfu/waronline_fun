@@ -144,6 +144,13 @@ PACKET_F_INTERFACE_COMMAND = construct.Struct("PACKET_F_INTERFACE_COMMAND",
     construct.UBInt16("unk_word_00"),                           # + 0x02
     construct.UBInt16("unk_word_01"),                           # + 0x04
     )
+    
+F_SWITCH_ATTACK_MODE = 0xDC
+SIZE_PACKET_F_SWITCH_ATTACK_MODE = 0x04
+PACKET_F_SWITCH_ATTACK_MODE = construct.Struct("PACKET_F_SWITCH_ATTACK_MODE",
+    construct.UBInt8("unk_byte_00"),                            # + 0x00
+    construct.Padding(3),                                       # + 0x01
+    )
 
 ##########################################################################
 
@@ -307,6 +314,16 @@ PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
     construct.UBInt8("unk_byte_01"),      # + 0x01
     construct.UBInt16("object_id"),       # + 0x02
     )
+    
+F_TRADE_SKILL_UPDATE = 0xF9
+SIZE_PACKET_F_TRADE_SKILL_UPDATE = 0x04
+PACKET_F_TRADE_SKILL_UPDATE = construct.Struct("PACKET_F_TRADE_SKILL_UPDATE",
+    construct.UBInt8("tradeskill_id"),    # + 0x00
+    construct.Padding(1),                 # + 0x01
+    construct.UBInt16("level"),           # + 0x02
+    )
+    
+##########################################################################
 
 F_QUEST = 0x02
 SIZE_PACKET_F_QUEST = 0x00 # TODO
@@ -1184,12 +1201,6 @@ PACKET_F_INFLUENCE_DETAILS = construct.Struct("PACKET_F_INFLUENCE_DETAILS",
     # TODO
     )
 
-F_SWITCH_ATTACK_MODE = 0xDC
-SIZE_PACKET_F_SWITCH_ATTACK_MODE = 0x00 # TODO
-PACKET_F_SWITCH_ATTACK_MODE = construct.Struct("PACKET_F_SWITCH_ATTACK_MODE",
-    # TODO
-    )
-
 F_BUG_REPORT = 0xDD
 SIZE_PACKET_F_BUG_REPORT = 0x00 # TODO
 PACKET_F_BUG_REPORT = construct.Struct("PACKET_F_BUG_REPORT",
@@ -1313,12 +1324,6 @@ PACKET_F_TACTICS = construct.Struct("PACKET_F_TACTICS",
 F_TOK_ENTRY_UPDATE = 0xF8
 SIZE_PACKET_F_TOK_ENTRY_UPDATE = 0x00 # TODO
 PACKET_F_TOK_ENTRY_UPDATE = construct.Struct("PACKET_F_TOK_ENTRY_UPDATE",
-    # TODO
-    )
-
-F_TRADE_SKILL_UPDATE = 0xF9
-SIZE_PACKET_F_TRADE_SKILL_UPDATE = 0x00 # TODO
-PACKET_F_TRADE_SKILL_UPDATE = construct.Struct("PACKET_F_TRADE_SKILL_UPDATE",
     # TODO
     )
 
