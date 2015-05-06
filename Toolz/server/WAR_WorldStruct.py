@@ -14,6 +14,25 @@ PacketClientHeader = construct.Struct("PacketClientHeader",
 
 ##########################################################################
 
+CHARACTER = construct.Struct("CHARACTER",
+    construct.String("nickname", 0x18, padchar="\x00"),         # + 0x00
+    construct.String("last_name", 0x18, padchar="\x00"),        # + 0x18
+    construct.UBInt8("level"),                                  # + 0x30
+    construct.UBInt8("career"),                                 # + 0x31
+    construct.UBInt8("realm"),                                  # + 0x32
+    construct.UBInt8("gender"),                                 # + 0x33
+    construct.UBInt16("unk_word_00"),                           # + 0x34
+    construct.ULInt16("zone"),                                  # + 0x36    /!\ Field on little endian
+    construct.Array(0x0C, construct.UBInt8("unk_data_00")),     # + 0x38
+    )
+
+ABILITY_STRUCT = construct.Struct("ABILITY_STRUCT",
+    construct.UBInt16("id_ability"),                            # + 0x00
+    construct.UBInt8("level"),                                  # + 0x02
+    )
+                        
+##########################################################################
+
 ## PACKET RECEIVED
 
 # OPCODE VALUE
@@ -263,6 +282,18 @@ PACKET_F_BAG_INFO_COMMAND_0F = construct.Struct("PACKET_F_BAG_INFO_COMMAND_0F",
     construct.ULInt32("bank_expansion_slots_cost"),         # + 0x0C , GameData.Player.bankExpansionSlotsCost
     )
 
+F_CHARACTER_INFO = 0xBE
+SIZE_PACKET_F_CHARACTER_INFO = 0x00 # TODO
+PACKET_F_CHARACTER_INFO = construct.Struct("PACKET_F_CHARACTER_INFO",
+    # TODO
+    )    
+    
+PACKET_F_CHARACTER_INFO_ABILITIES = construct.Struct("PACKET_F_CHARACTER_INFO_ABILITIES",
+    construct.UBInt8("nb_abilities"),      # + 0x00
+    construct.Padding(2),                  # + 0x01
+    construct.Array(lambda ctx: ctx.nb_abilities, ABILITY_STRUCT)
+    )    
+    
 F_PLAYER_INIT_COMPLETE = 0xEF
 SIZE_PACKET_F_PLAYER_INIT_COMPLETE = 0x02
 PACKET_F_PLAYER_INIT_COMPLETE = construct.Struct("PACKET_F_PLAYER_INIT_COMPLETE",
@@ -276,23 +307,6 @@ PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
     construct.UBInt8("unk_byte_01"),      # + 0x01
     construct.UBInt16("object_id"),       # + 0x02
     )
-
-##########################################################################
-
-CHARACTER = construct.Struct("CHARACTER",
-    construct.String("nickname", 0x18, padchar="\x00"),         # + 0x00
-    construct.String("last_name", 0x18, padchar="\x00"),        # + 0x18
-    construct.UBInt8("level"),                                  # + 0x30
-    construct.UBInt8("career"),                                 # + 0x31
-    construct.UBInt8("realm"),                                  # + 0x32
-    construct.UBInt8("gender"),                                 # + 0x33
-    construct.UBInt16("unk_word_00"),                           # + 0x34
-    construct.ULInt16("zone"),                                  # + 0x36    /!\ Field on little endian
-    construct.Array(0x0C, construct.UBInt8("unk_data_00")),     # + 0x38
-    )
-
-
-##########################################################################
 
 F_QUEST = 0x02
 SIZE_PACKET_F_QUEST = 0x00 # TODO
@@ -1011,12 +1025,6 @@ PACKET_F_ESTABLISH_DATAGRAM = construct.Struct("PACKET_F_ESTABLISH_DATAGRAM",
 F_PLAYER_INVENTORY = 0xBD
 SIZE_PACKET_F_PLAYER_INVENTORY = 0x00 # TODO
 PACKET_F_PLAYER_INVENTORY = construct.Struct("PACKET_F_PLAYER_INVENTORY",
-    # TODO
-    )
-
-F_CHARACTER_INFO = 0xBE
-SIZE_PACKET_F_CHARACTER_INFO = 0x00 # TODO
-PACKET_F_CHARACTER_INFO = construct.Struct("PACKET_F_CHARACTER_INFO",
     # TODO
     )
 

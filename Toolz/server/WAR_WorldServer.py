@@ -489,6 +489,30 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         p += PACKET_F_PLAYER_INIT_COMPLETE.build(construct.Container(unk_word_00 = 0x0000))
         self.send_data(p)
 
+    def response_F_CHARACTER_INFO(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_CHARACTER_INFO (0xBE)
+            Packet handling is done:
+            
+            * 0x004E20E7
+            
+            First byte is a command that can have the value:
+            
+            * 0x00:
+            * 0x01: This command is for sending abilities informations (Handled by 0x4E2194)
+            * 0x02:
+            ... ?
+
+        """
+        
+        action_00 = construct.Container(id_ability = 5, level = 1)
+        #action_01 = construct.Container(id_ability = 1390, level = 1)
+        
+        p = struct.pack(">B", opcode_entry[0])
+        p += struct.pack(">B", 0x01)    # SEND ABILITIES
+        p += PACKET_F_CHARACTER_INFO_ABILITIES.build(construct.Container(nb_abilities = 1, ABILITY_STRUCT=[action_00]))
+        self.send_data(p)
+        
     def response_S_PLAYER_INITTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
         """
             S_PLAYER_INITTED (0x88)
@@ -659,12 +683,13 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         #self.send_data(p)
         self.response(F_GET_ITEM, packet_client_header, packet_client, packet_data)
 
-        p = 'be01060300010701010b0101d301076a01076b0100f500'.decode('hex')
-        self.send_data(p)
+        #p = 'be01060300010701010b0101d301076a01076b0100f500'.decode('hex')
+        #self.send_data(p)
+        self.response(F_CHARACTER_INFO, packet_client_header, packet_client, packet_data)
 
         #p = 'ea00'.decode('hex')
         #self.send_data(p)
-        self.response(0xEA, packet_client_header, packet_client, packet_data)
+        #self.response(0xEA, packet_client_header, packet_client, packet_data)
 
         p = '4f1aae000000000000000000000000000000000000'.decode('hex')
         self.send_data(p)
@@ -1125,6 +1150,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0x8A, "F_RECEIVE_ENCRYPTKEY", self.response_F_RECEIVE_ENCRYPTKEY),
             (0x95, "F_BAG_INFO", self.response_F_BAG_INFO),
             (0xAA, "F_GET_ITEM", self.reponse_F_GET_ITEM),
+            (0xBE, "F_CHARACTER_INFO", self.response_F_CHARACTER_INFO),
             (0xD6, "F_SET_TIME", self.response_0xD6),
             (0xDA, "F_USE_ABILITY", self.response_0xDA),
             (0xEA, "F_QUEST_LIST", self.response_0xEA),
