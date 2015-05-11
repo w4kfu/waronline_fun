@@ -171,6 +171,18 @@ PACKET_F_PLAYER_HEALTH = construct.Struct("PACKET_F_PLAYER_HEALTH",
     construct.UBInt16("unk_word_01"),            # + 0x0E
     )
 
+F_CHAT = 0x06
+SIZE_PACKET_F_CHAT = 0x00
+PACKET_F_CHAT = construct.Struct("PACKET_F_CHAT",
+    construct.UBInt16("object_id"),              # + 0x00
+    construct.UBInt8("filter"),                  # + 0x02
+    construct.Padding(4),                        # + 0x03
+    construct.PascalString("name_sender",
+        length_field = construct.UBInt8("length")),  # + 0x..
+    construct.PascalString("text",
+        length_field = construct.UBInt16("length")),  # + 0x..
+    )    
+    
 F_MAX_VELOCITY = 0x1E
 SIZE_PACKET_F_MAX_VELOCITY = 0x02
 PACKET_F_MAX_VELOCITY = construct.Struct("PACKET_F_MAX_VELOCITY",
@@ -334,12 +346,6 @@ PACKET_F_QUEST = construct.Struct("PACKET_F_QUEST",
 F_UPDATE_SIEGE_LOOK_AT = 0x03
 SIZE_PACKET_F_UPDATE_SIEGE_LOOK_AT = 0x00 # TODO
 PACKET_F_UPDATE_SIEGE_LOOK_AT = construct.Struct("PACKET_F_UPDATE_SIEGE_LOOK_AT",
-    # TODO
-    )
-
-F_CHAT = 0x06
-SIZE_PACKET_F_CHAT = 0x00 # TODO
-PACKET_F_CHAT = construct.Struct("PACKET_F_CHAT",
     # TODO
     )
 

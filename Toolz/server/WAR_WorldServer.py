@@ -10,6 +10,8 @@ import WAR_TCPHandler
 import WAR_Utils
 from WAR_WorldStruct import *
 
+l_connections = set()
+
 class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     """ """
 
@@ -56,7 +58,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         WAR_Utils.LogInfo(packet_client_header, 3)
         if packet_client_header['opcode'] <= len(self.OpcodesTableRecv):
             entry_opcode = self.OpcodesTableRecv[packet_client_header['opcode']]
-            WAR_Utils.LogInfo("[+] Opcode \"%s\" (0x%02X ; %d)" % (entry_opcode[1], entry_opcode[0], entry_opcode[0]), 1)
+            if entry_opcode[0] != F_PLAYER_STATE2:
+                WAR_Utils.LogInfo("[+] Opcode \"%s\" (0x%02X ; %d)" % (entry_opcode[1], entry_opcode[0], entry_opcode[0]), 1)
             entry_opcode[2](entry_opcode, packet_client_header, packet_data)
                 # Now make the answer if it exists
                 #if answer_opcode != None:
@@ -76,7 +79,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             realm = 0x02,
             gender = 0x00,
             unk_word_00 = 0x0E00,           # model?
-            zone = 100,                     # /!\ Field on little endian Norsca: 100
+            #zone = 100,                    # /!\ Field on little endian Norsca: 100
+            zone = 11,                      # [zone011];Mt Bloodhorn
             unk_data_00 = [0] * 0x0C,
             ))
 
@@ -161,7 +165,8 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def response(self, opcode, packet_client_header, packet_client, packet_data):
         for i in self.WorldSent:
             if opcode == i[0]:
-                WAR_Utils.LogInfo("[+] Response Opcode \"%s\" (0x%02X ; %d)" % (i[1], i[0], i[0]), 1)
+                if opcode != F_PLAYER_STATE2:
+                    WAR_Utils.LogInfo("[+] Response Opcode \"%s\" (0x%02X ; %d)" % (i[1], i[0], i[0]), 1)
                 i[2](i, packet_client_header, packet_client, packet_data)
                 break
 
@@ -266,7 +271,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             Response sent after receiving F_CONNECT packet.
             Packet handling is done in WAR.exe by:
-            
+
             * 0x004C88F9: username and server_name are PascalString, protocol is normaly equal to 0xEB8DB21.
 
         """
@@ -322,9 +327,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             Response sent when packet F_ENCRYPTKEY received with key_present is NULL.
             Packet handler check if (WORD)field_0x1CC is not null, and packet is handled in WAR.exe by:
-            
+
             * 0x004C8883: if send_key is not null, RC4 will be generated and sent with packet F_ENCRYPTKEY
-            
+
         """
         p = struct.pack(">B", opcode_entry[0])
         p += PACKET_F_RECEIVE_ENCRYPTKEY.build(construct.Container(send_key = 0x01))
@@ -394,7 +399,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             Velocity * 0.0099999998
             Packet handling is done:
-            
+
             * 0x4DCF59
 
             Size packet is 0x00000002.
@@ -421,7 +426,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_PLAYER_EXPERIENCE (0x39)
             Packet handling is done:
-            
+
             * 0x4DD006
 
             Size Packet is 0x0000000D (?)
@@ -437,7 +442,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_PLAYER_RENOWN (0x4E)
             Packet handling is done:
-            
+
             * 0x4DD10F
 
             Size Packet is 0x00000009 (?)
@@ -452,7 +457,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_PLAYER_HEALTH (0x05)
             Packet handling is done:
-            
+
             * 0x4DBBB0
 
             Size packet is 0x00000010 (?)
@@ -476,7 +481,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_PLAYER_INIT_COMPLETE (0xEF)
             Packet handling is done:
-            
+
             * 0x4DCFDD
 
             Size packet is 0x00000002
@@ -493,26 +498,43 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_CHARACTER_INFO (0xBE)
             Packet handling is done:
-            
+
             * 0x004E20E7
-            
+
             First byte is a command that can have the value:
-            
+
             * 0x00:
             * 0x01: This command is for sending abilities informations (Handled by 0x4E2194)
             * 0x02:
             ... ?
 
         """
-        
+
         action_00 = construct.Container(id_ability = 5, level = 1)
         #action_01 = construct.Container(id_ability = 1390, level = 1)
-        
+
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">B", 0x01)    # SEND ABILITIES
         p += PACKET_F_CHARACTER_INFO_ABILITIES.build(construct.Container(nb_abilities = 1, ABILITY_STRUCT=[action_00]))
         self.send_data(p)
-        
+
+    def response_F_CHAT(self, opcode_entry, packet_client_header, packet_client, packet_data):
+        """
+            F_CHAT (0x06)
+            Packet handling is done in:
+
+            * 0x004D19CF
+
+            TODO
+        """
+        p = struct.pack(">B", opcode_entry[0])
+        p += PACKET_F_CHAT.build(construct.Container(object_id = 0x2121,
+            filter = 0,
+            name_sender = "NAME_SENDER",
+            text = "TXT_MESSAGE"))
+        self.send_data(p)
+
+
     def response_S_PLAYER_INITTED(self, opcode_entry, packet_client_header, packet_client, packet_data):
         """
             S_PLAYER_INITTED (0x88)
@@ -545,12 +567,12 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             F_BAG_INFO (0x95)
 
             Packet handling is done:
-            
+
             * 0x4C00D6
-                
+
             /!\ Little endian /!\
             First byte is a command that can have the value:
-            
+
             * 0x16:
             * 0x17:
             * 0x18:
@@ -566,7 +588,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             * 0x05:
             * 0x09:
             * 0x04:
-            
+
         """
         p = struct.pack(">B", opcode_entry[0])
         p += struct.pack(">B", 0x0F)            # Command
@@ -646,24 +668,24 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_TRADE_SKILL_UPDATE (0xF9)
             Packet handling is done:
-            
+
             * 0x004DEF40
-            
+
             Size packet is 0x00000003
             tradeskill_id can be found in data/gamedata/tradeskilldata.csv (0x7F9B4526CBAEF58B)
         """
         p = struct.pack(">B", opcode_entry[0])
         p += PACKET_F_TRADE_SKILL_UPDATE.build(construct.Container(tradeskill_id = 0x04, # apothecary
             level = 1))
-            
+
         self.send_data(p)
-        
+
     def reponse_F_GET_ITEM(self, opcode_entry, packet_client_header, packet_client, packet_data):
         """
             F_GET_ITEM (0xAA)
 
             Packet handling is done:
-            
+
             * 0x4D64A2
 
         """
@@ -709,9 +731,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
 
         #p = '4f1aae000000000000000000000000000000000000'.decode('hex')
         #self.send_data(p)
-        
+
         self.response(F_TRADE_SKILL_UPDATE, packet_client_header, packet_client, packet_data)
-        
+
         #p = 'F9040002'.decode('hex')
         #self.send_data(p)
 
@@ -752,14 +774,14 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_F_PING(self, opcode_entry, packet_client_header, packet_data):
         """
             This packet is sent from method in WAR.exe:
-            
+
             * 0x004B2F33, size = 0x00000014
 
             Server has to answer with S_PONG (0x81).
         """
         packet_client = opcode_entry[3].parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_F_PING:]
-        WAR_Utils.LogInfo(packet_client, 2)
+        #WAR_Utils.LogInfo(packet_client, 2)
         self.response(S_PONG, packet_client_header, packet_client, packet_data)
 
     def handle_0x0D(self, opcode_entry, packet_client_header, packet_data):
@@ -793,7 +815,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_F_OPEN_GAME(self, opcode_entry, packet_client_header, packet_data):
         """
             Opcode 0x17 can be sent in WAR.exe from:
-            
+
             * 0x004BFF5D, size = 0x00000002
 
             Server must answer with S_GAME_OPENED (0x85)
@@ -815,7 +837,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_F_DUMP_ARENAS_LARGE(self, opcode_entry, packet_client_header, packet_data):
         """
             Opcode 0x35 can be sent in WAR.exe from:
-            
+
             * 0x004BFEF2, size = 0x00000002
 
             Server must answer with F_WORLD_ENTER (0x19)
@@ -850,10 +872,10 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             If the field key_present is not NULL, RC4 key (256 bytes) is present a the end of packet.
 
             Opcode 0x5C can be sent from two methods in WAR.exe:
-            
+
             * 0x004B1819, size = 0x00000006 : key_present is NULL
             * 0x004B2C1B, size = 0x00000106 : RC4 key present
-            
+
         """
         packet_client = opcode_entry[3].parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_F_ENCRYPTKEY:]
@@ -880,9 +902,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             construct.UBInt8("unk_byte_02"),                            # + 0x03
             )
 
-        WAR_Utils.LogInfo(WAR_Utils.hexdump(packet_data[:0x100]))
+        #WAR_Utils.LogInfo(WAR_Utils.hexdump(packet_data[:0x100]))
         packet_un = F_PLAYER_STATE2.parse(packet_data)
-        WAR_Utils.LogInfo(packet_un)
+        #WAR_Utils.LogInfo(packet_un)
         packet_client = ""
         self.response(0x62, packet_client_header, packet_client, packet_data)
 
@@ -894,9 +916,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_F_INIT_PLAYER(self, opcode_entry, packet_client_header, packet_data):
         """
             Opcode 0x7C can be sent from:
-            
+
             * 0x004C6D11, size = 0x00000016
-            
+
         """
         #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
         packet_client = opcode_entry[3].parse(packet_data)
@@ -949,7 +971,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
     def handle_F_INTERFACE_COMMAND(self, opcode_entry, packet_client_header, packet_data):
         """
             This opcode can be sent from methods:
-            
+
             * 0x004B6DC0, size = 0x00000006,
             * 0x004B6E03, size = ??????????
 
@@ -999,9 +1021,9 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         """
             F_SWITCH_ATTACK_MODE (0xDC)
             This packet is sent from method in WAR.exe:
-            
+
             * 0x004B4B96, size = 0x00000004
-        
+
         """
         packet_client = opcode_entry[3].parse(packet_data)
         packet_data = packet_data[SIZE_PACKET_F_SWITCH_ATTACK_MODE:]
@@ -1156,6 +1178,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         ]
         self.WorldSent = [
             (0x05, "F_PLAYER_HEALTH", self.response_F_PLAYER_HEALTH),
+            (0x06, "F_CHAT", self.response_F_CHAT),
             (0x0C, "F_PLAYER_QUIT", self.reponse_0x0C),
             (0x13, "F_REQUEST_CHAR_TEMPLATES", self.response_0x13),
             (0x19, "F_WORLD_ENTER", self.response_F_WORLD_ENTER),
@@ -1188,14 +1211,29 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             (0xF9, "F_TRADE_SKILL_UPDATE", self.response_F_TRADE_SKILL_UPDATE)
         ]
         WAR_Utils.LogInfo("WorldTCPHandler : New connection from %s : %d" % (self.client_address[0], self.client_address[1]), 1)
-        self.handle_recv_data()
+        l_connections.add(self)
+        try:
+            self.handle_recv_data()
+        finally:
+            l_connections.remove(self)
 
     def finish(self):
         WAR_Utils.LogInfo("WorldTCPHandler : Closing connection from %s : %d" % (self.client_address[0], self.client_address[1]), 1)
         return SocketServer.BaseRequestHandler.finish(self)
 
-if __name__ == "__main__":
+    def send_message(self, text, filter = 0):
+        p = struct.pack(">B", F_CHAT)
+        p += PACKET_F_CHAT.build(construct.Container(object_id = 0x2121,
+            filter = 0,
+            name_sender = "NAME_SENDER",
+            text = text))
+        self.send_data(p)
 
+    def send_packet(self, p):
+        self.send_data(p)
+
+
+if __name__ == "__main__":
     WorldServer = WAR_TCPHandler.ThreadedTCPServer((WAR_TCPHandler.WorldHost, WAR_TCPHandler.WorldPort), WorldTCPHandler)
     WorldServer.allow_reuse_address = True
     WorldServerThr = threading.Thread(target=WorldServer.serve_forever)
@@ -1203,5 +1241,8 @@ if __name__ == "__main__":
     WorldServerThr.start()
     WAR_Utils.LogInfo("[+] WorldServer started on \"%s\" : %d" % (WAR_TCPHandler.WorldHost, WAR_TCPHandler.WorldPort), 1)
 
-    raw_input('Press enter to stop servers.\n')
+    import code
+    code.InteractiveConsole({'CO' : l_connections}).interact()
+
+    #raw_input('Press enter to stop servers.\n')
     WorldServerThr._Thread__stop()
