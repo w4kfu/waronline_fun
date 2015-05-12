@@ -227,6 +227,76 @@ PACKET_F_REQUEST_CHAR_RESPONSE = construct.Struct("PACKET_F_REQUEST_CHAR_RESPONS
     construct.UBInt16("unk_word_00"),                           # + 0x1E
     )
 
+F_CREATE_MONSTER = 0x72
+SIZE_PACKET_F_CREATE_MONSTER = 0x00
+PACKET_F_CREATE_MONSTER = construct.Struct("PACKET_F_CREATE_MONSTER",
+    construct.UBInt16("object_id"),         # + 0x00
+    construct.Padding(2),                   # + 0x02
+    construct.UBInt16("unk_word_00"),       # + 0x04
+    construct.UBInt16("pos_z"),             # + 0x06
+    construct.UBInt32("pos_x"),             # + 0x08
+    construct.UBInt32("pos_y"),             # + 0x0C
+    construct.UBInt16("unk_word_01"),       # + 0x10    ; 004DA8D3 0F BF 47 10             movsx   eax, word ptr [edi+10h]
+    construct.UBInt16("unk_word_02"),       # + 0x12    ; 004DA408 0F B7 47 12             movzx   eax, word ptr [edi+12h]
+    construct.UBInt8("unk_byte_00"),        # + 0x14    ; VELOCITY ?
+    construct.UBInt8("level"),              # + 0x15
+    construct.UBInt8("target_type_info"),   # + 0x16    # TARGET TYPE , ICONE TYPE, ETC ?
+    construct.Padding(1),                   # + 0x17
+    construct.UBInt8("unk_byte_22"),        # + 0x18    # HUMAN / OBJECT ? ; cmp     byte ptr [edi+18h], 0
+    construct.Padding(1),                   # + 0x19
+    construct.UBInt16("unk_word_03"),       # + 0x1A    ; movzx   eax, word ptr [edi+1Ah]   ; If NULL default value is set to 1
+    
+    construct.UBInt8("unk_byte_44"),        # + 0x1C    ; 004DAE43 0F B6 49 1C             movzx   ecx, byte ptr [ecx+1Ch]
+    construct.UBInt8("unk_byte_55"),        # + 0x1D    ; 004DAE3F 0F B6 51 1D             movzx   edx, byte ptr [ecx+1Dh]
+    
+    construct.UBInt8("unk_flag"),           # + 0x1E    # ACTION / ANIMATION
+    construct.Padding(1),                   # + 0x1F
+    construct.UBInt16("unk_word_04"),       # + 0x20    ; 004DA6CA 66 8B 48 20             mov     cx, [eax+20h]
+    construct.Padding(2),                   # + 0x22
+    construct.UBInt32("unk_dword_00"),      # + 0x24    ; 004DA6DD 8B 48 24                mov     ecx, [eax+24h]
+    construct.UBInt16("unk_word_05"),       # + 0x28    ; 004DA6E8 0F B7 48 28             movzx   ecx, word ptr [eax+28h]
+    construct.UBInt16("title"),             # + 0x2A
+    construct.UBInt8("NS_nb_attributes"),   # + 0x2C
+    construct.Array(lambda ctx: ctx.NS_nb_attributes, construct.UBInt8("NS_attributes")),
+    construct.UBInt8("NS_IS_PRESENT"),      # + 0x??    # BANNER ?
+    construct.CString("name"),
+    construct.If(lambda ctx: ctx["unk_flag"] & 1 != 0,
+        construct.UBInt32("unk_dword_00_flag_01"),
+        ),
+    construct.If(lambda ctx: ctx["unk_flag"] & 2 != 0,
+        construct.UBInt16("unk_word_00_flag_01"),
+        ),
+    construct.If(lambda ctx: ctx["unk_flag"] & 4 != 0,
+        construct.UBInt16("unk_word_01_flag_01"),
+        ),
+    construct.If(lambda ctx: ctx["unk_flag"] & 8 != 0,
+        construct.UBInt8("unk_byte_00_flag_01"),
+        ),
+    construct.If(lambda ctx: ctx["unk_flag"] & 0x10 != 0,
+        construct.UBInt16("unk_word_02_flag_01"),
+        ),
+    construct.If(lambda ctx: 0x18 in ctx["NS_attributes"],
+        construct.UBInt16("unk_word_00_00"),
+        ),
+    construct.If(lambda ctx: 0x1D in ctx["NS_attributes"],
+        construct.Array(0x0F, construct.UBInt8("unk_data_1D_00"))
+        ),
+    construct.If(lambda ctx: 0x19 in ctx["NS_attributes"],
+        construct.Struct("UNK",
+            construct.UBInt8("nb_something_01"),
+            construct.Array(lambda ctx: ctx.nb_something_01, construct.UBInt8("unk_data_00_00"))
+            ),
+        ),
+    construct.If(lambda ctx: ctx["target_type_info"] & 0x10 != 0, # RELATED TO MOUNT
+        construct.UBInt32("unk_dword_00_flag_02"),
+        ),
+    construct.UBInt8("unk_byte_02"),
+    construct.UBInt16("unk_word_06"),
+    construct.UBInt8("ns_opcode_00"),
+    construct.UBInt8("ns_opcode_01"),
+    construct.UBInt8("ns_opcode_02"),
+    )    
+    
 S_PID_ASSIGN = 0x80
 SIZE_PACKET_S_PID_ASSIGN = 0x30
 PACKET_S_PID_ASSIGN = construct.Struct("PACKET_S_PID_ASSIGN",
@@ -301,6 +371,18 @@ PACKET_F_BAG_INFO_COMMAND_0F = construct.Struct("PACKET_F_BAG_INFO_COMMAND_0F",
     construct.ULInt32("bank_expansion_slots_cost"),         # + 0x0C , GameData.Player.bankExpansionSlotsCost
     )
 
+F_PLAYER_JUMP = 0xAC
+SIZE_PACKET_F_PLAYER_JUMP = 0x14
+PACKET_F_PLAYER_JUMP = construct.Struct("PACKET_F_PLAYER_JUMP",
+    construct.UBInt32("coord_x"),          # + 0x00
+    construct.UBInt32("coord_y"),          # + 0x04
+    construct.UBInt16("object_id"),        # + 0x08
+    construct.UBInt16("coord_z"),          # + 0x0A
+    construct.UBInt16("coord_o"),          # + 0x0C
+    construct.UBInt16("unk_word_00"),      # + 0x0E
+    construct.UBInt32("unk_dword_00"),     # + 0x10
+    )
+    
 F_CHARACTER_INFO = 0xBE
 SIZE_PACKET_F_CHARACTER_INFO = 0x00 # TODO
 PACKET_F_CHARACTER_INFO = construct.Struct("PACKET_F_CHARACTER_INFO",
@@ -731,13 +813,7 @@ F_CREATE_STATIC = 0x71
 SIZE_PACKET_F_CREATE_STATIC = 0x00 # TODO
 PACKET_F_CREATE_STATIC = construct.Struct("PACKET_F_CREATE_STATIC",
     # TODO
-    )
-
-F_CREATE_MONSTER = 0x72
-SIZE_PACKET_F_CREATE_MONSTER = 0x00 # TODO
-PACKET_F_CREATE_MONSTER = construct.Struct("PACKET_F_CREATE_MONSTER",
-    # TODO
-    )
+    )       
 
 F_PLAYER_IMAGENUM = 0x73
 SIZE_PACKET_F_PLAYER_IMAGENUM = 0x00 # TODO
@@ -964,12 +1040,6 @@ PACKET_F_GET_ITEM = construct.Struct("PACKET_F_GET_ITEM",
 F_DUEL = 0xAB
 SIZE_PACKET_F_DUEL = 0x00 # TODO
 PACKET_F_DUEL = construct.Struct("PACKET_F_DUEL",
-    # TODO
-    )
-
-F_PLAYER_JUMP = 0xAC
-SIZE_PACKET_F_PLAYER_JUMP = 0x00 # TODO
-PACKET_F_PLAYER_JUMP = construct.Struct("PACKET_F_PLAYER_JUMP",
     # TODO
     )
 
