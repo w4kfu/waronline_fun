@@ -23,6 +23,8 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    LoginServiceHandler.rst
+    LoginServiceProtocol.rst
     AbilitiesData.rst
     GameData.rst
     ItemsData.rst
