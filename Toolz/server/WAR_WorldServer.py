@@ -754,21 +754,29 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         packet_client = opcode_entry[3].parse(packet_data)
         WAR_Utils.LogInfo(packet_client, 2)
 
-    def handle_0x07(self, opcode_entry, packet_client_header, packet_data):
-        #packet_client, packet_data = WAR_Utils.depack(opcode_entry[3], packet_data)
-        packet_client = ""
-        packet_data = packet_data[1:]
-        WAR_Utils.LogInfo(packet_client, 2)
-        print "CMD = " + packet_data
-        if packet_data[1:5] == "quit" or packet_data[1:5] == "exit":
+    def handle_F_TEXT(self, opcode_entry, packet_client_header, packet_data):
+        """
+            This packet is sent from method in WAR.exe:
+
+            * 0x004B39AC, size = 0xFFFFFFFF
+
+        """
+        packet_client = opcode_entry[3].parse(packet_data)
+        WAR_Utils.LogInfo(packet_client)
+        #packet_data = packet_data[1:]
+        #WAR_Utils.LogInfo(packet_client, 2)
+        #print "CMD = " + packet_data
+        #if packet_data[1:5] == "quit" or packet_data[1:5] == "exit":
+        if packet_client["text"] == "quit":
             self.response(0x0C, packet_client_header, packet_client, packet_data)
-        if packet_data[1:10] == "say mount":
+        #if packet_data[1:10] == "say mount":
+        if packet_client["text"] == "mount":
             p = '1E00AE0100'.decode('hex')
             self.send_data(p)
             self.response(0x4F, packet_client_header, packet_client, packet_data)
-        if packet_data[1:9] == "say zone":
-            p = '1F0000000000000001010000000000000000000000000000'
-            self.send_data(p)
+        #if packet_data[1:9] == "say zone":
+        #    p = '1F0000000000000001010000000000000000000000000000'
+        #    self.send_data(p)
         #pass
 
     def handle_F_PING(self, opcode_entry, packet_client_header, packet_data):
@@ -1050,7 +1058,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
         (0x00, "UNKNOWN", self.handle_unknown, None), (0x01, "UNKNOWN", self.handle_0x01, None),
         (0x02, "UNKNOWN", self.handle_unknown, None), (0x03, "UNKNOWN", self.handle_unknown, None),
         (0x04, "F_PLAYER_EXIT", self.handle_F_PLAYER_EXIT, PACKET_F_PLAYER_EXIT), (0x05, "UNKNOWN", self.handle_unknown, None),
-        (0x06, "UNKNOWN", self.handle_unknown, None), (0x07, "F_TEXT", self.handle_0x07, PACKET_F_TEXT),
+        (0x06, "UNKNOWN", self.handle_unknown, None), (0x07, "F_TEXT", self.handle_F_TEXT, PACKET_F_TEXT),
         (0x08, "UNKNOWN", self.handle_unknown, None), (0x09, "UNKNOWN", self.handle_unknown, None),
         (0x0A, "UNKNOWN", self.handle_unknown, None), (0x0B, "F_PING", self.handle_F_PING, PACKET_F_PING),
         (0x0C, "UNKNOWN", self.handle_unknown, None), (0x0D, "UNKNOWN", self.handle_0x0D, None),

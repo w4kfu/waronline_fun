@@ -30,7 +30,7 @@ ABILITY_STRUCT = construct.Struct("ABILITY_STRUCT",
     construct.UBInt16("id_ability"),                            # + 0x00
     construct.UBInt8("level"),                                  # + 0x02
     )
-                        
+
 ##########################################################################
 
 ## PACKET RECEIVED
@@ -44,6 +44,14 @@ SIZE_PACKET_F_PLAYER_EXIT = 4
 PACKET_F_PLAYER_EXIT = construct.Struct("PACKET_F_PLAYER_EXIT",
     construct.UBInt16("session_id"),                            # + 0x00
     construct.UBInt16("unk_word_00"),                           # + 0x02
+    )
+
+F_TEXT = 0x07
+SIZE_PACKET_F_TEXT = 0x00
+PACKET_F_TEXT = construct.Struct("PACKET_F_TEXT",
+    construct.UBInt8("unk_byte_00"),                # + 0x00
+    construct.CString("cmd", terminators='\x20'),   # + 0x01
+    construct.CString("text")
     )
 
 F_PING = 0x0B
@@ -144,7 +152,7 @@ PACKET_F_INTERFACE_COMMAND = construct.Struct("PACKET_F_INTERFACE_COMMAND",
     construct.UBInt16("unk_word_00"),                           # + 0x02
     construct.UBInt16("unk_word_01"),                           # + 0x04
     )
-    
+
 F_SWITCH_ATTACK_MODE = 0xDC
 SIZE_PACKET_F_SWITCH_ATTACK_MODE = 0x04
 PACKET_F_SWITCH_ATTACK_MODE = construct.Struct("PACKET_F_SWITCH_ATTACK_MODE",
@@ -181,8 +189,8 @@ PACKET_F_CHAT = construct.Struct("PACKET_F_CHAT",
         length_field = construct.UBInt8("length")),  # + 0x..
     construct.PascalString("text",
         length_field = construct.UBInt16("length")),  # + 0x..
-    )    
-    
+    )
+
 F_MAX_VELOCITY = 0x1E
 SIZE_PACKET_F_MAX_VELOCITY = 0x02
 PACKET_F_MAX_VELOCITY = construct.Struct("PACKET_F_MAX_VELOCITY",
@@ -245,10 +253,10 @@ PACKET_F_CREATE_MONSTER = construct.Struct("PACKET_F_CREATE_MONSTER",
     construct.UBInt8("unk_byte_22"),        # + 0x18    # HUMAN / OBJECT ? ; cmp     byte ptr [edi+18h], 0
     construct.Padding(1),                   # + 0x19
     construct.UBInt16("unk_word_03"),       # + 0x1A    ; movzx   eax, word ptr [edi+1Ah]   ; If NULL default value is set to 1
-    
+
     construct.UBInt8("unk_byte_44"),        # + 0x1C    ; 004DAE43 0F B6 49 1C             movzx   ecx, byte ptr [ecx+1Ch]
     construct.UBInt8("unk_byte_55"),        # + 0x1D    ; 004DAE3F 0F B6 51 1D             movzx   edx, byte ptr [ecx+1Dh]
-    
+
     construct.UBInt8("unk_flag"),           # + 0x1E    # ACTION / ANIMATION
     construct.Padding(1),                   # + 0x1F
     construct.UBInt16("unk_word_04"),       # + 0x20    ; 004DA6CA 66 8B 48 20             mov     cx, [eax+20h]
@@ -295,8 +303,8 @@ PACKET_F_CREATE_MONSTER = construct.Struct("PACKET_F_CREATE_MONSTER",
     construct.UBInt8("ns_opcode_00"),
     construct.UBInt8("ns_opcode_01"),
     construct.UBInt8("ns_opcode_02"),
-    )    
-    
+    )
+
 S_PID_ASSIGN = 0x80
 SIZE_PACKET_S_PID_ASSIGN = 0x30
 PACKET_S_PID_ASSIGN = construct.Struct("PACKET_S_PID_ASSIGN",
@@ -382,19 +390,19 @@ PACKET_F_PLAYER_JUMP = construct.Struct("PACKET_F_PLAYER_JUMP",
     construct.UBInt16("unk_word_00"),      # + 0x0E
     construct.UBInt32("unk_dword_00"),     # + 0x10
     )
-    
+
 F_CHARACTER_INFO = 0xBE
 SIZE_PACKET_F_CHARACTER_INFO = 0x00 # TODO
 PACKET_F_CHARACTER_INFO = construct.Struct("PACKET_F_CHARACTER_INFO",
     # TODO
-    )    
-    
+    )
+
 PACKET_F_CHARACTER_INFO_ABILITIES = construct.Struct("PACKET_F_CHARACTER_INFO_ABILITIES",
     construct.UBInt8("nb_abilities"),      # + 0x00
     construct.Padding(2),                  # + 0x01
     construct.Array(lambda ctx: ctx.nb_abilities, ABILITY_STRUCT)
-    )    
-    
+    )
+
 F_PLAYER_INIT_COMPLETE = 0xEF
 SIZE_PACKET_F_PLAYER_INIT_COMPLETE = 0x02
 PACKET_F_PLAYER_INIT_COMPLETE = construct.Struct("PACKET_F_PLAYER_INIT_COMPLETE",
@@ -408,7 +416,7 @@ PACKET_F_PLAYER_RANK_UPDATE = construct.Struct("PACKET_F_PLAYER_RANK_UPDATE",
     construct.UBInt8("unk_byte_01"),      # + 0x01
     construct.UBInt16("object_id"),       # + 0x02
     )
-    
+
 F_TRADE_SKILL_UPDATE = 0xF9
 SIZE_PACKET_F_TRADE_SKILL_UPDATE = 0x04
 PACKET_F_TRADE_SKILL_UPDATE = construct.Struct("PACKET_F_TRADE_SKILL_UPDATE",
@@ -416,7 +424,7 @@ PACKET_F_TRADE_SKILL_UPDATE = construct.Struct("PACKET_F_TRADE_SKILL_UPDATE",
     construct.Padding(1),                 # + 0x01
     construct.UBInt16("level"),           # + 0x02
     )
-    
+
 ##########################################################################
 
 F_QUEST = 0x02
@@ -428,12 +436,6 @@ PACKET_F_QUEST = construct.Struct("PACKET_F_QUEST",
 F_UPDATE_SIEGE_LOOK_AT = 0x03
 SIZE_PACKET_F_UPDATE_SIEGE_LOOK_AT = 0x00 # TODO
 PACKET_F_UPDATE_SIEGE_LOOK_AT = construct.Struct("PACKET_F_UPDATE_SIEGE_LOOK_AT",
-    # TODO
-    )
-
-F_TEXT = 0x07
-SIZE_PACKET_F_TEXT = 0x00 # TODO
-PACKET_F_TEXT = construct.Struct("PACKET_F_TEXT",
     # TODO
     )
 
@@ -813,7 +815,7 @@ F_CREATE_STATIC = 0x71
 SIZE_PACKET_F_CREATE_STATIC = 0x00 # TODO
 PACKET_F_CREATE_STATIC = construct.Struct("PACKET_F_CREATE_STATIC",
     # TODO
-    )       
+    )
 
 F_PLAYER_IMAGENUM = 0x73
 SIZE_PACKET_F_PLAYER_IMAGENUM = 0x00 # TODO
