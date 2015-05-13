@@ -11,6 +11,7 @@ Set of tools to play with Warhammer Online 1.4.8.573
 * [Python 2.7][python_2_7]
 * [Python Protobuf][python_protobuf]
 * [Python Colorama][python_colorama]
+* [Python Construct][python_construct]
 
 ## Information about the files
 
@@ -38,3 +39,4 @@ Set of tools to play with Warhammer Online 1.4.8.573
 [python_2_7]: http://www.python.org/getit/
 [python_protobuf]: https://developers.google.com/protocol-buffers/docs/pythontutorial
 [python_colorama]: https://pypi.python.org/pypi/colorama#downloads
+[python_construct]: https://pypi.python.org/pypi/construct

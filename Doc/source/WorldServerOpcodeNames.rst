@@ -1,6 +1,9 @@
-# World Server Opcodes names
+World Server Opcodes names
+==========================
     
-Names extracted from war.exe (executable from the original iso) with the script "ExtractOpcodeName.py"
+Names extracted from war.exe (executable from the original iso) with the script "ExtractOpcodeName.py" ([#IDAScriptExtractName]_)
+    
+.. code-block:: text    
     
     [+]   2 (0x02) ; F_QUEST
     [+]   3 (0x03) ; F_UPDATE_SIEGE_LOOK_AT
@@ -200,3 +203,8 @@ Names extracted from war.exe (executable from the original iso) with the script 
     [+] 252 (0xFC) ; F_INFLUENCE_INFO
     [+] 253 (0xFD) ; F_KNOCKBACK
     [+] 254 (0xFE) ; F_PLAY_VOICE_OVER
+    
+References
+----------
+
+.. [#IDAScriptExtractName] https://github.com/w4kfu/waronline_fun/blob/master/Toolz/IDAScript/ExtractOpcodeName.py

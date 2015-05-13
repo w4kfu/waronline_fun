@@ -506,7 +506,7 @@ class WorldTCPHandler(WAR_TCPHandler.TCPHandler):
             * 0x00:
             * 0x01: This command is for sending abilities informations (Handled by 0x4E2194)
             * 0x02:
-            ... ?
+            * ... ?
 
         """
 

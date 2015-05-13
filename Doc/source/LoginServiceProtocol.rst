@@ -37,7 +37,7 @@ The original content is :
 
 If you want to be able to manage your own login service, you have to replace
 the content of the file inside the data.myp archive, or you can use this
-`DLL project`_ that replace the content at runtime.
+[#DLL_project]_ DLL that replaces the content at runtime.
 
 Packet format
 -------------
@@ -295,7 +295,10 @@ Protocol buffer message types (GetAccountProperties.proto) :
 
 You must answer with opcode 0x0C (GetAcctPropListReply)
 
-All data inside packet use the `Google's data interchange format`_.
+All data inside packet use the Google's data interchange format [#Google_proto]_.
 
-.. _DLL project: https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml
-.. _Google's data interchange format: https://code.google.com/p/protobuf/
+References
+----------
+
+.. [#DLL_project] https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml
+.. [#Google_proto] https://code.google.com/p/protobuf/

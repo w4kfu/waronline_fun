@@ -27,8 +27,11 @@ Contents:
     LoginServiceProtocol.rst
     AbilitiesData.rst
     GameData.rst
+    FileExtension.rst
     ItemsData.rst
     WorldServer.rst
+    WorldServerOpcodeNames.rst
+    WorldPacketSentVA.rst
     ZonesData.rst
 
 ..
