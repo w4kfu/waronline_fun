@@ -29,6 +29,7 @@ Contents:
     GameData.rst
     FileExtension.rst
     ItemsData.rst
+    Server.rst
     WorldServer.rst
     WorldServerOpcodeNames.rst
     WorldPacketSentVA.rst

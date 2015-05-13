@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Server Emulator &mdash; Warhammer Online Fun 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="index.html" />
+    <link rel="next" title="WorldServer" href="WorldServer.html" />
+    <link rel="prev" title="Items Data" href="ItemsData.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="WorldServer.html" title="WorldServer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ItemsData.html" title="Items Data"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="server-emulator">
+<h1>Server Emulator<a class="headerlink" href="#server-emulator" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Server emulator is not fully functional. It&#8217;s just a proof of concept.
+Lots of WorldServer events are only triggerable from python
+<a class="reference internal" href="#interactiveconsole">InteractiveConsole</a>.</p>
+</div>
+<div class="section" id="requirements">
+<span id="server-requirements"></span><h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>In order to run the differents scripts, you must have installed:</p>
+<ul class="simple">
+<li>Python 2.7 can be found on the official website <a class="reference external" href="https://www.python.org/ftp/python/2.7.9/python-2.7.9.msi">here</a></li>
+<li>Python Protobuf : Microsoft Installer available <a class="reference external" href="http://war.w4kfu.com/protobuf-2.5.0.win32.msi">protobuf-2.5.0.win32.msi</a></li>
+<li>Python Colorama : Microsoft Installer available <a class="reference external" href="http://war.w4kfu.com/colorama-0.3.3.win32.msi">colorama-0.3.3.win32.msi</a></li>
+<li>Python Construct : Microsoft Installer available <a class="reference external" href="http://war.w4kfu.com/construct-2.5.2.win32.msi">construct-2.5.2.win32.msi</a></li>
+<li>Python six (requirement for construct) : Microsoft Installer available <a class="reference external" href="http://war.w4kfu.com/six-1.9.0.win32.msi">six-1.9.0.win32.msi</a></li>
+</ul>
+</div>
+<div class="section" id="mythloginserviceconfig">
+<h2>MythLoginServiceConfig<a class="headerlink" href="#mythloginserviceconfig" title="Permalink to this headline">¶</a></h2>
+<p><code class="file docutils literal"><span class="pre">WAR.exe</span></code> at launch will extract XML data from the file <code class="file docutils literal"><span class="pre">data/MythLoginServiceConfig.xml</span></code> (data.myp ; Hash name : 0x3FE03665349E2A8C).</p>
+<p>XML data contains address and port used for the LoginServer, if you want to run
+your own server, you will have to replace this configuration file.</p>
+<p><code class="file docutils literal"><span class="pre">MythLoginServiceConfig.xml</span></code> file entry informations in <code class="file docutils literal"><span class="pre">data.myp</span></code>:</p>
+<ul class="simple">
+<li>offset = 12463784</li>
+<li>size_header = 136</li>
+<li>sizez = 306</li>
+<li>size = 810</li>
+<li>name = 4602738627475024524</li>
+<li>crc = 1840099700</li>
+<li>flag = 1</li>
+</ul>
+<div class="literal-block-wrapper container" id="get-original-content-of-mythloginserviceconfig-xml-from-data-myp">
+<div class="code-block-caption"><span class="caption-text">Get original content of MythLoginServiceConfig.xml from data.myp</span><a class="headerlink" href="#get-original-content-of-mythloginserviceconfig-xml-from-data-myp" title="Permalink to this code">¶</a></div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">zlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&quot;data.myp&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<span class="go">&#39;fc0cac05ba416e920b3a6dd7defa8fc1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;data.myp&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">12463784</span> <span class="o">+</span> <span class="mi">136</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>          <span class="c"># seek to (offset + size_header)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">306</span><span class="p">))</span> <span class="c"># read sizez</span>
+<span class="go">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="go">&lt;RootElementOfAnyName&gt;</span>
+<span class="go">&lt;MythLoginServiceConfig&gt;</span>
+<span class="go">    &lt;Settings&gt;</span>
+<span class="go">    &lt;ProductId&gt;2&lt;/ProductId&gt;</span>
+<span class="go">    &lt;MessageTimeoutSecs&gt;20&lt;/MessageTimeoutSecs&gt;</span>
+<span class="go">    &lt;/Settings&gt;</span>
+<span class="go">    &lt;RegionList&gt;</span>
+<span class="go">    &lt;Region regionName=&quot;WAR Live&quot;&gt;</span>
+<span class="go">        &lt;PingServer serverName=&quot;None&quot;&gt;</span>
+<span class="go">        &lt;Address&gt;0.0.0.0&lt;/Address&gt;</span>
+<span class="go">        &lt;Port&gt;0&lt;/Port&gt;</span>
+<span class="go">        &lt;/PingServer&gt;</span>
+<span class="go">        &lt;LoginServerList&gt;</span>
+<span class="go">        &lt;LoginServer serverName=&quot;login 1&quot;&gt;</span>
+<span class="go">            &lt;Address&gt;107.23.232.189&lt;/Address&gt;</span>
+<span class="go">            &lt;Port&gt;8046&lt;/Port&gt;</span>
+<span class="go">        &lt;/LoginServer&gt;</span>
+<span class="go">        &lt;LoginServer serverName=&quot;login 2&quot;&gt;</span>
+<span class="go">            &lt;Address&gt;107.23.135.143&lt;/Address&gt;</span>
+<span class="go">            &lt;Port&gt;8046&lt;/Port&gt;</span>
+<span class="go">        &lt;/LoginServer&gt;</span>
+<span class="go">        &lt;/LoginServerList&gt;</span>
+<span class="go">    &lt;/Region&gt;</span>
+<span class="go">    &lt;/RegionList&gt;</span>
+<span class="go">&lt;/MythLoginServiceConfig&gt;</span>
+<span class="go">&lt;/RootElementOfAnyName&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>Loading of this file is done in sub at 0x004ACE41.</p>
+<div class="highlight-text"><div class="highlight"><pre>.text:004ACF1E 68 AC 98 A7 00          push    offset aMythloginservi ; &quot;MythLoginServiceConfig.xml&quot;
+.text:004ACF23 68 58 24 A7 00          push    offset aData    ; &quot;data&quot;
+
+...
+
+.text:004ACF6A E8 C5 06 3E 00          call    sub_88D634
+.text:004ACF6F 8B 08                   mov     ecx, [eax]
+</pre></div>
+</div>
+<p>The call to 0x0088D634 will get the content of file <code class="file docutils literal"><span class="pre">MythLoginServiceConfig.xml</span></code> from
+<code class="file docutils literal"><span class="pre">data.myp</span></code> archive.</p>
+<p>In order to not alter the <code class="file docutils literal"><span class="pre">data.myp</span></code> file, we can insert a Hook just after
+the call 0x0088D634 and we will be able to replace the content of the file.</p>
+<p>The DLL <a class="reference internal" href="#id1">replace_xml</a> will setup an hook for replacing the content at runtime
+when injected inside <code class="file docutils literal"><span class="pre">WAR.exe</span></code>.</p>
+</div>
+<div class="section" id="replace-xml">
+<h2>Replace XML<a class="headerlink" href="#replace-xml" title="Permalink to this headline">¶</a></h2>
+<p>You can create a file <code class="file docutils literal"><span class="pre">server_ip.txt</span></code> inside warhammer online folder that
+will be load by <code class="file docutils literal"><span class="pre">replace_xml.dll</span></code> for the server address.</p>
+<div class="literal-block-wrapper container" id="example-server-ip-txt">
+<div class="code-block-caption"><span class="caption-text">Example server_ip.txt</span><a class="headerlink" href="#example-server-ip-txt" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>E:\Game\Warhammer Online&gt;type server_ip.txt
+192.168.1.42
+</pre></div>
+</div>
+</div>
+<p>If <code class="file docutils literal"><span class="pre">server_ip.txt</span></code> is not found, the default ip address value is: 127.0.0.1</p>
+</div>
+<div class="section" id="inject-dll">
+<h2>Inject DLL<a class="headerlink" href="#inject-dll" title="Permalink to this headline">¶</a></h2>
+<p>You can use the project <a class="reference internal" href="#injector">injector</a> for injecting the DLL in <code class="file docutils literal"><span class="pre">WAR.exe</span></code>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">acctname and sesstoken arguments for WAR.exe are hardcoded inside the injector</p>
+</div>
+<div class="literal-block-wrapper container" id="example">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#example" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>E:\Game\Warhammer Online&gt;war_injector.exe replace_xml.dll
+</pre></div>
+</div>
+</div>
+<p>You can create a shortcut (.lnk) or a script (.bat) for next launch</p>
+</div>
+<div class="section" id="loginserver">
+<h2>LoginServer<a class="headerlink" href="#loginserver" title="Permalink to this headline">¶</a></h2>
+<p>You must have installed correctly all the requirements (see <a class="reference internal" href="#server-requirements"><span>Requirements</span></a>.).</p>
+<p>Open a window cmd shell, navigate to server folder, and launch
+WAR_LoginServer.py.</p>
+<p>Any authentication token is accepted, there is no check/validation.</p>
+<p>If the WorldServer is not running on localhost, edit in the function <code class="xref py py-func docutils literal"><span class="pre">handle_GetClusterList()</span></code>
+in <code class="file docutils literal"><span class="pre">WAR_LoginServer.py</span></code> the following line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cluster_info</span><span class="o">.</span><span class="n">lobby_host</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span> <span class="c"># IP TO REPLACE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="worldserver">
+<h2>WorldServer<a class="headerlink" href="#worldserver" title="Permalink to this headline">¶</a></h2>
+<p>You must have installed correctly all the requirements (see <a class="reference internal" href="#server-requirements"><span>Requirements</span></a>.).</p>
+<p>Open a window cmd shell, navigate to server folder, and launch WAR_WorldServer.py.</p>
+<p>Only one character is sent to the client for character list, but you can edit the
+dict <code class="xref py py-class docutils literal"><span class="pre">CHARACTER</span></code> in <code class="xref py py-func docutils literal"><span class="pre">premaidcharacter()</span></code>.</p>
+<p>Once your character choosed, you can edit the packet <code class="xref py py-class docutils literal"><span class="pre">PACKET_S_PLAYER_INITTED</span></code>
+in <code class="xref py py-func docutils literal"><span class="pre">response_S_PLAYER_INITTED()</span></code> for all infos regarding the positioning of
+your character.</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">object_id</span></code> of player is hardcoded to value 0x4242.</p>
+<div class="section" id="interactive-console">
+<h3>Interactive Console<a class="headerlink" href="#interactive-console" title="Permalink to this headline">¶</a></h3>
+<p>TODO</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="interactiveconsole" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><a class="reference external" href="https://docs.python.org/2/library/code.html">https://docs.python.org/2/library/code.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><a class="reference external" href="https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml">https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="injector" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td><a class="reference external" href="https://github.com/w4kfu/waronline_fun/tree/master/Toolz/injector">https://github.com/w4kfu/waronline_fun/tree/master/Toolz/injector</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Server Emulator</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#mythloginserviceconfig">MythLoginServiceConfig</a></li>
+<li><a class="reference internal" href="#replace-xml">Replace XML</a></li>
+<li><a class="reference internal" href="#inject-dll">Inject DLL</a></li>
+<li><a class="reference internal" href="#loginserver">LoginServer</a></li>
+<li><a class="reference internal" href="#worldserver">WorldServer</a><ul>
+<li><a class="reference internal" href="#interactive-console">Interactive Console</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ItemsData.html"
+                        title="previous chapter">Items Data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="WorldServer.html"
+                        title="next chapter">WorldServer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Server.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="WorldServer.html" title="WorldServer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ItemsData.html" title="Items Data"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, w4kfu.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

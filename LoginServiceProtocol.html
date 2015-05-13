@@ -54,40 +54,6 @@
             
   <div class="section" id="login-service-protocol">
 <h1>Login Service Protocol<a class="headerlink" href="#login-service-protocol" title="Permalink to this headline">¶</a></h1>
-<p>WAR.exe at launch will extract XML data from the file <em>data/mythloginserviceconfig.xml</em> (data.myp ; Hash name : 0x3FE03665349E2A8C)</p>
-<p>The original content is :</p>
-<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
-<span class="nt">&lt;RootElementOfAnyName&gt;</span>
-  <span class="nt">&lt;MythLoginServiceConfig&gt;</span>
-    <span class="nt">&lt;Settings&gt;</span>
-      <span class="nt">&lt;ProductId&gt;</span>2<span class="nt">&lt;/ProductId&gt;</span>
-      <span class="nt">&lt;MessageTimeoutSecs&gt;</span>20<span class="nt">&lt;/MessageTimeoutSecs&gt;</span>
-    <span class="nt">&lt;/Settings&gt;</span>
-    <span class="nt">&lt;RegionList&gt;</span>
-      <span class="nt">&lt;Region</span> <span class="na">regionName=</span><span class="s">&quot;WAR Live&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;PingServer</span> <span class="na">serverName=</span><span class="s">&quot;None&quot;</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;Address&gt;</span>0.0.0.0<span class="nt">&lt;/Address&gt;</span>
-          <span class="nt">&lt;Port&gt;</span>0<span class="nt">&lt;/Port&gt;</span>
-        <span class="nt">&lt;/PingServer&gt;</span>
-        <span class="nt">&lt;LoginServerList&gt;</span>
-          <span class="nt">&lt;LoginServer</span> <span class="na">serverName=</span><span class="s">&quot;login 1&quot;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;Address&gt;</span>107.23.232.189<span class="nt">&lt;/Address&gt;</span>
-            <span class="nt">&lt;Port&gt;</span>8046<span class="nt">&lt;/Port&gt;</span>
-          <span class="nt">&lt;/LoginServer&gt;</span>
-          <span class="nt">&lt;LoginServer</span> <span class="na">serverName=</span><span class="s">&quot;login 2&quot;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;Address&gt;</span>107.23.135.143<span class="nt">&lt;/Address&gt;</span>
-            <span class="nt">&lt;Port&gt;</span>8046<span class="nt">&lt;/Port&gt;</span>
-          <span class="nt">&lt;/LoginServer&gt;</span>
-        <span class="nt">&lt;/LoginServerList&gt;</span>
-      <span class="nt">&lt;/Region&gt;</span>
-    <span class="nt">&lt;/RegionList&gt;</span>
-  <span class="nt">&lt;/MythLoginServiceConfi&gt;</span>
-<span class="nt">&lt;/RootElementOfAnyName&gt;</span>
-</pre></div>
-</div>
-<p>If you want to be able to manage your own login service, you have to replace
-the content of the file inside the data.myp archive, or you can use this
-<a class="footnote-reference" href="#dll-project" id="id1">[1]</a> DLL that replaces the content at runtime.</p>
 <div class="section" id="packet-format">
 <h2>Packet format<a class="headerlink" href="#packet-format" title="Permalink to this headline">¶</a></h2>
 <p>All the packet sent and received by this service follows the following packet
@@ -287,21 +253,15 @@ put ip address of your World Service and service port in lobby_port.</p>
 </pre></div>
 </div>
 <p>You must answer with opcode 0x0C (GetAcctPropListReply)</p>
-<p>All data inside packet use the Google&#8217;s data interchange format <a class="footnote-reference" href="#google-proto" id="id2">[2]</a>.</p>
+<p>All data inside packet use the Google&#8217;s data interchange format <a class="footnote-reference" href="#google-proto" id="id1">[1]</a>.</p>
 </div>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
-<table class="docutils footnote" frame="void" id="dll-project" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml">https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml</a></td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="google-proto" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="https://code.google.com/p/protobuf/">https://code.google.com/p/protobuf/</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://code.google.com/p/protobuf/">https://code.google.com/p/protobuf/</a></td></tr>
 </tbody>
 </table>
 </div>
