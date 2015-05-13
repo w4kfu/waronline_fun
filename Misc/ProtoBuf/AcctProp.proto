@@ -1,7 +1,0 @@
-package login.proto;
-
-message AcctProp {
- required uint32 property_id = 1;
- required int32 property_value = 2;
-}
-

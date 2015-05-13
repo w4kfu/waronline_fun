@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Login Service Handler &mdash; Warhammer Online Fun 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="index.html" />
+    <link rel="next" title="Login Service Protocol" href="LoginServiceProtocol.html" />
+    <link rel="prev" title="Welcome to Warhammer Online Fun’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceProtocol.html" title="Login Service Protocol"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Warhammer Online Fun’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="login-service-handler">
+<h1>Login Service Handler<a class="headerlink" href="#login-service-handler" title="Permalink to this headline">¶</a></h1>
+<p>This file gives all the location of each important functions used for handling
+received messages for login service.</p>
+<div class="section" id="loginservicehandler">
+<h2>LoginServiceHandler<a class="headerlink" href="#loginservicehandler" title="Permalink to this headline">¶</a></h2>
+<p>All messages received for the login service are handled by this function :</p>
+<ul class="simple">
+<li>VA    : 0x0095858B</li>
+<li>RVA   : 0x0055858B</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-loginservicehandler-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of LoginServiceHandler (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-loginservicehandler-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>b8........e8........51515356578bd98365fc008b430c8b308b7d088b4704 19 0016 01F5 :0000 LoginServiceHandler
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-verifyprotocolreply">
+<h2>Handle_VerifyProtocolReply<a class="headerlink" href="#handle-verifyprotocolreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x0095734B</li>
+<li>RVA   : 0x0055734B</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-verifyprotocolreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_VerifyProtocolReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-verifyprotocolreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>558bec83e4f86aff64a10000000068........506489250000000083ec58538b 05 89B4 0153 :0000 Handle_VerifyProtocolReply
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-authinitialtokenreply">
+<h2>Handle_AuthInitialTokenReply<a class="headerlink" href="#handle-authinitialtokenreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x0095749E</li>
+<li>RVA   : 0x0055749E</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-authinitialtokenreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_AuthInitialTokenReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-authinitialtokenreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>558bec538b5d085657bf........578bf08b460c8b0868........6a0350ff51 14 06A6 00F1 :0000 Handle_AuthInitialTokenReply
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-authsessiontokenreply">
+<h2>Handle_AuthSessionTokenReply<a class="headerlink" href="#handle-authsessiontokenreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x0095758F</li>
+<li>RVA   : 0x0055758F</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-authsessiontokenreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_AuthSessionTokenReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-authsessiontokenreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>538b5c24085657be........568bf88b470c8b0868........6a0350ff51048b 12 9A91 00B0 :0000 Handle_AuthSessionTokenReply
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-getcharlistreply">
+<h2>Handle_GetCharListReply<a class="headerlink" href="#handle-getcharlistreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x00957B11</li>
+<li>RVA   : 0x00557B11</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-getcharlistreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_GetCharListReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-getcharlistreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>558bec83e4f86aff68........64a100000000506489250000000083ec38538b 05 3207 021D :0000 Handle_GetCharListReply
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-getclusterlistreply">
+<h2>Handle_GetClusterListReply<a class="headerlink" href="#handle-getclusterlistreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x0095763F</li>
+<li>RVA   : 0x0055763F</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-getclusterlistreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_GetClusterListReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-getclusterlistreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>558bec83e4f86aff68........64a100000000506489250000000081ecc80000 12 C9A2 04D2 :0000 Handle_GetClusterListReply
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="handle-getaccountpropertiesreply">
+<h2>Handle_GetAccountPropertiesReply<a class="headerlink" href="#handle-getaccountpropertiesreply" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>VA    : 0x00957D2E</li>
+<li>RVA   : 0x00557D2E</li>
+</ul>
+<div class="literal-block-wrapper container" id="pat-signature-of-handle-getaccountpropertiesreply-for-sigmake-ida">
+<div class="code-block-caption"><span class="caption-text">PAT signature of Handle_GetAccountPropertiesReply (for sigmake IDA)</span><a class="headerlink" href="#pat-signature-of-handle-getaccountpropertiesreply-for-sigmake-ida" title="Permalink to this code">¶</a></div>
+<div class="highlight-text"><div class="highlight"><pre>558bec83e4f86aff68........64a100000000506489250000000083ec248364 0E 3AC3 0147 :0000 Handle_GetAccountPropertiesReply
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Login Service Handler</a><ul>
+<li><a class="reference internal" href="#loginservicehandler">LoginServiceHandler</a></li>
+<li><a class="reference internal" href="#handle-verifyprotocolreply">Handle_VerifyProtocolReply</a></li>
+<li><a class="reference internal" href="#handle-authinitialtokenreply">Handle_AuthInitialTokenReply</a></li>
+<li><a class="reference internal" href="#handle-authsessiontokenreply">Handle_AuthSessionTokenReply</a></li>
+<li><a class="reference internal" href="#handle-getcharlistreply">Handle_GetCharListReply</a></li>
+<li><a class="reference internal" href="#handle-getclusterlistreply">Handle_GetClusterListReply</a></li>
+<li><a class="reference internal" href="#handle-getaccountpropertiesreply">Handle_GetAccountPropertiesReply</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Warhammer Online Fun&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="LoginServiceProtocol.html"
+                        title="next chapter">Login Service Protocol</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/LoginServiceHandler.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceProtocol.html" title="Login Service Protocol"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Warhammer Online Fun’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, w4kfu.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

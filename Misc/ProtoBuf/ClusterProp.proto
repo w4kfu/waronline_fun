@@ -1,7 +1,0 @@
-package login.proto;
-
-message ClusterProp {
- required string prop_name = 1;
- required string prop_value = 2;
-}
-

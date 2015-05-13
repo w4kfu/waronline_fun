@@ -1,6 +1,0 @@
-*.pyc
-*.swp
-*.exe
-*.dll
-.temp/*
-Doc/_build/

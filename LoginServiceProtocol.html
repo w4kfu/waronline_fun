@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Login Service Protocol &mdash; Warhammer Online Fun 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="index.html" />
+    <link rel="next" title="Abilities Data" href="AbilitiesData.html" />
+    <link rel="prev" title="Login Service Handler" href="LoginServiceHandler.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="AbilitiesData.html" title="Abilities Data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceHandler.html" title="Login Service Handler"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="login-service-protocol">
+<h1>Login Service Protocol<a class="headerlink" href="#login-service-protocol" title="Permalink to this headline">¶</a></h1>
+<p>WAR.exe at launch will extract XML data from the file <em>data/mythloginserviceconfig.xml</em> (data.myp ; Hash name : 0x3FE03665349E2A8C)</p>
+<p>The original content is :</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="nt">&lt;RootElementOfAnyName&gt;</span>
+  <span class="nt">&lt;MythLoginServiceConfig&gt;</span>
+    <span class="nt">&lt;Settings&gt;</span>
+      <span class="nt">&lt;ProductId&gt;</span>2<span class="nt">&lt;/ProductId&gt;</span>
+      <span class="nt">&lt;MessageTimeoutSecs&gt;</span>20<span class="nt">&lt;/MessageTimeoutSecs&gt;</span>
+    <span class="nt">&lt;/Settings&gt;</span>
+    <span class="nt">&lt;RegionList&gt;</span>
+      <span class="nt">&lt;Region</span> <span class="na">regionName=</span><span class="s">&quot;WAR Live&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;PingServer</span> <span class="na">serverName=</span><span class="s">&quot;None&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;Address&gt;</span>0.0.0.0<span class="nt">&lt;/Address&gt;</span>
+          <span class="nt">&lt;Port&gt;</span>0<span class="nt">&lt;/Port&gt;</span>
+        <span class="nt">&lt;/PingServer&gt;</span>
+        <span class="nt">&lt;LoginServerList&gt;</span>
+          <span class="nt">&lt;LoginServer</span> <span class="na">serverName=</span><span class="s">&quot;login 1&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;Address&gt;</span>107.23.232.189<span class="nt">&lt;/Address&gt;</span>
+            <span class="nt">&lt;Port&gt;</span>8046<span class="nt">&lt;/Port&gt;</span>
+          <span class="nt">&lt;/LoginServer&gt;</span>
+          <span class="nt">&lt;LoginServer</span> <span class="na">serverName=</span><span class="s">&quot;login 2&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;Address&gt;</span>107.23.135.143<span class="nt">&lt;/Address&gt;</span>
+            <span class="nt">&lt;Port&gt;</span>8046<span class="nt">&lt;/Port&gt;</span>
+          <span class="nt">&lt;/LoginServer&gt;</span>
+        <span class="nt">&lt;/LoginServerList&gt;</span>
+      <span class="nt">&lt;/Region&gt;</span>
+    <span class="nt">&lt;/RegionList&gt;</span>
+  <span class="nt">&lt;/MythLoginServiceConfi&gt;</span>
+<span class="nt">&lt;/RootElementOfAnyName&gt;</span>
+</pre></div>
+</div>
+<p>If you want to be able to manage your own login service, you have to replace
+the content of the file inside the data.myp archive, or you can use this
+<a class="footnote-reference" href="#dll-project" id="id1">[1]</a> DLL that replaces the content at runtime.</p>
+<div class="section" id="packet-format">
+<h2>Packet format<a class="headerlink" href="#packet-format" title="Permalink to this headline">¶</a></h2>
+<p>All the packet sent and received by this service follows the following packet
+layout :</p>
+<div class="highlight-text"><div class="highlight"><pre>+0x00 : Size_Packet     [BYTE]
++0x01 : Opcode_Packet   [BYTE]
++0x02 : ProtoBuff_Data  // Depends of the opcode
+</pre></div>
+</div>
+</div>
+<div class="section" id="opcodes-list">
+<h2>Opcodes list<a class="headerlink" href="#opcodes-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="x01-verifyprotocolreq">
+<h3>0x01 (VerifyProtocolReq)<a class="headerlink" href="#x01-verifyprotocolreq" title="Permalink to this headline">¶</a></h3>
+<p>The client (WAR.exe) send this packet after the connection.</p>
+<p>Protocol buffer message types (VerifyProtocolReq.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message VerifyProtocolReq {
+    required uint32 protocol_version = 1;
+    required uint32 product_id = 2;
+    required bytes client_public_key = 3;
+}
+</pre></div>
+</div>
+<p>You must answer with opcode 0x02 (VerifyProtocolReply).</p>
+</div>
+<div class="section" id="x02-verifyprotocolreply">
+<h3>0x02 (VerifyProtocolReply)<a class="headerlink" href="#x02-verifyprotocolreply" title="Permalink to this headline">¶</a></h3>
+<p>This opcode is for the answer of opcode 0x01.</p>
+<p>Protocol buffer message types (VerifyProtocolReply.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message VerifyProtocolReply {
+    required ResultCode result_code = 1;
+    optional bytes iv1 = 2;
+    optional bytes iv2 = 3;
+}
+</pre></div>
+</div>
+<p>The result code must be RES_SUCESS, and the iv1, and iv2, can be something
+random like : iv1 = &#8220;x42&#8221; * 16 and iv2 = &#8220;x42&#8221; * 16.</p>
+</div>
+<div class="section" id="x05-authsessiontokenreq">
+<h3>0x05 (AuthSessionTokenReq)<a class="headerlink" href="#x05-authsessiontokenreq" title="Permalink to this headline">¶</a></h3>
+<p>After answering with opcode 0x02 (<em>TODO CONFIRM ALL CASES</em>), this opcode will be received.</p>
+<p>Protocol buffer message types (AuthSessionTokenReq.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message AuthSessionTokenReq {
+    required bytes session_token = 1;
+}
+</pre></div>
+</div>
+<p>You must answer with opcode 0x06 (AuthSessionTokenReply).</p>
+</div>
+<div class="section" id="x06-authsessiontokenreply">
+<h3>0x06 (AuthSessionTokenReply)<a class="headerlink" href="#x06-authsessiontokenreply" title="Permalink to this headline">¶</a></h3>
+<p>This opcode is for the answer of opcode 0x05.</p>
+<p>Protocol buffer message types (AuthSessionTokenReply.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message AuthSessionTokenReply {
+    required ResultCode result_code = 1;
+}
+</pre></div>
+</div>
+<p>The result code must be RES_SUCESS.</p>
+</div>
+<div class="section" id="x07-getcharsummarylistreq">
+<h3>0x07 (GetCharSummaryListReq)<a class="headerlink" href="#x07-getcharsummarylistreq" title="Permalink to this headline">¶</a></h3>
+<p>No ProtoBuff_Data for this opcode.</p>
+<p>Answer with opcode 0x08 (GetCharSummaryListReply).</p>
+</div>
+<div class="section" id="x08-getcharsummarylistreply">
+<h3>0x08 (GetCharSummaryListReply)<a class="headerlink" href="#x08-getcharsummarylistreply" title="Permalink to this headline">¶</a></h3>
+<p>Protocol buffer message types (GetCharSummaryListReply.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message GetCharSummaryListReply {
+    required ResultCode result_code = 1;
+    repeated CharSummary summary_list = 2;
+}
+</pre></div>
+</div>
+<div class="section" id="charsummary">
+<h4>CharSummary<a class="headerlink" href="#charsummary" title="Permalink to this headline">¶</a></h4>
+<p>Protocol buffer message types (CharSummary.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message CharSummary {
+    required uint32 server_id = 1;
+    required uint32 character_id = 2;
+    required int64 last_played_time = 3;
+    optional string xml_data = 4;
+}
+</pre></div>
+</div>
+<p><em>TODO describe</em></p>
+</div>
+</div>
+<div class="section" id="x09-getclusterlist">
+<h3>0x09 (GetClusterList)<a class="headerlink" href="#x09-getclusterlist" title="Permalink to this headline">¶</a></h3>
+<p>No ProtoBuff_Data for this opcode.</p>
+<p>Answer with opcode 0x0A (GetClusterListReply).</p>
+</div>
+<div class="section" id="x0a-getclusterlistreply">
+<h3>0x0A (GetClusterListReply)<a class="headerlink" href="#x0a-getclusterlistreply" title="Permalink to this headline">¶</a></h3>
+<p>This opcode is the answer of 0x09.</p>
+<p>Protocol buffer message types (GetClusterListReply.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message GetClusterListReply {
+    required ResultCode result_code = 1;
+    repeated ClusterInfo cluster_list = 2;
+}
+</pre></div>
+</div>
+<div class="section" id="clusterinfo">
+<h4>ClusterInfo<a class="headerlink" href="#clusterinfo" title="Permalink to this headline">¶</a></h4>
+<p>Protocol buffer message types (ClusterInfo.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message ClusterInfo {
+    required uint32 cluster_id = 1;
+    required string cluster_name = 2;
+    optional string lobby_host = 3;
+    optional uint32 lobby_port = 4;
+    optional uint32 cluster_pop = 5;
+    optional uint32 max_cluster_pop = 6;
+    optional ClusterPopStatus cluster_pop_status = 7;
+    required uint32 language_id = 8;
+    required ClusterStatus cluster_status = 9;
+    repeated ServerInfo server_list = 10;
+    repeated ClusterProp property_list = 11;
+}
+</pre></div>
+</div>
+<p>In cluster_id put the REALM_ID, in cluster_name put REALM_NAME, in lobby host
+put ip address of your World Service and service port in lobby_port.</p>
+<div class="section" id="language-id">
+<h5>Language_id<a class="headerlink" href="#language-id" title="Permalink to this headline">¶</a></h5>
+<ul class="simple">
+<li><em>TODO</em></li>
+<li><em>TODO</em></li>
+<li><em>TODO value</em></li>
+</ul>
+<p>For cluster_status set STATUS_ONLINE.</p>
+</div>
+<div class="section" id="serverinfo">
+<h5>ServerInfo<a class="headerlink" href="#serverinfo" title="Permalink to this headline">¶</a></h5>
+<p>Protocol buffer message types (ServerInfo.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message ServerInfo {
+    required uint32 server_id = 1;
+    required string server_name = 2;
+}
+</pre></div>
+</div>
+<p>Put REALM_ID in server_id and REALM_NAME in server_name.</p>
+</div>
+<div class="section" id="clusterprop">
+<h5>ClusterProp<a class="headerlink" href="#clusterprop" title="Permalink to this headline">¶</a></h5>
+<p><em>TODO</em></p>
+<p>Protocol buffer message types (ClusterProp.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message ClusterProp {
+    required string prop_name = 1;
+    required string prop_value = 2;
+}
+</pre></div>
+</div>
+<p>And finally set the result_code to RES_SUCESS.</p>
+</div>
+</div>
+</div>
+<div class="section" id="x0b-metriceventnotify">
+<h3>0x0B (MetricEventNotify)<a class="headerlink" href="#x0b-metriceventnotify" title="Permalink to this headline">¶</a></h3>
+<p>Protocol buffer message types (MetricEventNotify.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message MetricEventNotify {
+    required uint32 event_id = 1;
+    optional bytes event_data = 2;
+}
+</pre></div>
+</div>
+<p>Don&#8217;t know how to deal with this stuff (<em>TODO</em>).</p>
+</div>
+<div class="section" id="x0c-getacctproplistreply">
+<h3>0x0C (GetAcctPropListReply)<a class="headerlink" href="#x0c-getacctproplistreply" title="Permalink to this headline">¶</a></h3>
+<p>This opcode is for the answer of opcode 0x0D.</p>
+<p>Protocol buffer message types (GetAcctPropListReply.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message GetAcctPropListReply {
+    required ResultCode result_code = 1;
+    repeated AcctProp prop_list = 2;
+}
+</pre></div>
+</div>
+<p>Protocol buffer message types (AcctProp.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message AcctProp {
+    required uint32 property_id = 1;
+    required int32 property_value = 2;
+}
+</pre></div>
+</div>
+<p>No informations related to property_id and property_value (<em>TODO</em>).</p>
+<p>You can answer just by setting the result_code to RES_SUCESS.</p>
+</div>
+<div class="section" id="x0d-getaccountproperties">
+<h3>0x0D (GetAccountProperties)<a class="headerlink" href="#x0d-getaccountproperties" title="Permalink to this headline">¶</a></h3>
+<p>Nothing related to the proto inside WAR.exe has been found so this proto is maybe wrong.</p>
+<p>Protocol buffer message types (GetAccountProperties.proto) :</p>
+<div class="highlight-text"><div class="highlight"><pre>message GetAcctPropListReq {
+    repeated AcctProp prop_list = 1;
+}
+</pre></div>
+</div>
+<p>You must answer with opcode 0x0C (GetAcctPropListReply)</p>
+<p>All data inside packet use the Google&#8217;s data interchange format <a class="footnote-reference" href="#google-proto" id="id2">[2]</a>.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="dll-project" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml">https://github.com/w4kfu/waronline_fun/tree/master/Toolz/replace_xml</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="google-proto" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="https://code.google.com/p/protobuf/">https://code.google.com/p/protobuf/</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Login Service Protocol</a><ul>
+<li><a class="reference internal" href="#packet-format">Packet format</a></li>
+<li><a class="reference internal" href="#opcodes-list">Opcodes list</a><ul>
+<li><a class="reference internal" href="#x01-verifyprotocolreq">0x01 (VerifyProtocolReq)</a></li>
+<li><a class="reference internal" href="#x02-verifyprotocolreply">0x02 (VerifyProtocolReply)</a></li>
+<li><a class="reference internal" href="#x05-authsessiontokenreq">0x05 (AuthSessionTokenReq)</a></li>
+<li><a class="reference internal" href="#x06-authsessiontokenreply">0x06 (AuthSessionTokenReply)</a></li>
+<li><a class="reference internal" href="#x07-getcharsummarylistreq">0x07 (GetCharSummaryListReq)</a></li>
+<li><a class="reference internal" href="#x08-getcharsummarylistreply">0x08 (GetCharSummaryListReply)</a><ul>
+<li><a class="reference internal" href="#charsummary">CharSummary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#x09-getclusterlist">0x09 (GetClusterList)</a></li>
+<li><a class="reference internal" href="#x0a-getclusterlistreply">0x0A (GetClusterListReply)</a><ul>
+<li><a class="reference internal" href="#clusterinfo">ClusterInfo</a><ul>
+<li><a class="reference internal" href="#language-id">Language_id</a></li>
+<li><a class="reference internal" href="#serverinfo">ServerInfo</a></li>
+<li><a class="reference internal" href="#clusterprop">ClusterProp</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#x0b-metriceventnotify">0x0B (MetricEventNotify)</a></li>
+<li><a class="reference internal" href="#x0c-getacctproplistreply">0x0C (GetAcctPropListReply)</a></li>
+<li><a class="reference internal" href="#x0d-getaccountproperties">0x0D (GetAccountProperties)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="LoginServiceHandler.html"
+                        title="previous chapter">Login Service Handler</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="AbilitiesData.html"
+                        title="next chapter">Abilities Data</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/LoginServiceProtocol.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="AbilitiesData.html" title="Abilities Data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceHandler.html" title="Login Service Handler"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, w4kfu.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

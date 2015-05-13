@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to Warhammer Online Fun’s documentation! &mdash; Warhammer Online Fun 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="#" />
+    <link rel="next" title="Login Service Handler" href="LoginServiceHandler.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceHandler.html" title="Login Service Handler"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-warhammer-online-fun-s-documentation">
+<h1>Welcome to Warhammer Online Fun&#8217;s documentation!<a class="headerlink" href="#welcome-to-warhammer-online-fun-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This documentation contains informations regarding reverse engineering of
+warhammer online, and server emulator for Lobby and World.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>All virtual address given in this documentation are for:</p>
+<ul class="last simple">
+<li>File : &#8220;WAR.exe&#8221;</li>
+<li>MD5 : 0BEE43EEBE6C055E260B5E773848A08B</li>
+<li>SHA-1 : 0F4A35D5F0B8FCE9CF72334A2464AFBA82B553BF</li>
+<li>FileVersion : 1,4,8,573</li>
+</ul>
+</div>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="LoginServiceHandler.html">Login Service Handler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#loginservicehandler">LoginServiceHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-verifyprotocolreply">Handle_VerifyProtocolReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-authinitialtokenreply">Handle_AuthInitialTokenReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-authsessiontokenreply">Handle_AuthSessionTokenReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-getcharlistreply">Handle_GetCharListReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-getclusterlistreply">Handle_GetClusterListReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceHandler.html#handle-getaccountpropertiesreply">Handle_GetAccountPropertiesReply</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="LoginServiceProtocol.html">Login Service Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceProtocol.html#packet-format">Packet format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceProtocol.html#opcodes-list">Opcodes list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginServiceProtocol.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AbilitiesData.html">Abilities Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GameData.html">Game Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GameData.html#skill-type">Skill type</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FileExtension.html">File Extension</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#csv">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#db">DB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#dds">DDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#lmp">lmp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#nif">nif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#tga">tga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#txt">txt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#xac">xac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#xml">xml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#xsm">xsm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FileExtension.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ItemsData.html">Items Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="WorldServer.html">WorldServer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="WorldServerOpcodeNames.html">World Server Opcodes names</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="WorldServerOpcodeNames.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="WorldPacketSentVA.html">WorldPacketSentVA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ZonesData.html">Zones Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ZonesData.html#region-list">Region List</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Next topic</h4>
+  <p class="topless"><a href="LoginServiceHandler.html"
+                        title="next chapter">Login Service Handler</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LoginServiceHandler.html" title="Login Service Handler"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, w4kfu.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

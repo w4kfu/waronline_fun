@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>WorldServer &mdash; Warhammer Online Fun 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="index.html" />
+    <link rel="next" title="World Server Opcodes names" href="WorldServerOpcodeNames.html" />
+    <link rel="prev" title="Items Data" href="ItemsData.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="WorldServerOpcodeNames.html" title="World Server Opcodes names"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ItemsData.html" title="Items Data"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-WAR_WorldServer">
+<span id="worldserver"></span><h1>WorldServer<a class="headerlink" href="#module-WAR_WorldServer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="WAR_WorldServer.WorldTCPHandler">
+<em class="property">class </em><code class="descclassname">WAR_WorldServer.</code><code class="descname">WorldTCPHandler</code><span class="sig-paren">(</span><em>request</em>, <em>client_address</em>, <em>server</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_DUMP_ARENAS_LARGE">
+<code class="descname">handle_F_DUMP_ARENAS_LARGE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_DUMP_ARENAS_LARGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opcode 0x35 can be sent in WAR.exe from:</p>
+<ul class="simple">
+<li>0x004BFEF2, size = 0x00000002</li>
+</ul>
+<p>Server must answer with F_WORLD_ENTER (0x19)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_ENCRYPTKEY">
+<code class="descname">handle_F_ENCRYPTKEY</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_ENCRYPTKEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>First packet received from the client after connection.
+If the field key_present is NULL, server has to answer with F_RECEIVE_ENCRYPTKEY (0x8A).
+If the field key_present is not NULL, RC4 key (256 bytes) is present a the end of packet.</p>
+<p>Opcode 0x5C can be sent from two methods in WAR.exe:</p>
+<ul class="simple">
+<li>0x004B1819, size = 0x00000006 : key_present is NULL</li>
+<li>0x004B2C1B, size = 0x00000106 : RC4 key present</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_INIT_PLAYER">
+<code class="descname">handle_F_INIT_PLAYER</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_INIT_PLAYER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opcode 0x7C can be sent from:</p>
+<ul class="simple">
+<li>0x004C6D11, size = 0x00000016</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_INTERFACE_COMMAND">
+<code class="descname">handle_F_INTERFACE_COMMAND</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_INTERFACE_COMMAND" title="Permalink to this definition">¶</a></dt>
+<dd><p>This opcode can be sent from methods:</p>
+<ul class="simple">
+<li>0x004B6DC0, size = 0x00000006,</li>
+<li>0x004B6E03, size = ??????????</li>
+</ul>
+<p>TODO CHECK NO RESPONSE?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_OPEN_GAME">
+<code class="descname">handle_F_OPEN_GAME</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_OPEN_GAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opcode 0x17 can be sent in WAR.exe from:</p>
+<ul class="simple">
+<li>0x004BFF5D, size = 0x00000002</li>
+</ul>
+<p>Server must answer with S_GAME_OPENED (0x85)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_PING">
+<code class="descname">handle_F_PING</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_PING" title="Permalink to this definition">¶</a></dt>
+<dd><p>This packet is sent from method in WAR.exe:</p>
+<ul class="simple">
+<li>0x004B2F33, size = 0x00000014</li>
+</ul>
+<p>Server has to answer with S_PONG (0x81).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_PLAYER_ENTER_FULL">
+<code class="descname">handle_F_PLAYER_ENTER_FULL</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_PLAYER_ENTER_FULL" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_SWITCH_ATTACK_MODE">
+<code class="descname">handle_F_SWITCH_ATTACK_MODE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_SWITCH_ATTACK_MODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_SWITCH_ATTACK_MODE (0xDC)
+This packet is sent from method in WAR.exe:</p>
+<ul class="simple">
+<li>0x004B4B96, size = 0x00000004</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.handle_F_TEXT">
+<code class="descname">handle_F_TEXT</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.handle_F_TEXT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This packet is sent from method in WAR.exe:</p>
+<ul class="simple">
+<li>0x004B39AC, size = 0xFFFFFFFF</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.reponse_F_GET_ITEM">
+<code class="descname">reponse_F_GET_ITEM</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.reponse_F_GET_ITEM" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_GET_ITEM (0xAA)</p>
+<p>Packet handling is done:</p>
+<ul class="simple">
+<li>0x4D64A2</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_BAG_INFO">
+<code class="descname">response_F_BAG_INFO</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_BAG_INFO" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_BAG_INFO (0x95)</p>
+<p>Packet handling is done:</p>
+<ul class="simple">
+<li>0x4C00D6</li>
+</ul>
+<p>/!Little endian /!            First byte is a command that can have the value:</p>
+<ul class="simple">
+<li>0x16:</li>
+<li>0x17:</li>
+<li>0x18:</li>
+<li>0x19:</li>
+<li>0x1A:</li>
+<li>0x1D:</li>
+<li>0x1E:</li>
+<li>0x1F:</li>
+<li>0x0B:</li>
+<li>0x0D:</li>
+<li>0x0E:</li>
+<li>0x0C:</li>
+<li>0x05:</li>
+<li>0x09:</li>
+<li>0x04:</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_CHARACTER_INFO">
+<code class="descname">response_F_CHARACTER_INFO</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_CHARACTER_INFO" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_CHARACTER_INFO (0xBE)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x004E20E7</li>
+</ul>
+<p>First byte is a command that can have the value:</p>
+<ul class="simple">
+<li>0x00:</li>
+<li>0x01: This command is for sending abilities informations (Handled by 0x4E2194)</li>
+<li>0x02:</li>
+<li>... ?</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_CHAT">
+<code class="descname">response_F_CHAT</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_CHAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_CHAT (0x06)
+Packet handling is done in:</p>
+<ul class="simple">
+<li>0x004D19CF</li>
+</ul>
+<p>TODO</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_MAX_VELOCITY">
+<code class="descname">response_F_MAX_VELOCITY</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_MAX_VELOCITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Velocity * 0.0099999998
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x4DCF59</li>
+</ul>
+<p>Size packet is 0x00000002.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_EXPERIENCE">
+<code class="descname">response_F_PLAYER_EXPERIENCE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_EXPERIENCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_PLAYER_EXPERIENCE (0x39)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x4DD006</li>
+</ul>
+<p>Size Packet is 0x0000000D (?)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_HEALTH">
+<code class="descname">response_F_PLAYER_HEALTH</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_HEALTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_PLAYER_HEALTH (0x05)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x4DBBB0</li>
+</ul>
+<p>Size packet is 0x00000010 (?)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_INIT_COMPLETE">
+<code class="descname">response_F_PLAYER_INIT_COMPLETE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_INIT_COMPLETE" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_PLAYER_INIT_COMPLETE (0xEF)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x4DCFDD</li>
+</ul>
+<p>Size packet is 0x00000002
+Packet data are ignored</p>
+<p>Check if Player-&gt;field_255 (0x3FC) is NULL, if True send packet F_CLIENT_DATA
+In all case send packet F_INTERFACE_COMMAND</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_RANK_UPDATE">
+<code class="descname">response_F_PLAYER_RANK_UPDATE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_RANK_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_PLAYER_RANK_UPDATE (0xF4)
+Packet handling is done:
+* 0x4DD5E4</p>
+<p>Size Packet is 0x00000004</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_RENOWN">
+<code class="descname">response_F_PLAYER_RENOWN</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_RENOWN" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_PLAYER_RENOWN (0x4E)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x4DD10F</li>
+</ul>
+<p>Size Packet is 0x00000009 (?)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_WEALTH">
+<code class="descname">response_F_PLAYER_WEALTH</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_PLAYER_WEALTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send GameData.Player.money
+Packet handling is done at basic block 0x004C3BB8.
+Size packet is 0x00000008.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_RECEIVE_ENCRYPTKEY">
+<code class="descname">response_F_RECEIVE_ENCRYPTKEY</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_RECEIVE_ENCRYPTKEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response sent when packet F_ENCRYPTKEY received with key_present is NULL.
+Packet handler check if (WORD)field_0x1CC is not null, and packet is handled in WAR.exe by:</p>
+<ul class="simple">
+<li>0x004C8883: if send_key is not null, RC4 will be generated and sent with packet F_ENCRYPTKEY</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_TRADE_SKILL_UPDATE">
+<code class="descname">response_F_TRADE_SKILL_UPDATE</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_TRADE_SKILL_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>F_TRADE_SKILL_UPDATE (0xF9)
+Packet handling is done:</p>
+<ul class="simple">
+<li>0x004DEF40</li>
+</ul>
+<p>Size packet is 0x00000003
+tradeskill_id can be found in data/gamedata/tradeskilldata.csv (0x7F9B4526CBAEF58B)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_F_WORLD_ENTER">
+<code class="descname">response_F_WORLD_ENTER</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_F_WORLD_ENTER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response of packet F_DUMP_ARENAS_LARGE (0x35).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_S_CONNECTED">
+<code class="descname">response_S_CONNECTED</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_S_CONNECTED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response sent after receiving F_CONNECT packet.
+Packet handling is done in WAR.exe by:</p>
+<ul class="simple">
+<li>0x004C88F9: username and server_name are PascalString, protocol is normaly equal to 0xEB8DB21.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_S_GAME_OPENED">
+<code class="descname">response_S_GAME_OPENED</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_S_GAME_OPENED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opcode handled by basic block at 0x004C40F7</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_S_PLAYER_INITTED">
+<code class="descname">response_S_PLAYER_INITTED</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_S_PLAYER_INITTED" title="Permalink to this definition">¶</a></dt>
+<dd><p>S_PLAYER_INITTED (0x88)
+Function 0x4C6346 will convert all Big Endian field to Little Endian.
+Then packet data is handled by 0x004DE151.</p>
+<p>For region ID, refer to file 0x5B701C61C34ABF61 &#8220;zones/zones.dat&#8221; in world.myp</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_S_PONG">
+<code class="descname">response_S_PONG</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_S_PONG" title="Permalink to this definition">¶</a></dt>
+<dd><p>response sent when packet F_PING has been received.
+Packet handling is done in the basick block at 0x004C403B.
+Answer have to reuse the timestamp sent by the client, and put a QWORD of the
+actual timestamp and increment the sequence number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_item">
+<code class="descname">response_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>0x2A87C15DF8425A8C data/gamedata/itemdata.csv</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WAR_WorldServer.WorldTCPHandler.response_player_init">
+<code class="descname">response_player_init</code><span class="sig-paren">(</span><em>opcode_entry</em>, <em>packet_client_header</em>, <em>packet_client</em>, <em>packet_data</em><span class="sig-paren">)</span><a class="headerlink" href="#WAR_WorldServer.WorldTCPHandler.response_player_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send all informations related to player initialization</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ItemsData.html"
+                        title="previous chapter">Items Data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="WorldServerOpcodeNames.html"
+                        title="next chapter">World Server Opcodes names</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/WorldServer.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="WorldServerOpcodeNames.html" title="World Server Opcodes names"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ItemsData.html" title="Items Data"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Warhammer Online Fun 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, w4kfu.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

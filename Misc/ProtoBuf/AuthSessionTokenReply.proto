@@ -1,8 +1,0 @@
-package login.proto;
-
-import "ResultCodes.proto";
-
-message AuthSessionTokenReply {
- required ResultCode result_code = 1;
-}
-

@@ -1,6 +1,0 @@
-package login.proto;
-
-message AuthSessionTokenReq {
- required bytes session_token = 1;
-}
-

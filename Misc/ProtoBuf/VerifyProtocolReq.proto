@@ -1,8 +1,0 @@
-package login.proto;
-
-message VerifyProtocolReq {
- required uint32 protocol_version = 1;
- required uint32 product_id = 2;
- required bytes client_public_key = 3;
-}
-
