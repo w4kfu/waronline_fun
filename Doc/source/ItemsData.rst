@@ -63,6 +63,14 @@ NO_SELL                                            13
 HIDE_ITEM_LEVEL                                    19
 ================================================== =================
 
+Character Slot ID
+-----------------
+
+Value of all :class:`slot_id` mapped on character window.
+
+.. image:: _static/character_slot_id.png
+
+
 Icons
 -----
 
