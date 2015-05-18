@@ -68,7 +68,7 @@ Character Slot ID
 
 Value of all :class:`slot_id` mapped on character window.
 
-.. image:: _static/character_slot_id.png
+.. image:: images/character_slot_id.png
 
 
 Icons
