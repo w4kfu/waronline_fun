@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Warhammer Online Fun 1.0 documentation" href="index.html" />
-    <link rel="next" title="WorldServer" href="WorldServer.html" />
+    <link rel="next" title="Server Emulator" href="Server.html" />
     <link rel="prev" title="File Extension" href="FileExtension.html" /> 
   </head>
   <body role="document">
@@ -38,7 +38,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="WorldServer.html" title="WorldServer"
+          <a href="Server.html" title="Server Emulator"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="FileExtension.html" title="File Extension"
@@ -56,6 +56,196 @@
 <h1>Items Data<a class="headerlink" href="#items-data" title="Permalink to this headline">¶</a></h1>
 <p>Big list of items with their ID, Icon ID, type and slot can be found in
 <code class="file docutils literal"><span class="pre">data/gamedata/itemdata.csv</span></code> (0x2A87C15DF8425A8C) in <code class="file docutils literal"><span class="pre">data.myp</span></code>.</p>
+<p>Icons images are stored in <code class="file docutils literal"><span class="pre">interface.myp</span></code> in <a class="reference internal" href="#directdraw-surface">DirectDraw_Surface</a> format.</p>
+<p>Association between ID and image file name are stored in <code class="file docutils literal"><span class="pre">interface/default/eatemplate_icons/source/icons.xml</span></code>
+(0xBC8564953C316BF6) in <code class="file docutils literal"><span class="pre">interface.myp</span></code>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">TYPE</th>
+<th class="head">ID ICON</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Misc Icons</td>
+<td>0-99</td>
+</tr>
+<tr class="row-odd"><td>Skill Icons</td>
+<td>100-199</td>
+</tr>
+<tr class="row-even"><td>Item Icons</td>
+<td>200-799</td>
+</tr>
+<tr class="row-odd"><td>Greenskin Shield Textures</td>
+<td>1000-1199</td>
+</tr>
+<tr class="row-even"><td>Greenskin Weapon Icons</td>
+<td>1200-1499</td>
+</tr>
+<tr class="row-odd"><td>Greenskin Armor Icons</td>
+<td>1500-2099</td>
+</tr>
+<tr class="row-even"><td>Greenskin Ability Icons</td>
+<td>2100-2999</td>
+</tr>
+<tr class="row-odd"><td>Dwarf Shield Icons</td>
+<td>3000-3199</td>
+</tr>
+<tr class="row-even"><td>Dwarf Weapon Icons</td>
+<td>3200-3499</td>
+</tr>
+<tr class="row-odd"><td>Dwarf Armor Icons</td>
+<td>3500-4099</td>
+</tr>
+<tr class="row-even"><td>Dwarf Ability Icons</td>
+<td>4100-4999</td>
+</tr>
+<tr class="row-odd"><td>Generic Ability Icons</td>
+<td>5000-5099</td>
+</tr>
+<tr class="row-even"><td>Chaos Ability Icons</td>
+<td>5100-5999</td>
+</tr>
+<tr class="row-odd"><td>Chaos Armor Icons</td>
+<td>6000-7599</td>
+</tr>
+<tr class="row-even"><td>Chaos Weapon Icons</td>
+<td>7600-7899</td>
+</tr>
+<tr class="row-odd"><td>Empire Ability Icons</td>
+<td>7900-8799</td>
+</tr>
+<tr class="row-even"><td>Empire Armor Icons</td>
+<td>8800-10399</td>
+</tr>
+<tr class="row-odd"><td>Empire Weapon Icons</td>
+<td>10400-10699</td>
+</tr>
+<tr class="row-even"><td>Empire Shield Icons</td>
+<td>10700-10899</td>
+</tr>
+<tr class="row-odd"><td>Dark Elf Ability Icons</td>
+<td>10900-11199</td>
+</tr>
+<tr class="row-even"><td>Dark Elf Weapons Icons</td>
+<td>11200-11499</td>
+</tr>
+<tr class="row-odd"><td>Dark Elf Shields Icons</td>
+<td>11500-11699</td>
+</tr>
+<tr class="row-even"><td>Dark Elf Armor Icons</td>
+<td>11700-13299</td>
+</tr>
+<tr class="row-odd"><td>High Elf Ability Textures</td>
+<td>13300-13699</td>
+</tr>
+<tr class="row-even"><td>High Elf Weapons Icons</td>
+<td>13700-13999</td>
+</tr>
+<tr class="row-odd"><td>High Elf Shields Icons</td>
+<td>14000-14199</td>
+</tr>
+<tr class="row-even"><td>High Elf Armor Icons</td>
+<td>14200-15799</td>
+</tr>
+<tr class="row-odd"><td>NPC Weapon Icons</td>
+<td>14500-14600</td>
+</tr>
+<tr class="row-even"><td>Illuminated Letters Icons</td>
+<td>20065-20179</td>
+</tr>
+<tr class="row-odd"><td>Career Icons</td>
+<td>20180-20214</td>
+</tr>
+<tr class="row-even"><td>Mount Icons</td>
+<td>20215-20249</td>
+</tr>
+<tr class="row-odd"><td>Crafting Icons</td>
+<td>20250-22249</td>
+</tr>
+<tr class="row-even"><td>Renown Icons</td>
+<td>22250-22649</td>
+</tr>
+<tr class="row-odd"><td>Tactic Icons</td>
+<td>22650-22999</td>
+</tr>
+<tr class="row-even"><td>Pregame Race Icons</td>
+<td>23000-23049</td>
+</tr>
+<tr class="row-odd"><td>ME Icons</td>
+<td>23050-23099</td>
+</tr>
+<tr class="row-even"><td>Siege Icons</td>
+<td>23100-23149</td>
+</tr>
+<tr class="row-odd"><td>Archetype Icons</td>
+<td>23150-23399</td>
+</tr>
+<tr class="row-even"><td>Siege Abilities Icons</td>
+<td>23400-23499</td>
+</tr>
+<tr class="row-odd"><td>Event Icons</td>
+<td>23500-23799</td>
+</tr>
+<tr class="row-even"><td>Sigil Icons</td>
+<td>23800-24999</td>
+</tr>
+<tr class="row-odd"><td>RVR Icons</td>
+<td>25000-25099</td>
+</tr>
+<tr class="row-even"><td>TK Weapons</td>
+<td>25100-26999</td>
+</tr>
+<tr class="row-odd"><td>TK Inventory</td>
+<td>27000-28199</td>
+</tr>
+<tr class="row-even"><td>TK Glyphs</td>
+<td>28200-28299</td>
+</tr>
+<tr class="row-odd"><td>TK MISC</td>
+<td>28300-28399</td>
+</tr>
+<tr class="row-even"><td>TK Armor</td>
+<td>28400-30099</td>
+</tr>
+<tr class="row-odd"><td>TK CLOAKS</td>
+<td>30100-30199</td>
+</tr>
+<tr class="row-even"><td>TK TROPHIES</td>
+<td>30200-30299</td>
+</tr>
+<tr class="row-odd"><td>TK TALISMANS</td>
+<td>30300-30399</td>
+</tr>
+<tr class="row-even"><td>WILD HUNT PAW PRINTS</td>
+<td>30400-30449</td>
+</tr>
+<tr class="row-odd"><td>GENERIC ACCESSORY ICONS</td>
+<td>30550-40000</td>
+</tr>
+<tr class="row-even"><td>MTX ICONS</td>
+<td>30437-50000</td>
+</tr>
+<tr class="row-odd"><td>Extra Mount ICONS  and Trophies</td>
+<td>50001-500100</td>
+</tr>
+<tr class="row-even"><td>T5 BH and 7 armor ICONS</td>
+<td>50101-50500</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="directdraw-surface" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><a class="reference external" href="http://en.wikipedia.org/wiki/DirectDraw_Surface">http://en.wikipedia.org/wiki/DirectDraw_Surface</a></td></tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -64,12 +254,20 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Items Data</a><ul>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="FileExtension.html"
                         title="previous chapter">File Extension</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="WorldServer.html"
-                        title="next chapter">WorldServer</a></p>
+  <p class="topless"><a href="Server.html"
+                        title="next chapter">Server Emulator</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -104,7 +302,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="WorldServer.html" title="WorldServer"
+          <a href="Server.html" title="Server Emulator"
              >next</a> |</li>
         <li class="right" >
           <a href="FileExtension.html" title="File Extension"
