@@ -1,6 +1,71 @@
 Items Data
 ==========
 
+Values :class:`GameData.ItemTypes` found in :func:`sub 0x005B07A2`.
+
+================================================== =================
+TYPE                                               VALUE
+================================================== =================
+NONE                                               0
+SWORD                                              1
+AXE                                                2
+HAMMER                                             3
+SHIELD                                             5
+ROBE                                               6
+BOW                                                7
+GUN                                                9
+STAFF                                              11
+DAGGER                                             12
+SPEAR                                              14
+PISTOL                                             15
+LIGHTARMOR                                         18
+MEDIUMARMOR                                        19
+HEAVYARMOR                                         20
+QUEST                                              21
+MEDIUMROBE                                         22
+ENHANCEMENT                                        23
+TROPHY                                             24
+CHARM                                              25
+DYE                                                27
+BASICMOUNT                                         29
+ADVANCEDMOUNT                                      30
+POTION                                             31
+SALVAGING                                          32
+MARKETING                                          33
+CRAFTING                                           34
+ACCESSORY                                          35
+CURRENCY                                           36
+TELEPORT                                           37
+TELEPORT_GROUP                                     38
+SIEGE                                              39
+TREASURE_CHEST                                     40
+TREASURE_KEY                                       41
+REFINER_TOOL                                       45
+================================================== =================
+
+Values :class:`GameData.Item` found in :func:`sub 0x005B07A2`.
+
+================================================== =================
+EITEMFLAG                                          VALUE
+================================================== =================
+NO_CHARGE_DELETE                                   0
+CAN_USE_IN_TRIAL                                   1
+BIND_ON_PICKUP                                     2
+BIND_ON_EQUIP                                      3
+TEMPORARY                                          4
+NO_MOVE                                            5
+BROKEN                                             6
+DECAYED                                            7
+DYE_ABLE                                           8
+MUNDANE_SALVAGABLE                                 10
+MAGICAL_SALVAGABLE                                 9
+NO_SELL                                            13
+HIDE_ITEM_LEVEL                                    19
+================================================== =================
+
+Icons
+-----
+
 Big list of items with their ID, Icon ID, type and slot can be found in
 :file:`data/gamedata/itemdata.csv` (0x2A87C15DF8425A8C) in :file:`data.myp`.
 
