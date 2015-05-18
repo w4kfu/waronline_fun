@@ -126,11 +126,15 @@ You can use the project `injector`_ for injecting the DLL in :file:`WAR.exe`.
     E:\Game\Warhammer Online>war_injector.exe replace_xml.dll
     
 You can create a shortcut (.lnk) or a script (.bat) for next launch
+
+Now warhammer online will connect to the LoginServer at IP address you specified 
+or default one.
     
 LoginServer
 -----------   
 
-You must have installed correctly all the requirements (see :ref:`server-requirements`.).
+Before running :file:`WAR_LoginServer.py`, you must have installed correctly all 
+the requirements (see :ref:`server-requirements`.).
 
 Open a window cmd shell, navigate to server folder, and launch 
 WAR_LoginServer.py.
@@ -148,7 +152,8 @@ in :file:`WAR_LoginServer.py` the following line:
 WorldServer
 -----------
 
-You must have installed correctly all the requirements (see :ref:`server-requirements`.).
+Before running :file:`WAR_WorldServer.py`, you must have installed correctly 
+all the requirements (see :ref:`server-requirements`.).
 
 Open a window cmd shell, navigate to server folder, and launch WAR_WorldServer.py.
 
