@@ -29,6 +29,7 @@ Contents:
     GameData.rst
     FileExtension.rst
     ItemsData.rst
+    BagInfo.rst
     Server.rst
     WorldServer.rst
     WorldServerOpcodeNames.rst
