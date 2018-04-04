@@ -1,5 +1,5 @@
-from idautils import *
-from idc import *
+import idautils
+import idc
 
 def get_bb(ea=None):
     # from https://gist.github.com/w4kfu/4252f4c19be573eaaecceb76e1dc0c1c
@@ -7,7 +7,7 @@ def get_bb(ea=None):
         Return the basic block if a desired effective address or the current one
     """
     if ea == None:
-        ea = here()
+        ea = idc.here()
     f = idaapi.get_func(ea)
     if not f:
         return None
@@ -24,8 +24,8 @@ def get_string_ref(ea=None):
         address or desired one
     """
     if ea == None:
-        ea = here()
-    func_ea = GetFunctionAttr(ea, FUNCATTR_START)
+        ea = idc.here()
+    func_ea = idc.GetFunctionAttr(ea, FUNCATTR_START)
     for item_ea in idautils.FuncItems(func_ea):
         for ref in idautils.DataRefsFrom(item_ea):
             type = idc.GetStringType(ref)
@@ -51,7 +51,7 @@ if GetInputMD5() == "DC4F692AAA7A9AEF5EE2D2A3F00C690B":
     opcode_num = 0
     opcode_name = ""
     
-    for e in list(FuncItems(EA)):
+    for e in list(idautils.FuncItems(EA)):
         if idc.GetMnem(e) == "push":
             if idc.GetOpType(e, 0) == o_imm:
                 val = idc.GetOperandValue(e, 0)
@@ -74,7 +74,7 @@ elif GetInputMD5() == "3C78A494DF37F707AB013360BA4CFBF6":
     VA_FUNC = 0x004C30CE
     JMP_TABLE = 0x004C5482
     OP_TABLE = 0x004C56FA
-    start_va_func = GetFunctionAttr(VA_FUNC, FUNCATTR_START)
+    start_va_func = idc.GetFunctionAttr(VA_FUNC, FUNCATTR_START)
     switch_dst = [Dword(JMP_TABLE + x * 4) for x in [Byte(OP_TABLE + y) for y in xrange(0, 253)]]
     for va, name in get_string_ref(VA_FUNC):
         cur_va = va
@@ -83,7 +83,7 @@ elif GetInputMD5() == "3C78A494DF37F707AB013360BA4CFBF6":
             if cur_bb.startEA in switch_dst:
                 opcodes.append((switch_dst.index(cur_bb.startEA), name))
                 break
-            cur_va = list(XrefsTo(cur_bb.startEA))[0].frm
+            cur_va = list(idautils.XrefsTo(cur_bb.startEA))[0].frm
 else:
     print("[-] Input file not supported : {0}".format(GetInputMD5()))
 
