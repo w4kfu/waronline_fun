@@ -81,7 +81,8 @@ elif GetInputMD5() == "3C78A494DF37F707AB013360BA4CFBF6":
         while cur_va > start_va_func:
             cur_bb = get_bb(cur_va)
             if cur_bb.startEA in switch_dst:
-                opcodes.append((switch_dst.index(cur_bb.startEA), name))
+                # + 1 because opcode value (3th parameter) is decremented before the call to 0x004C30CE
+                opcodes.append((switch_dst.index(cur_bb.startEA) + 1, name))
                 break
             cur_va = list(idautils.XrefsTo(cur_bb.startEA))[0].frm
 else:
